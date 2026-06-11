@@ -8,7 +8,7 @@
     "dev": "astro dev",
     "build": "astro build && node scripts/generate-robots.mjs && node scripts/generate-llms.mjs && node scripts/generate-sitemap.mjs",
     "preview": "astro preview",
-    "test": "node tests/validate-robots-txt.mjs && node tests/validate-llms-txt.mjs",
+    "test": "node tests/validate-lockfile.mjs && node tests/validate-robots-txt.mjs && node tests/validate-llms-txt.mjs && node scripts/check-terminology.mjs",
     "update:robots-data": "node scripts/update-robots-data.mjs",
     "indexnow": "node scripts/indexnow-submit.mjs"
   },
