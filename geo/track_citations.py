@@ -151,6 +151,10 @@ def main():
     if args.manual_checklist:
         write_manual_checklist(queries, manual)
         return 0
+    skipped = [e["name"] for e in engines if not os.environ.get(e["api_key_env"])]
+    engines = [e for e in engines if os.environ.get(e["api_key_env"])]
+    if skipped:
+        print(f"跳过(缺密钥环境变量): {', '.join(skipped)} —— 覆盖范围按实际申报")
     plan = sum(len(e["modes"]) for e in engines) * len(queries)
     print(f"计划: {len(engines)} 引擎 × {len(queries)} 查询(含双模式)= {plan} 次调用")
     if args.dry_run:
