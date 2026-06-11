@@ -21,5 +21,5 @@ ssh -o BatchMode=yes "$HOST" "
   mv -Tf $SITE_DIR/current.new $SITE_DIR/current
   ls -dt $SITE_DIR/releases/* | tail -n +6 | xargs -r rm -rf
 "
-echo "deployed release $STAMP -> $SITE_DIR/current"
-echo "上线后记得: npm run indexnow(F2 首推)"
+echo "deployed release $STAMP -> $SITE_DIR/current (服务器侧部署完成)"
+echo "IndexNow 推送自带 DNS 前置门(r6 R1): npm run indexnow —— DNS 未指向目标服务器时自动取消"

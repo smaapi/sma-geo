@@ -3,10 +3,27 @@
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import dns from 'node:dns';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { key, host } = JSON.parse(readFileSync(resolve(root, 'config/indexnow.json'), 'utf8'));
 const { site, pages } = JSON.parse(readFileSync(resolve(root, 'src/data/pages.json'), 'utf8'));
+
+// R1 DNS 前置门(REVIEW r6 §3):站点主机必须公网解析到目标服务器,否则推送的是他人现状。
+// 200 = 已受理而非已验证 —— 会撒谎的成功信号,必须在源头设门。
+const EXPECT_IP = process.env.INDEXNOW_EXPECT_IP || '47.93.39.204';
+let resolved;
+try {
+  resolved = await dns.promises.resolve4(host);
+} catch (err) {
+  console.error(`DNS 解析失败(${host}): ${err.code ?? err.message} —— 推送取消`);
+  process.exit(1);
+}
+if (!resolved.includes(EXPECT_IP)) {
+  console.error(`DNS 未指向目标服务器(${host} -> ${resolved.join(', ')},期望 ${EXPECT_IP})—— 推送取消`);
+  process.exit(1);
+}
+console.log(`DNS 门通过: ${host} -> ${EXPECT_IP}`);
 
 const body = {
   host,
