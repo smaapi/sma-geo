@@ -1,13 +1,13 @@
 {
   "_meta": {
     "purpose": "中文 AI/搜索引擎爬虫 UA 补充清单(上游 robots.json 覆盖不全)",
-    "source": "主 spec §1.1 起步清单;增补按 GEO Wiki 平台档案核对后加入(增补件 E1)",
-    "todo": "夸克、秘塔等引擎 UA 待 E1 核对后增补;未核实的 UA 不进清单"
+    "tiers": "verified = 引擎方一手文档或站长平台公告;reference = GEO Wiki 等社区来源(索引线索,不作最终依据)。robots.txt 生成两档皆用;监测周报\"已验真\"语义仅认 verified 档(REVIEW r3 R-A 暂裁)",
+    "rule": "无任何来源的 UA 不收录;Bytespider 已随上游 robots.json 收录,不在此重复"
   },
   "bots": [
-    "Baiduspider",
-    "360Spider",
-    "Sogou web spider",
-    "YisouSpider"
+    { "ua": "Baiduspider", "tier": "verified", "source": "https://ziyuan.baidu.com (百度搜索资源平台·Baiduspider 官方档案)" },
+    { "ua": "360Spider", "tier": "verified", "source": "https://zhanzhang.so.com (360 站长平台·蜘蛛 UA 公告)" },
+    { "ua": "Sogou web spider", "tier": "verified", "source": "https://zhanzhang.sogou.com (搜狗站长平台·蜘蛛说明)" },
+    { "ua": "YisouSpider", "tier": "verified", "source": "https://zhanzhang.sm.cn (神马搜索站长平台·YisouSpider 说明)" }
   ]
 }

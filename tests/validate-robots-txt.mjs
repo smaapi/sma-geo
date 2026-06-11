@@ -10,8 +10,13 @@ const errors = [];
 
 const txt = read('dist/robots.txt');
 const upstream = Object.keys(JSON.parse(read('config/robots.json')));
-const cn = JSON.parse(read('config/cn-bots.json')).bots;
-const expected = [...new Set([...upstream, ...cn])];
+const cn = JSON.parse(read('config/cn-bots.json')).bots.map((b) => b.ua);
+// 与生成器同构:大小写不敏感去重后逐一核对
+const merged = new Map();
+for (const ua of [...upstream, ...cn]) {
+  if (!merged.has(ua.toLowerCase())) merged.set(ua.toLowerCase(), ua);
+}
+const expected = [...merged.values()];
 
 // 按 UA 组切分:组 = User-agent 行 + 后续指令行
 const groups = new Map();

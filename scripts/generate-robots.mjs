@@ -9,9 +9,14 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 
 const upstream = Object.keys(read('config/robots.json'));
-const cn = read('config/cn-bots.json').bots;
+const cn = read('config/cn-bots.json').bots.map((b) => b.ua);
 const source = read('config/robots-source.json');
-const uas = [...new Set([...upstream, ...cn])];
+// 大小写不敏感去重,保留首见(上游)原始大小写(REVIEW r3 D2/R-A)
+const merged = new Map();
+for (const ua of [...upstream, ...cn]) {
+  if (!merged.has(ua.toLowerCase())) merged.set(ua.toLowerCase(), ua);
+}
+const uas = [...merged.values()];
 
 const INTERNAL_DISALLOWS = ['/console/', '/admin/', '/api/internal/'];
 const disallowBlock = INTERNAL_DISALLOWS.map((p) => `Disallow: ${p}`).join('\n');
