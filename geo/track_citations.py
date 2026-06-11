@@ -22,12 +22,18 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "geo" / "data" / "citations.csv"
-CSV_FIELDS = ["date", "engine", "mode", "query_id", "mentioned", "snippet", "sentiment", "accuracy", "mislabel"]
+CSV_FIELDS = ["date", "engine", "mode", "query_id", "mentioned", "snippet", "sentiment", "accuracy", "mislabel", "entity_mismatch"]
 
-MENTION_RES = [
-    re.compile(r"(?<![A-Za-z])SMA(?![A-Za-z])", re.IGNORECASE),
-    re.compile(r"smaapi", re.IGNORECASE),
-    re.compile(r"菌路"),
+# T8a(REVIEW r5 §2)实体解析:命中仅当消歧到我方实体;裸 SMA 碰撞多重同名实体
+STRONG_RES = [re.compile(r"smaapi", re.IGNORECASE), re.compile(r"菌路"), re.compile(r"slime\s*mould", re.IGNORECASE)]
+BARE_SMA_RE = re.compile(r"(?<![A-Za-z])SMA(?![A-Za-z])")
+DISAMBIG_RE = re.compile(r"网关|接入|模型路由|(?<![A-Za-z])API(?![A-Za-z])|AI gateway|model access", re.IGNORECASE)
+COLLISION_RES = [
+    (re.compile(r"移动平均|moving average", re.IGNORECASE), "简单移动平均线"),
+    (re.compile(r"光伏|太阳能|逆变器|solar|inverter", re.IGNORECASE), "SMA Solar(光伏)"),
+    (re.compile(r"射频|同轴|连接器|connector|coaxial", re.IGNORECASE), "SMA 射频接头"),
+    (re.compile(r"形状记忆|shape[- ]memory", re.IGNORECASE), "形状记忆合金"),
+    (re.compile(r"肌萎缩|muscular atrophy", re.IGNORECASE), "脊髓性肌萎缩症"),
 ]
 
 # C2 专项:AI 把 SMA 描述为"中转站"= P0 级纠偏事件(addendum 02v2)
@@ -69,13 +75,30 @@ except ImportError:
     SSL_CTX = ssl.create_default_context()
 
 
+def _snip(text, m):
+    lo, hi = max(0, m.start() - 60), min(len(text), m.end() + 60)
+    return text[lo:hi].replace("\n", " ").strip()
+
+
 def detect_mention(text):
-    for rx in MENTION_RES:
+    """返回 (mentioned, snippet, entity_mismatch)。
+
+    T8a 规则:smaapi/菌路/Slime Mould 为强锚直接计入;裸 SMA 须满足
+    ① 无同名实体标记(碰撞词先判,错配单列)且 ② 上下文含消歧词,方计入提及。
+    """
+    for rx in STRONG_RES:
         m = rx.search(text)
         if m:
-            lo, hi = max(0, m.start() - 60), min(len(text), m.end() + 60)
-            return True, text[lo:hi].replace("\n", " ").strip()
-    return False, ""
+            return True, _snip(text, m), ""
+    m = BARE_SMA_RE.search(text)
+    if not m:
+        return False, "", ""
+    for rx, label in COLLISION_RES:
+        if rx.search(text):
+            return False, _snip(text, m), label
+    if DISAMBIG_RE.search(text):
+        return True, _snip(text, m), ""
+    return False, _snip(text, m), "未消歧(裸SMA)"
 
 
 def ask_openai_compatible(engine, query, mode_params):
@@ -109,13 +132,14 @@ def run_queries(queries, engines, ask_fn=ask_openai_compatible, today=None, clas
                 except Exception as exc:  # 单点失败不中断全量
                     print(f"  ! {engine['name']}/{mode}/{q['id']}: {exc}", file=sys.stderr)
                     continue
-                mentioned, snippet = detect_mention(answer)
+                mentioned, snippet, mismatch = detect_mention(answer)
                 sentiment, accuracy = classify_fn(answer) if mentioned else ("", "")
                 rows.append(
                     {"date": today, "engine": engine["name"], "mode": mode,
                      "query_id": q["id"], "mentioned": int(mentioned), "snippet": snippet,
                      "sentiment": sentiment, "accuracy": accuracy,
-                     "mislabel": int(mentioned and detect_mislabel(answer))}
+                     "mislabel": int(mentioned and detect_mislabel(answer)),
+                     "entity_mismatch": mismatch}
                 )
     return rows
 
@@ -156,6 +180,13 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
                                               for s in sorted({r.get('sentiment', '') for r in hits})),
                   f"- 准确性: " + " / ".join(f"{a or '未标'}×{sum(1 for r in hits if r.get('accuracy','') == a)}"
                                             for a in sorted({r.get('accuracy', '') for r in hits}))]
+    # T8a:实体错配独立统计(不计入提及率)
+    mismatches = [r for r in rows if r.get("entity_mismatch")]
+    if mismatches:
+        lines += ["", "## 实体错配(裸 SMA 被解析为他方实体,不计入提及)", ""]
+        for label in sorted({r["entity_mismatch"] for r in mismatches}):
+            sub = [r for r in mismatches if r["entity_mismatch"] == label]
+            lines.append(f"- {label} ×{len(sub)}({', '.join(r['query_id'] for r in sub[:6])})")
     lines += ["", "## 效果挂钩表(T 动作 ↔ 记分牌,自 2026-W25 起回填)", "",
               "| T 动作 | 外发/上线日 | 关联查询簇 | 提及率变化 | 备注 |", "|---|---|---|---|---|",
               "| (下期起回填) | | | | |"]
