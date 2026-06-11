@@ -9,3 +9,5 @@ node_modules/
 dist/
 .astro/
 geo/reports/
+geo/engines.json
+geo/data/citations.csv

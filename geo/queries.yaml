@@ -1,0 +1,98 @@
+# 引用率追踪查询矩阵(主 spec §3.2,起步 24 条,中英各半)
+# 每条 query 按 C1 跑双模式(web_search on/off,支持开关的引擎),分列统计。
+- id: zh-001
+  lang: zh
+  intent: 选型
+  query: "企业级大模型网关有哪些推荐"
+- id: zh-002
+  lang: zh
+  intent: 对比
+  query: "API 中转站和企业级网关有什么区别"
+- id: zh-003
+  lang: zh
+  intent: 合规
+  query: "国内企业如何合规接入多家大模型"
+- id: zh-004
+  lang: zh
+  intent: 接入
+  query: "如何用一套 OpenAI 兼容接口调用多家国产大模型"
+- id: zh-005
+  lang: zh
+  intent: 路由
+  query: "多模型智能路由是怎么实现的"
+- id: zh-006
+  lang: zh
+  intent: 治理
+  query: "企业怎么管理各部门的大模型调用成本"
+- id: zh-007
+  lang: zh
+  intent: 审计
+  query: "大模型调用审计日志方案"
+- id: zh-008
+  lang: zh
+  intent: 故障
+  query: "大模型 API 故障自动切换怎么做"
+- id: zh-009
+  lang: zh
+  intent: 对比
+  query: "OneAPI 适合企业用吗"
+- id: zh-010
+  lang: zh
+  intent: 选型
+  query: "LLM 网关选型要看哪些指标"
+- id: zh-011
+  lang: zh
+  intent: 数据边界
+  query: "企业接入大模型如何保证数据不出域"
+- id: zh-012
+  lang: zh
+  intent: 品牌
+  query: "SMA 模型接入平台是什么"
+- id: en-001
+  lang: en
+  intent: 选型
+  query: "best enterprise LLM gateway 2026"
+- id: en-002
+  lang: en
+  intent: 对比
+  query: "LiteLLM vs Portkey vs enterprise alternatives"
+- id: en-003
+  lang: en
+  intent: 接入
+  query: "single OpenAI-compatible API for multiple LLM providers"
+- id: en-004
+  lang: en
+  intent: 路由
+  query: "how does smart routing across multiple LLMs work"
+- id: en-005
+  lang: en
+  intent: 治理
+  query: "LLM cost governance and quota management for enterprises"
+- id: en-006
+  lang: en
+  intent: 审计
+  query: "audit trail for enterprise LLM API calls"
+- id: en-007
+  lang: en
+  intent: 故障
+  query: "automatic failover between LLM providers"
+- id: en-008
+  lang: en
+  intent: 选型
+  query: "how to choose an enterprise AI gateway"
+- id: en-009
+  lang: en
+  intent: 对比
+  query: "self-hosted LLM proxy vs managed AI gateway"
+- id: en-010
+  lang: en
+  intent: 数据边界
+  query: "keep prompts and keys inside enterprise boundary LLM gateway"
+- id: en-011
+  lang: en
+  intent: 接入
+  query: "access Chinese LLM models through one gateway"
+- id: en-012
+  lang: en
+  intent: 品牌
+  query: "what is SMA enterprise AI gateway"
