@@ -11,3 +11,5 @@ dist/
 geo/reports/
 geo/engines.json
 geo/data/citations.csv
+geo/data/citations-INVALID-*
+geo/data/README-invalid-note.txt
