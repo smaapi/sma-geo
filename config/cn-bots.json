@@ -6,7 +6,6 @@
   },
   "bots": [
     "Baiduspider",
-    "Bytespider",
     "360Spider",
     "Sogou web spider",
     "YisouSpider"

@@ -22,12 +22,27 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 LOG_RE = re.compile(r'^(\S+) \S+ \S+ \[([^\]]+)\] "(\S+) (\S+)[^"]*" (\d{3}) \S+ "[^"]*" "([^"]*)"')
 TIME_FMT = "%d/%b/%Y:%H:%M:%S %z"
+# UA 中的厂商 URL 段(如 +https://openai.com/gptbot)在匹配前剥离,防其域名误命中清单条目(REVIEW r3 D2)
+UA_URL_RE = re.compile(r"\+https?://\S+")
+
+
+def compile_bot_patterns(ua_list):
+    """边界匹配:名称前后不得是字母数字(名称内空格/连字符按字面)。"""
+    return [
+        (b, re.compile(r"(?<![A-Za-z0-9])" + re.escape(b) + r"(?![A-Za-z0-9])", re.IGNORECASE))
+        for b in ua_list
+    ]
 
 
 def load_ua_list():
     upstream = json.loads((ROOT / "config" / "robots.json").read_text())
     cn = json.loads((ROOT / "config" / "cn-bots.json").read_text())["bots"]
-    return sorted(set(list(upstream.keys()) + cn), key=len, reverse=True)
+    cn_uas = [b["ua"] if isinstance(b, dict) else b for b in cn]
+    # 大小写不敏感去重,保留上游原始大小写;排序确定化(REVIEW r3 D2)
+    merged = {}
+    for ua in list(upstream.keys()) + cn_uas:
+        merged.setdefault(ua.lower(), ua)
+    return sorted(merged.values(), key=lambda b: (-len(b), b.lower()))
 
 
 def load_ip_ranges():
@@ -53,13 +68,15 @@ def iter_lines(patterns):
 def parse(patterns, ua_list, ip_ranges):
     stats = {}  # bot -> {paths: {path: count}, verified, ua_only, first, last}
     total_lines = 0
+    bot_patterns = compile_bot_patterns(ua_list)
     for line in iter_lines(patterns):
         total_lines += 1
         m = LOG_RE.match(line)
         if not m:
             continue
         ip_str, time_str, _method, path, _status, ua = m.groups()
-        bot = next((b for b in ua_list if b.lower() in ua.lower()), None)
+        ua_clean = UA_URL_RE.sub("", ua)
+        bot = next((b for b, rx in bot_patterns if rx.search(ua_clean)), None)
         if bot is None:
             continue
         entry = stats.setdefault(bot, {"paths": {}, "verified": 0, "ua_only": 0, "first": None, "last": None})

@@ -21,7 +21,16 @@ ua_list = load_ua_list()
 ip_ranges = load_ip_ranges()
 fixture = str(ROOT / "tests" / "fixtures" / "sample-access.log")
 
+# D2 守卫:合并清单无大小写重复;排序确定(REVIEW r3)
+lower = [u.lower() for u in ua_list]
+check(len(lower) == len(set(lower)), "UA 清单存在大小写不敏感重复")
+check(ua_list == sorted(ua_list, key=lambda b: (-len(b), b.lower())), "UA 清单排序非确定")
+check("OpenAI" in ua_list and "GPTBot" in ua_list, "歧义对 OpenAI/GPTBot 应同时在清单中(回归前提)")
+
 stats, total = parse([fixture], ua_list, ip_ranges)
+
+# D2 回归:GPTBot 行的厂商 URL(+https://openai.com/gptbot)不得误记入 OpenAI 名下
+check("OpenAI" not in stats, "厂商 URL 误命中 OpenAI(D2 根因复现)")
 
 check(total == 7, f"日志行数应为 7,实为 {total}")
 check("GPTBot" in stats, "GPTBot 未命中")
