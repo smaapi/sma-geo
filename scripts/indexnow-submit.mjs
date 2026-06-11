@@ -11,7 +11,16 @@ const { site, pages } = JSON.parse(readFileSync(resolve(root, 'src/data/pages.js
 
 // R1 DNS 前置门(REVIEW r6 §3):站点主机必须公网解析到目标服务器,否则推送的是他人现状。
 // 200 = 已受理而非已验证 —— 会撒谎的成功信号,必须在源头设门。
-const EXPECT_IP = process.env.INDEXNOW_EXPECT_IP || '47.93.39.204';
+const DEFAULT_EXPECT_IP = '47.93.39.204';
+const override = process.env.INDEXNOW_EXPECT_IP;
+if (override && process.env.CI) {
+  console.error('CI 环境禁用 INDEXNOW_EXPECT_IP 覆写(REVIEW r7 §3.2)—— 推送取消');
+  process.exit(1);
+}
+if (override) {
+  console.warn(`⚠️⚠️⚠️ 警告: DNS 门期望值被覆写为 ${override}(默认 ${DEFAULT_EXPECT_IP})——仅限本地测试场景 ⚠️⚠️⚠️`);
+}
+const EXPECT_IP = override || DEFAULT_EXPECT_IP;
 let resolved;
 try {
   resolved = await dns.promises.resolve4(host);
