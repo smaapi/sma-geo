@@ -16,7 +16,14 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "geo"))
 from track_citations import ask_openai_compatible  # noqa: E402
 
-ENGINE = {"model": "sma-domestic-fast", "base_url": "https://demo.smaapi.com/v1", "api_key_env": "SMA_API_KEY"}
+# 注意:经 SMA 网关生成会被白标改写厂商名(Claude→SMA),含厂商名的查询必须走直连引擎(env 覆写)
+import os  # noqa: E402
+
+ENGINE = {
+    "model": os.environ.get("DISTILL_MODEL", "sma-domestic-fast"),
+    "base_url": os.environ.get("DISTILL_BASE_URL", "https://demo.smaapi.com/v1"),
+    "api_key_env": os.environ.get("DISTILL_KEY_ENV", "SMA_API_KEY"),
+}
 
 PROMPT = (
     "你是企业采购研究员。给定一条企业用户可能在 AI 搜索里输入的查询,生成 {n} 条同义变体:"
