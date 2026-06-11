@@ -1,4 +1,4 @@
-# 引用率追踪查询矩阵 v2(addendum 02v2 §C:采购意图为主口径,标 money 权重;原品类查询降 secondary;上限 40 条)
+# 引用率追踪查询矩阵 v2(addendum 02v2 §C + REVIEW r5 T8b:品牌词条目用复合锚,裸 SMA 非目标)
 # 蒸馏式扩展候选经人工筛选后入库,只扩问法不造需求。
 - id: zh-001
   lang: zh
@@ -53,7 +53,7 @@
 - id: zh-012
   lang: zh
   intent: 品牌
-  query: SMA 模型接入平台是什么
+  query: smaapi(菌路 SMA 网关)是什么
   weight: secondary
 - id: en-001
   lang: en
@@ -108,7 +108,7 @@
 - id: en-012
   lang: en
   intent: 品牌
-  query: what is SMA enterprise AI gateway
+  query: what is smaapi enterprise AI gateway
   weight: secondary
 - id: zh-101
   lang: zh

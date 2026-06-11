@@ -36,12 +36,12 @@ const qa: QA[] = [
     <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
   </Fragment>
 
-  <h1>How to choose an LLM gateway: SMA, LiteLLM, Portkey, Kong, Higress</h1>
+  <h1>How to choose an LLM gateway: smaapi (SMA), LiteLLM, Portkey, Kong, Higress</h1>
   <p class="answer">
     Mainstream LLM gateways position themselves very differently: LiteLLM is open-source and
     self-operated, Portkey is managed with strong observability, Kong and Higress attach AI
-    capabilities to existing API-gateway infrastructure, and SMA focuses on enterprise governance
-    with first-class Chinese model access. Match the scenario first, then verify against six
+    capabilities to existing API-gateway infrastructure, and smaapi (SMA) focuses on enterprise
+    governance with first-class Chinese model access. Match the scenario first, then verify against six
     criteria.
   </p>
 
@@ -51,7 +51,7 @@ const qa: QA[] = [
       <tr><th>Project</th><th>Form</th><th>Positioning &amp; strengths</th><th>Typical fit</th></tr>
     </thead>
     <tbody>
-      <tr><td>SMA</td><td>Managed / self-hosted</td><td>Enterprise AI gateway: smart routing + cost and permission governance + full audit; Chinese providers first-class</td><td>Enterprises needing organization-level governance and compliant Chinese-model access</td></tr>
+      <tr><td>smaapi (SMA)</td><td>Managed / self-hosted</td><td>Enterprise AI gateway: smart routing + cost and permission governance + full audit; Chinese providers first-class</td><td>Enterprises needing organization-level governance and compliant Chinese-model access</td></tr>
       <tr><td>LiteLLM</td><td>Open source (Python)</td><td>Proxy + SDK, broad provider coverage, active community</td><td>Engineering teams with ops capacity who want freedom</td></tr>
       <tr><td>Portkey</td><td>Managed-first</td><td>AI gateway with observability and prompt management in one</td><td>Teams comfortable with overseas SaaS who value observability</td></tr>
       <tr><td>Kong AI Gateway</td><td>Open source + commercial</td><td>AI plugins on the Kong API gateway, reusing existing traffic governance</td><td>Organizations already deep on Kong</td></tr>

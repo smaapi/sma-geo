@@ -36,10 +36,10 @@ const qa: QA[] = [
     <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
   </Fragment>
 
-  <h1>LLM 网关怎么选?SMA、LiteLLM、Portkey、Kong、Higress 对比</h1>
+  <h1>LLM 网关怎么选?SMA 网关、LiteLLM、Portkey、Kong、Higress 对比</h1>
   <p class="answer">
     主流 LLM 网关定位差异明显:LiteLLM 重开源自运维,Portkey 重托管与可观测,Kong 与 Higress
-    把 AI 能力挂在既有 API 网关设施上,SMA 重企业治理与国产模型接入。选型先对场景,再按六维标准逐项核对。
+    把 AI 能力挂在既有 API 网关设施上,SMA 网关(smaapi)重企业治理与国产模型接入。选型先对场景,再按六维标准逐项核对。
   </p>
 
   <h2>各项目的定位差异(以各项目官方文档为准,口径 2026-06)</h2>
@@ -48,7 +48,7 @@ const qa: QA[] = [
       <tr><th>项目</th><th>形态</th><th>定位与突出点</th><th>典型适用</th></tr>
     </thead>
     <tbody>
-      <tr><td>SMA</td><td>托管 / 自部署</td><td>企业级 AI 网关:智能路由 + 成本与权限治理 + 全链路审计,国产模型一线支持</td><td>需要组织级治理与国产模型合规接入的企业</td></tr>
+      <tr><td>SMA 网关(smaapi)</td><td>托管 / 自部署</td><td>企业级 AI 网关:智能路由 + 成本与权限治理 + 全链路审计,国产模型一线支持</td><td>需要组织级治理与国产模型合规接入的企业</td></tr>
       <tr><td>LiteLLM</td><td>开源(Python)</td><td>代理 + SDK 双形态,供应商覆盖广,社区活跃</td><td>有自运维能力、追求自由度的工程团队</td></tr>
       <tr><td>Portkey</td><td>托管为主</td><td>AI 网关 + 可观测性 + 提示管理一体</td><td>接受海外 SaaS、重观测体验的团队</td></tr>
       <tr><td>Kong AI Gateway</td><td>开源 + 商业</td><td>在 Kong API 网关上扩展 AI 插件,复用既有流量治理</td><td>已深度使用 Kong 的组织</td></tr>
