@@ -60,6 +60,18 @@ with tempfile.TemporaryDirectory() as td2:
     check(any(_pl.Path(td2).glob("crawlers-*-bots.csv")), "应产出 bot 级分表")
     check(any(_pl.Path(td2).glob("crawlers-*-paths.csv")), "应产出 path 级分表")
 
+# r11 §3-1:观察阈值(>100 零验真 / 非公开路径探测)
+from collections import Counter as _C
+synth = {
+    "GPTBot": {"paths": _C({f"/p{i}": 1 for i in range(120)}), "status": _C({"2xx": 120}), "hosts": _C({"www.smaapi.com": 120}), "bytes": 1, "verified": 0, "ua_only": 120, "first": None, "last": None},
+    "ClaudeBot": {"paths": _C({"/console/index.html": 2, "/": 1}), "status": _C({"4xx": 3}), "hosts": _C(), "bytes": 0, "verified": 0, "ua_only": 3, "first": None, "last": None},
+}
+with tempfile.TemporaryDirectory() as td3:
+    _wr(synth, 123, ip_ranges, __import__("pathlib").Path(td3))
+    md = next(__import__("pathlib").Path(td3).glob("crawlers-*.md")).read_text()
+    check("观察级备注" in md and "超观察阈值" in md, "高命中零验真应触发观察备注")
+    check("/console/index.html" in md, "非公开路径探测应列入备注")
+
 # 空日志不报错
 with tempfile.TemporaryDirectory() as td:
     empty = Path(td) / "empty.log"

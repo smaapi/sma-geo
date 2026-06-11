@@ -166,7 +166,19 @@ def write_reports(stats, total_lines, ip_ranges, out_dir):
             lines.append(f"- **{bot}**: " + ", ".join(f"`{p}`×{c}" for p, c in tops))
     else:
         lines.append("本周无 AI 爬虫命中(冷启动期属预期)。")
-    lines += ["", "> 已验真 = 来源 IP 落在厂商公布段内;仅 UA 匹配 = UA 命中但 IP 不在段内(疑似伪装)或厂商未公布段。",
+    # r11 §3-1:仅 UA 档观察阈值——周命中 >100 或非公开路径探测 → 观察级备注(不告警不门禁)
+    PROBE_RE = __import__("re").compile(r"^/(console|admin|api/internal|\.env|wp-|\.git|phpmyadmin)", __import__("re").IGNORECASE)
+    observations = []
+    for bot, e in stats.items():
+        total = sum(e["paths"].values())
+        probes = [p for p in e["paths"] if PROBE_RE.match(p)]
+        if total > 100 and e["verified"] == 0:
+            observations.append(f"- {bot}: 周命中 {total} 且零验真,超观察阈值(>100)")
+        if probes:
+            observations.append(f"- {bot}: 探测非公开路径 {sorted(probes)[:5]}")
+    if observations:
+        lines += ["", "## 观察级备注(仅 UA 档伪装流量,r11 §3-1 阈值)", ""] + observations
+    lines += ["", "> 已验真 = 来源 IP 落在厂商公布段内;仅 UA 匹配 = UA 命中但 IP 不在段内(疑似伪装)或厂商未公布段——此列固定保留为伪装流量观察位(r11 裁定)。",
               "> 计数口径:bot 级表一行一 bot,verified/ua_only 为请求级计数;path 明细见 -paths.csv,不与 bot 表混算。"]
     Path(f"{base}.md").write_text("\n".join(lines) + "\n")
     print(f"报告: {base}.md / {base}-bots.csv / {base}-paths.csv")

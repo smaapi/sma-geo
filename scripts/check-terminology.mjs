@@ -18,6 +18,9 @@ const ABSOLUTE = [
 // dist/ 派生产物继承其源文件的例外区资格(compare 页构建产物、llms-full 正文拼接);自指/并置启发式仍全量生效
 const EXEMPT = [
   /^src\/pages\/[^/]+\/compare\//,
+  // r11 §3-2 预批:B1 钱页(02v2 §B1 设计)纳入他指例外区,同侧禁止照常生效
+  /^src\/pages\/[^/]+\/solutions\//,
+  /^dist\/(zh|en)\/solutions\//,
   /^geo\/queries\.yaml$/,
   /faq/i,
   /^scripts\/check-terminology\.mjs$/,
