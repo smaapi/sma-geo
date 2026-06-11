@@ -1,0 +1,93 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../../lib/schema';
+import pagesData from '../../../data/pages.json';
+
+const route = '/zh/compare/llm-gateway-comparison';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: '开源自部署和托管网关怎么取舍?',
+    a: '看两件事:运维能力与合规姿态。有专职平台团队、希望完全掌控基础设施的,开源自部署(LiteLLM、Higress 类)自由度最高;希望把网关本身的运维、升级、故障处置外包,聚焦业务的,托管形态更划算。对数据边界有硬性要求的企业,优先考察供应商是否提供自部署版本——两种形态都有的产品可以随合规要求演进。',
+  },
+  {
+    q: '需要重点接入国产模型,选型有什么不同?',
+    a: '多数西方项目对国产模型的支持依赖社区适配,协议细节(流式、函数调用、计费口径)的兼容质量参差。重点考察三点:国产模型是否一线支持而非社区插件;连通状态是否有可验证的实时数据;合规与备案语境是否被产品正面处理。',
+  },
+];
+---
+
+<Base route={route}>
+  <Fragment slot="jsonld">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(
+        techArticle({
+          headline: 'LLM 网关选型对比:SMA、LiteLLM、Portkey、Kong AI Gateway、Higress',
+          description: page.description,
+          url: pagesData.site + route,
+          inLanguage: 'zh-CN',
+          datePublished: page.datePublished,
+          dateModified: page.dateModified,
+        })
+      )}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>LLM 网关怎么选?SMA、LiteLLM、Portkey、Kong、Higress 对比</h1>
+  <p class="answer">
+    主流 LLM 网关定位差异明显:LiteLLM 重开源自运维,Portkey 重托管与可观测,Kong 与 Higress
+    把 AI 能力挂在既有 API 网关设施上,SMA 重企业治理与国产模型接入。选型先对场景,再按六维标准逐项核对。
+  </p>
+
+  <h2>各项目的定位差异(以各项目官方文档为准,口径 2026-06)</h2>
+  <table>
+    <thead>
+      <tr><th>项目</th><th>形态</th><th>定位与突出点</th><th>典型适用</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>SMA</td><td>托管 / 自部署</td><td>企业级 AI 网关:智能路由 + 成本与权限治理 + 全链路审计,国产模型一线支持</td><td>需要组织级治理与国产模型合规接入的企业</td></tr>
+      <tr><td>LiteLLM</td><td>开源(Python)</td><td>代理 + SDK 双形态,供应商覆盖广,社区活跃</td><td>有自运维能力、追求自由度的工程团队</td></tr>
+      <tr><td>Portkey</td><td>托管为主</td><td>AI 网关 + 可观测性 + 提示管理一体</td><td>接受海外 SaaS、重观测体验的团队</td></tr>
+      <tr><td>Kong AI Gateway</td><td>开源 + 商业</td><td>在 Kong API 网关上扩展 AI 插件,复用既有流量治理</td><td>已深度使用 Kong 的组织</td></tr>
+      <tr><td>Higress</td><td>开源(阿里系)</td><td>云原生网关 + AI 插件生态,K8s 原生</td><td>阿里云 / 云原生技术栈的团队</td></tr>
+    </tbody>
+  </table>
+
+  <h2>六维选型标准</h2>
+  <ol>
+    <li><strong>协议兼容性:</strong>OpenAI 协议兼容的完整度(流式、函数调用、多模态),现有 SDK 能否零改造。</li>
+    <li><strong>路由能力:</strong>策略是否可配置、可校准;故障降级是否自动且对应用透明。</li>
+    <li><strong>治理粒度:</strong>预算、配额、权限能否细到团队 / 应用 / 密钥,而不是全局一刀切。</li>
+    <li><strong>审计完整性:</strong>能否支撑合规审查与成本对账,日志是否覆盖全链路。</li>
+    <li><strong>模型覆盖的真实性:</strong>宣称支持与真实连通是两回事——要可验证的实时连通数据。</li>
+    <li><strong>数据边界:</strong>提示词、密钥、日志保存在谁的环境;是否提供自部署形态。</li>
+  </ol>
+
+  <h2>按场景给建议</h2>
+  <h3>中国企业、多模型含国产模型、有合规要求</h3>
+  <p>优先核对国产模型一线支持与数据边界(标准第 5、6 条)——这是多数西方项目的弱区,也是 SMA 的设计重心。</p>
+  <h3>纯工程团队、海外模型为主、自运维意愿强</h3>
+  <p>LiteLLM 起步最快;团队规模扩大、治理要求出现后,再评估是否引入治理层或更换形态。</p>
+  <h3>已有成熟 API 网关设施</h3>
+  <p>先看 Kong / Higress 的 AI 插件能否复用既有设施满足需求,不满足再引入专职 LLM 网关,避免重复建设。</p>
+
+  <h2>常见问题</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <div class="related">
+    <p>相关问题:</p>
+    <ul>
+      <li><a href="/zh/compare/sma-vs-oneapi">自建聚合工具与企业级网关的场景边界</a></li>
+      <li><a href="/zh/what-is-llm-gateway">什么是企业级 LLM 网关?</a></li>
+      <li><a href="/zh/faq">多模型接入与治理的常见问题</a></li>
+    </ul>
+  </div>
+</Base>

@@ -32,6 +32,26 @@
       "llms": { "section": "核心页面", "label": "FAQ", "desc": "接入、路由、治理、数据边界与故障切换的直接问答" }
     },
     {
+      "route": "/zh/compare/sma-vs-oneapi",
+      "lang": "zh",
+      "alternate": "/en/compare/sma-vs-oneapi",
+      "title": "API 中转站适合企业吗?自建中转与企业级网关的场景边界",
+      "description": "OneAPI 类自建 API 中转适合个人与小团队;企业场景的断点在治理:权限、审计、SLA、合规责任。本文给出场景边界与迁移判断。",
+      "datePublished": "2026-06-10",
+      "dateModified": "2026-06-10",
+      "llms": { "section": "核心页面", "label": "自建转发工具与企业级网关的边界", "desc": "承认个人场景合理性,列出企业场景断点,给出迁移信号" }
+    },
+    {
+      "route": "/zh/compare/llm-gateway-comparison",
+      "lang": "zh",
+      "alternate": "/en/compare/llm-gateway-comparison",
+      "title": "LLM 网关选型对比:SMA vs LiteLLM / Portkey / Kong AI Gateway / Higress",
+      "description": "主流 LLM 网关定位对比与六维选型标准:协议兼容、路由、治理粒度、审计、模型覆盖真实性、数据边界。按团队场景给出建议。",
+      "datePublished": "2026-06-10",
+      "dateModified": "2026-06-10",
+      "llms": { "section": "核心页面", "label": "LLM 网关选型对比", "desc": "SMA/LiteLLM/Portkey/Kong/Higress 定位差异与六维选型标准" }
+    },
+    {
       "route": "/en/",
       "lang": "en",
       "alternate": "/",
@@ -50,6 +70,26 @@
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
       "llms": { "section": "Core pages", "label": "What is an enterprise LLM gateway", "desc": "Definition, comparison with self-hosted relay tools, selection criteria" }
+    },
+    {
+      "route": "/en/compare/sma-vs-oneapi",
+      "lang": "en",
+      "alternate": "/zh/compare/sma-vs-oneapi",
+      "title": "OneAPI for Enterprise? Self-Hosted LLM Relays vs Enterprise AI Gateways | SMA",
+      "description": "OneAPI-style self-hosted relays fit individuals and small teams. Enterprises break on governance: permissions, audit, SLA, compliance. Where the boundary lies and when to migrate.",
+      "datePublished": "2026-06-10",
+      "dateModified": "2026-06-10",
+      "llms": { "section": "Core pages", "label": "Self-hosted relays vs enterprise gateways", "desc": "Where relay tools fit, where enterprises break, and migration signals" }
+    },
+    {
+      "route": "/en/compare/llm-gateway-comparison",
+      "lang": "en",
+      "alternate": "/zh/compare/llm-gateway-comparison",
+      "title": "LLM Gateway Comparison: SMA vs LiteLLM / Portkey / Kong AI Gateway / Higress",
+      "description": "Positioning comparison of mainstream LLM gateways plus six selection criteria: protocol compatibility, routing, governance granularity, audit, honesty of model coverage, data boundary.",
+      "datePublished": "2026-06-10",
+      "dateModified": "2026-06-10",
+      "llms": { "section": "Core pages", "label": "LLM gateway comparison", "desc": "How SMA, LiteLLM, Portkey, Kong, and Higress position differently, with six selection criteria" }
     },
     {
       "route": "/en/faq",

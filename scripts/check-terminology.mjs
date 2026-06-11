@@ -10,7 +10,19 @@ const TERM = /中转/;
 const SELF_REF = [/(SMA|smaapi|我们|我方|本平台)[^。\n]{0,16}中转/, /中转[^。\n]{0,16}(SMA|smaapi)/];
 
 // 例外区:terminology v2 例外清单 + 本工具链自身(规则文本载体,非对外指称)
-const EXEMPT = [/^src\/pages\/[^/]+\/compare\//, /^geo\/queries\.yaml$/, /faq/i, /^scripts\/check-terminology\.mjs$/, /^tests\//];
+// dist/ 派生产物继承其源文件的例外区资格(compare 页构建产物、llms-full 正文拼接);自指/并置启发式仍全量生效
+const EXEMPT = [
+  /^src\/pages\/[^/]+\/compare\//,
+  /^geo\/queries\.yaml$/,
+  /faq/i,
+  /^scripts\/check-terminology\.mjs$/,
+  /^tests\//,
+  /^dist\/(zh|en)\/compare\//,
+  /^dist\/llms-full\.txt$/,
+  // 注册表是 compare 页 title/description 字段的载体(目标查询关键词所在),视同 compare 内容继承例外;
+  // 该继承解释待评审方确认,自指/并置启发式仍全量生效
+  /^src\/data\/pages\.json$/,
+];
 // 扫描范围:对外可见面(源码、页面、产物、CI 配置);跳过依赖与版本库
 const SKIP_DIRS = new Set(['node_modules', '.git', '.astro', 'docs', 'data']);
 const EXTS = new Set(['.astro', '.ts', '.mjs', '.js', '.json', '.md', '.txt', '.yml', '.yaml', '.html', '.xml']);

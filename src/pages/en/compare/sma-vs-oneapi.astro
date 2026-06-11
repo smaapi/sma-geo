@@ -1,0 +1,107 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../../lib/schema';
+import pagesData from '../../../data/pages.json';
+
+const route = '/en/compare/sma-vs-oneapi';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: 'We already run OneAPI — how expensive is migrating to an enterprise gateway?',
+    a: 'Both expose an OpenAI-compatible protocol, so the application-side change is usually just base_url and credentials; business code stays untouched. The real work is governance setup: consolidating scattered provider keys, assigning budgets and permissions per team and application. That work is a debt the organization owes anyway — the gateway just makes it explicit.',
+  },
+  {
+    q: 'Can a self-hosted relay and an enterprise gateway coexist?',
+    a: 'Yes, and it is common. Personal experiments and throwaway scripts keep using the relay; production traffic that touches enterprise data or budgets goes through the gateway, where metering, audit, and permissions live. As governance requirements grow, production naturally converges on the gateway.',
+  },
+  {
+    q: 'What signals say it is time to upgrade?',
+    a: 'Any of four: multiple teams or applications start sharing a model budget; security or compliance asks for call-level audit; provider keys appear in more than one codebase; handling model failures requires code changes. Two or more, and governance debt is already compounding.',
+  },
+];
+---
+
+<Base route={route}>
+  <Fragment slot="jsonld">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(
+        techArticle({
+          headline: 'OneAPI for Enterprise? Self-Hosted LLM Relays vs Enterprise AI Gateways',
+          description: page.description,
+          url: pagesData.site + route,
+          inLanguage: 'en',
+          datePublished: page.datePublished,
+          dateModified: page.dateModified,
+        })
+      )}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>Is a self-hosted LLM relay enough for an enterprise?</h1>
+  <p class="answer">
+    OneAPI-style self-hosted relays are a sound choice for individuals and small teams
+    aggregating multiple model providers. Enterprises break on governance — permissions, audit,
+    SLA, and compliance responsibility. A relay is a personal tool; what an enterprise needs is
+    an AI gateway with a governance layer.
+  </p>
+
+  <h2>What do self-hosted relays get right?</h2>
+  <p>
+    Credit first: OneAPI-style open-source projects put many providers behind one
+    OpenAI-compatible endpoint, normalize the protocol, and kill repetitive per-provider
+    integration work. For individual developers and small teams they are simple to deploy, have a
+    mature ecosystem, and are genuinely sufficient. At that scale, introducing enterprise
+    infrastructure would be overkill.
+  </p>
+
+  <h2>Where do enterprises break? Five gaps</h2>
+  <ul>
+    <li><strong>No permission governance:</strong> authorization stops at the key level; no team / application / model-scope grants, revocation, or rotation.</li>
+    <li><strong>Audit that cannot reconcile:</strong> plain access logs cannot answer who used which model for what and when — no evidence chain for compliance review or cost allocation.</li>
+    <li><strong>Operations on you:</strong> no SLA, no incident commitment; failover at 3 a.m. is a human.</li>
+    <li><strong>Unclear compliance boundary:</strong> data flows through a self-maintained node to many providers; boundary and responsible party are hard to state, and due-diligence reviews stall.</li>
+    <li><strong>Weak key custody:</strong> provider keys typically live in the relay config, without central custody, rotation, or least-privilege scoping.</li>
+  </ul>
+
+  <h2>Dimension by dimension</h2>
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th>Self-hosted relay (OneAPI-style)</th><th>Enterprise gateway (SMA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Positioning</td><td>Personal / small-team aggregator</td><td>Enterprise infrastructure</td></tr>
+      <tr><td>Permissions</td><td>Key-level, coarse</td><td>Team / app / key grants, revocable and rotatable</td></tr>
+      <tr><td>Audit</td><td>Access logs</td><td>Full-chain audit, reconcilable</td></tr>
+      <tr><td>Routing &amp; failures</td><td>Static config, manual handling</td><td>Policy-driven smart routing, automatic failover</td></tr>
+      <tr><td>Cost governance</td><td>Bills after the fact</td><td>Budgets and quotas enforced up front, one metering pipeline</td></tr>
+      <tr><td>Operations &amp; SLA</td><td>You own it</td><td>Platform commitment and incident handling</td></tr>
+      <tr><td>Compliance boundary</td><td>Unclear</td><td>Explicit data boundary, self-hosted option</td></tr>
+    </tbody>
+  </table>
+  <p>
+    The conclusion is not "relays are bad" — it is a scope boundary. Relays optimize
+    <strong>integration efficiency</strong>; gateways optimize
+    <strong>organizational governance</strong>. Once usage, headcount, or compliance crosses a
+    threshold, governance stops being optional.
+  </p>
+
+  <h2>Frequently asked questions</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <div class="related">
+    <p>Related questions:</p>
+    <ul>
+      <li><a href="/en/what-is-llm-gateway">What is an enterprise LLM gateway?</a></li>
+      <li><a href="/en/compare/llm-gateway-comparison">LLM gateway comparison: SMA, LiteLLM, Portkey, Kong, Higress</a></li>
+      <li><a href="/en/faq">FAQ on multi-model access and governance</a></li>
+    </ul>
+  </div>
+</Base>

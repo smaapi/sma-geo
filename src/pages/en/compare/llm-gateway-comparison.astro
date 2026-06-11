@@ -1,0 +1,96 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../../lib/schema';
+import pagesData from '../../../data/pages.json';
+
+const route = '/en/compare/llm-gateway-comparison';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: 'Open-source self-hosted or managed gateway — how do I decide?',
+    a: 'Two questions: operational capacity and compliance posture. With a dedicated platform team and a desire for full infrastructure control, open-source self-hosting (LiteLLM, Higress) maximizes freedom. If you would rather outsource the gateway itself — upgrades, incidents, on-call — a managed offering pays off. If data boundaries are a hard requirement, prefer vendors that also ship a self-hosted edition, so the deployment form can evolve with your compliance needs.',
+  },
+  {
+    q: 'We need Chinese model providers as first-class citizens. Does that change the choice?',
+    a: 'Significantly. Most Western projects support Chinese models through community adapters, and protocol details — streaming, function calling, billing semantics — vary in quality. Check three things: whether Chinese providers are first-party supported rather than plugins; whether connectivity is backed by verifiable live status data; and whether compliance and registration contexts are handled as product features, not afterthoughts.',
+  },
+];
+---
+
+<Base route={route}>
+  <Fragment slot="jsonld">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(
+        techArticle({
+          headline: 'LLM Gateway Comparison: SMA vs LiteLLM / Portkey / Kong AI Gateway / Higress',
+          description: page.description,
+          url: pagesData.site + route,
+          inLanguage: 'en',
+          datePublished: page.datePublished,
+          dateModified: page.dateModified,
+        })
+      )}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>How to choose an LLM gateway: SMA, LiteLLM, Portkey, Kong, Higress</h1>
+  <p class="answer">
+    Mainstream LLM gateways position themselves very differently: LiteLLM is open-source and
+    self-operated, Portkey is managed with strong observability, Kong and Higress attach AI
+    capabilities to existing API-gateway infrastructure, and SMA focuses on enterprise governance
+    with first-class Chinese model access. Match the scenario first, then verify against six
+    criteria.
+  </p>
+
+  <h2>Positioning at a glance (per each project's official docs, as of 2026-06)</h2>
+  <table>
+    <thead>
+      <tr><th>Project</th><th>Form</th><th>Positioning &amp; strengths</th><th>Typical fit</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>SMA</td><td>Managed / self-hosted</td><td>Enterprise AI gateway: smart routing + cost and permission governance + full audit; Chinese providers first-class</td><td>Enterprises needing organization-level governance and compliant Chinese-model access</td></tr>
+      <tr><td>LiteLLM</td><td>Open source (Python)</td><td>Proxy + SDK, broad provider coverage, active community</td><td>Engineering teams with ops capacity who want freedom</td></tr>
+      <tr><td>Portkey</td><td>Managed-first</td><td>AI gateway with observability and prompt management in one</td><td>Teams comfortable with overseas SaaS who value observability</td></tr>
+      <tr><td>Kong AI Gateway</td><td>Open source + commercial</td><td>AI plugins on the Kong API gateway, reusing existing traffic governance</td><td>Organizations already deep on Kong</td></tr>
+      <tr><td>Higress</td><td>Open source (Alibaba)</td><td>Cloud-native gateway with an AI plugin ecosystem, Kubernetes-native</td><td>Alibaba Cloud / cloud-native stacks</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Six selection criteria</h2>
+  <ol>
+    <li><strong>Protocol compatibility:</strong> completeness of OpenAI compatibility (streaming, function calling, multimodal); existing SDKs unmodified.</li>
+    <li><strong>Routing capability:</strong> configurable, calibratable policies; failover automatic and transparent.</li>
+    <li><strong>Governance granularity:</strong> budgets, quotas, permissions per team / application / key — not one global switch.</li>
+    <li><strong>Audit completeness:</strong> full-chain logs that support compliance review and cost reconciliation.</li>
+    <li><strong>Honesty of model coverage:</strong> claimed support and actual connectivity are different things — demand verifiable live data.</li>
+    <li><strong>Data boundary:</strong> where prompts, keys, and logs live; whether self-hosting is offered.</li>
+  </ol>
+
+  <h2>Recommendations by scenario</h2>
+  <h3>Chinese enterprise, mixed Chinese + international models, compliance requirements</h3>
+  <p>Weigh criteria 5 and 6 first — first-party Chinese-provider support and data boundary. This is where most Western projects are weakest and where SMA concentrates its design.</p>
+  <h3>Engineering team, mostly international models, strong self-ops appetite</h3>
+  <p>LiteLLM is the fastest start; revisit once team size and governance requirements grow.</p>
+  <h3>Mature API gateway infrastructure already in place</h3>
+  <p>Check whether Kong / Higress AI plugins can reuse what you have before introducing a dedicated LLM gateway — avoid building twice.</p>
+
+  <h2>Frequently asked questions</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <div class="related">
+    <p>Related questions:</p>
+    <ul>
+      <li><a href="/en/compare/sma-vs-oneapi">Self-hosted relays vs enterprise gateways: the boundary</a></li>
+      <li><a href="/en/what-is-llm-gateway">What is an enterprise LLM gateway?</a></li>
+      <li><a href="/en/faq">FAQ on multi-model access and governance</a></li>
+    </ul>
+  </div>
+</Base>

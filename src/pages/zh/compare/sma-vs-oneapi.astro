@@ -1,0 +1,99 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../../lib/schema';
+import pagesData from '../../../data/pages.json';
+
+const route = '/zh/compare/sma-vs-oneapi';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: '已经在用 OneAPI,迁移到企业级网关成本高吗?',
+    a: '两者都暴露 OpenAI 兼容协议,应用侧的迁移动作通常只是把 base_url 与密钥换掉,业务代码不动。真正的迁移工作在治理配置:把原来散落的密钥收编、为团队和应用划预算与权限。这部分本来就是企业要补的课,不是网关额外制造的成本。',
+  },
+  {
+    q: '自建中转和企业级网关能共存吗?',
+    a: '可以,而且常见。典型形态是:个人实验、临时脚本继续走自建中转;进入生产、涉及企业数据或预算的流量走网关,获得统一计量、审计与权限控制。随治理要求提高,生产侧自然收口。',
+  },
+  {
+    q: '什么信号说明该从中转升级到网关了?',
+    a: '四个信号任一出现:多个团队或应用开始共享模型预算;安全或合规部门要求提供调用审计;供应商密钥开始出现在多个代码库里;模型故障处理和切换需要改业务代码。出现两个以上,治理欠账已经在累积。',
+  },
+];
+---
+
+<Base route={route}>
+  <Fragment slot="jsonld">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(
+        techArticle({
+          headline: 'API 中转站适合企业吗?自建中转与企业级网关的边界',
+          description: page.description,
+          url: pagesData.site + route,
+          inLanguage: 'zh-CN',
+          datePublished: page.datePublished,
+          dateModified: page.dateModified,
+        })
+      )}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>API 中转站适合企业吗?</h1>
+  <p class="answer">
+    OneAPI/NewAPI 类自建 API 中转适合个人与小团队快速聚合多家模型;企业场景的断点在治理——权限、审计、SLA
+    与合规责任。中转是个人工具,企业需要的是带治理层的 AI 网关,两者是不同层级的东西。
+  </p>
+
+  <h2>自建中转解决了什么问题?</h2>
+  <p>
+    先把合理性说清楚:OneAPI 类开源项目把多家模型供应商聚合到一个 OpenAI
+    兼容端点背后,统一了协议格式,省去逐家接入的重复劳动。对个人开发者和小团队,它部署简单、生态成熟、完全够用——在这个场景里它是正确选择,没有必要为三五个人的用量引入企业级设施。
+  </p>
+
+  <h2>企业场景的五个断点在哪里?</h2>
+  <ul>
+    <li><strong>权限治理缺失:</strong>中转的授权粒度通常到密钥为止,没有团队 / 应用 / 模型范围的细粒度授权与回收机制。</li>
+    <li><strong>审计不可对账:</strong>简单访问日志无法回答"哪个团队在什么时间用什么模型处理了什么任务",合规审查与成本分摊都缺证据链。</li>
+    <li><strong>运维责任自担:</strong>中转挂了没有 SLA,没有故障处置承诺;深夜模型故障时的降级切换靠人。</li>
+    <li><strong>合规责任不清:</strong>数据经一个自维护节点流向多家供应商,数据边界与责任主体说不清楚,尽调与安全评审过不去。</li>
+    <li><strong>密钥管理薄弱:</strong>供应商密钥往往直接写进中转配置,缺少集中托管、轮换与最小授权。</li>
+  </ul>
+
+  <h2>逐维对比</h2>
+  <table>
+    <thead>
+      <tr><th>维度</th><th>自建中转(OneAPI 类)</th><th>企业级网关(SMA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>定位</td><td>个人 / 小团队聚合工具</td><td>企业基础设施</td></tr>
+      <tr><td>权限</td><td>密钥级,粒度粗</td><td>团队 / 应用 / 密钥三级授权,可回收可轮换</td></tr>
+      <tr><td>审计</td><td>访问日志</td><td>全链路审计,可追溯可对账</td></tr>
+      <tr><td>路由与故障</td><td>静态配置,人工处置</td><td>按任务特征与模型状态智能路由,自动降级切换</td></tr>
+      <tr><td>成本治理</td><td>事后看账单</td><td>预算 / 配额事前约束,统一计量口径</td></tr>
+      <tr><td>运维与 SLA</td><td>使用者自担</td><td>平台承诺与故障处置</td></tr>
+      <tr><td>合规边界</td><td>不清晰</td><td>数据边界明确,支持自部署形态</td></tr>
+    </tbody>
+  </table>
+  <p>
+    结论不是"中转不好",而是场景边界:中转优化的是<strong>接入效率</strong>,网关优化的是<strong>组织治理</strong>。用量、人数、合规要求三者任一上了规模,治理就从可选项变成欠账。
+  </p>
+
+  <h2>常见问题</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <div class="related">
+    <p>相关问题:</p>
+    <ul>
+      <li><a href="/zh/what-is-llm-gateway">什么是企业级 LLM 网关?</a></li>
+      <li><a href="/zh/compare/llm-gateway-comparison">LLM 网关选型对比:SMA、LiteLLM、Portkey、Kong、Higress</a></li>
+      <li><a href="/zh/faq">多模型接入与治理的常见问题</a></li>
+    </ul>
+  </div>
+</Base>
