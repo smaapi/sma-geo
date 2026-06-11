@@ -62,6 +62,11 @@ const nav = zh
       <p>
         {zh ? '更新于' : 'Last updated'} {page.dateModified} · © 2026 {zh ? '菌路科技' : 'Slime Mould Tech'}
       </p>
+      <p class="disclaimer">
+        {zh
+          ? 'OpenAI、Anthropic、Google 为各商标持有人,本平台与上述公司无官方合作关系(如有变更以公告为准)。模型名称仅为指明性使用。'
+          : 'OpenAI, Anthropic, and Google are trademarks of their respective holders. This platform has no official affiliation with these companies (subject to change by announcement). Model names are used nominatively.'}
+      </p>
     </footer>
   </body>
 </html>
@@ -151,6 +156,11 @@ const nav = zh
   footer p {
     padding-top: 1rem;
     padding-bottom: 1rem;
+  }
+  footer .disclaimer {
+    padding-top: 0;
+    font-size: 0.8rem;
+    opacity: 0.85;
   }
   .related {
     margin-top: 2.5rem;

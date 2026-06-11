@@ -37,6 +37,30 @@ const qa: QA[] = [
     q: 'How do I choose the best enterprise LLM gateway?',
     a: 'Evaluate against six criteria: OpenAI protocol compatibility, routing configurability and failover behavior, governance granularity (team / app / key), audit completeness, honesty of model coverage (verifiable connectivity data, not claims), and the data boundary including a self-hosted option. Weigh them by your compliance posture and traffic profile.',
   },
+  {
+    q: 'Can you issue official VAT invoices (fapiao)?',
+    a: 'Yes — corporate contracts and corporate invoicing are part of the enterprise positioning. The specific invoicing entity, VAT rate, and corporate payment flow are confirmed with contracts and documentation during procurement; we only commit to terms we can put in writing.',
+  },
+  {
+    q: 'How can a company in China use the Claude API through proper channels?',
+    a: 'Two layers: channel and scenario. On channel, access should run through legitimate enterprise-grade routes with a full contract chain and audit records — not personal accounts or resale of unknown origin. On scenario, internal business use and public-facing services are different regimes: services offered to the Chinese public must use government-registered models. SMA provides unified access, routing, and audit on top of legitimate channels, and can route public-facing traffic to registered domestic models.',
+  },
+  {
+    q: 'What are your upstream channels?',
+    a: 'We connect to model providers through legitimate enterprise channels, with the contracting entity, SLA, and accountability written into contracts. Per our disclosure rules, we do not name channel types we cannot evidence; channel composition and supporting documentation are shared during procurement, and the transparency page will label each entry according to evidence.',
+  },
+  {
+    q: 'Does our data leave China? How is it sanitized?',
+    a: 'When calling international models, prompts are transmitted to endpoints outside China — that is a fact we do not paper over. The gateway provides sensitive-data detection and sanitization at the egress, and every cross-border call enters the audit log. For workloads involving personal information or important data, routing policy should follow your own cross-border assessment: SMA can route such requests to registered domestic models so that data stays in-country.',
+  },
+  {
+    q: 'Can public-facing products use international models?',
+    a: 'The honest answer: under current regulation, generative AI services offered to the public in China must use registered models. Public-facing traffic should therefore be served by registered domestic models — SMA routes it there automatically — while international models fit internal business scenarios. One gateway, two scopes, each within its boundary.',
+  },
+  {
+    q: 'How is this different from an API relay, in terms of channel and accountability?',
+    a: 'Relay-style services often sit on personal account pools or resale of unknown origin, with no contracting entity to hold accountable when things break. An enterprise gateway runs on legitimate channels with the contracting party, SLA, audit, and responsibility written down. What an enterprise actually procures is not an endpoint — it is someone accountable and books that reconcile.',
+  },
 ];
 ---
 

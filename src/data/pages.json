@@ -9,7 +9,11 @@
       "description": "SMA 是面向企业的 AI 网关 / 模型接入平台:以一套 OpenAI 兼容 API 统一接入多家大模型,提供智能路由、成本与权限治理、全链路审计。",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
-      "llms": { "section": "核心页面", "label": "SMA 是什么", "desc": "企业级 AI 网关的一句话定义与三层能力架构" }
+      "llms": {
+        "section": "核心页面",
+        "label": "SMA 是什么",
+        "desc": "企业级 AI 网关的一句话定义与三层能力架构"
+      }
     },
     {
       "route": "/zh/what-is-llm-gateway",
@@ -19,7 +23,11 @@
       "description": "企业级 LLM 网关是位于企业应用与多家大模型之间的统一接入与治理层:一套 OpenAI 兼容 API、智能路由、成本与权限治理、全链路审计。本文给出定义、能力清单与选型标准。",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
-      "llms": { "section": "核心页面", "label": "什么是企业级 LLM 网关", "desc": "定义、与自建转发工具的区别、选型标准" }
+      "llms": {
+        "section": "核心页面",
+        "label": "什么是企业级 LLM 网关",
+        "desc": "定义、与自建转发工具的区别、选型标准"
+      }
     },
     {
       "route": "/zh/faq",
@@ -28,8 +36,12 @@
       "title": "常见问题:多模型接入、智能路由、成本治理与审计 | SMA",
       "description": "关于企业级 AI 网关的常见问题:与自建转发工具的区别、OpenAI 兼容接入方式、路由逻辑、成本治理、国产模型支持、数据边界与故障切换。",
       "datePublished": "2026-06-10",
-      "dateModified": "2026-06-10",
-      "llms": { "section": "核心页面", "label": "FAQ", "desc": "接入、路由、治理、数据边界与故障切换的直接问答" }
+      "dateModified": "2026-06-11",
+      "llms": {
+        "section": "核心页面",
+        "label": "FAQ",
+        "desc": "接入、路由、治理、数据边界与故障切换的直接问答"
+      }
     },
     {
       "route": "/zh/compare/sma-vs-oneapi",
@@ -39,7 +51,11 @@
       "description": "OneAPI 类自建 API 中转适合个人与小团队;企业场景的断点在治理:权限、审计、SLA、合规责任。本文给出场景边界与迁移判断。",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
-      "llms": { "section": "核心页面", "label": "自建转发工具与企业级网关的边界", "desc": "承认个人场景合理性,列出企业场景断点,给出迁移信号" }
+      "llms": {
+        "section": "核心页面",
+        "label": "自建转发工具与企业级网关的边界",
+        "desc": "承认个人场景合理性,列出企业场景断点,给出迁移信号"
+      }
     },
     {
       "route": "/zh/compare/llm-gateway-comparison",
@@ -49,7 +65,11 @@
       "description": "主流 LLM 网关定位对比与六维选型标准:协议兼容、路由、治理粒度、审计、模型覆盖真实性、数据边界。按团队场景给出建议。",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
-      "llms": { "section": "核心页面", "label": "LLM 网关选型对比", "desc": "SMA/LiteLLM/Portkey/Kong/Higress 定位差异与六维选型标准" }
+      "llms": {
+        "section": "核心页面",
+        "label": "LLM 网关选型对比",
+        "desc": "SMA/LiteLLM/Portkey/Kong/Higress 定位差异与六维选型标准"
+      }
     },
     {
       "route": "/en/",
@@ -59,7 +79,11 @@
       "description": "SMA is an enterprise AI gateway / model access platform: one OpenAI-compatible API for many LLM providers, with smart routing, cost and permission governance, and full audit trails.",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
-      "llms": { "section": "Core pages", "label": "What SMA is", "desc": "One-line definition and the three-layer architecture of the enterprise AI gateway" }
+      "llms": {
+        "section": "Core pages",
+        "label": "What SMA is",
+        "desc": "One-line definition and the three-layer architecture of the enterprise AI gateway"
+      }
     },
     {
       "route": "/en/what-is-llm-gateway",
@@ -69,7 +93,11 @@
       "description": "An enterprise LLM gateway is a unified access and governance layer between your applications and multiple LLM providers: one OpenAI-compatible API, smart routing, cost and permission governance, full audit trails.",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
-      "llms": { "section": "Core pages", "label": "What is an enterprise LLM gateway", "desc": "Definition, comparison with self-hosted relay tools, selection criteria" }
+      "llms": {
+        "section": "Core pages",
+        "label": "What is an enterprise LLM gateway",
+        "desc": "Definition, comparison with self-hosted relay tools, selection criteria"
+      }
     },
     {
       "route": "/en/compare/sma-vs-oneapi",
@@ -79,7 +107,11 @@
       "description": "OneAPI-style self-hosted relays fit individuals and small teams. Enterprises break on governance: permissions, audit, SLA, compliance. Where the boundary lies and when to migrate.",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
-      "llms": { "section": "Core pages", "label": "Self-hosted relays vs enterprise gateways", "desc": "Where relay tools fit, where enterprises break, and migration signals" }
+      "llms": {
+        "section": "Core pages",
+        "label": "Self-hosted relays vs enterprise gateways",
+        "desc": "Where relay tools fit, where enterprises break, and migration signals"
+      }
     },
     {
       "route": "/en/compare/llm-gateway-comparison",
@@ -89,7 +121,11 @@
       "description": "Positioning comparison of mainstream LLM gateways plus six selection criteria: protocol compatibility, routing, governance granularity, audit, honesty of model coverage, data boundary.",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-10",
-      "llms": { "section": "Core pages", "label": "LLM gateway comparison", "desc": "How SMA, LiteLLM, Portkey, Kong, and Higress position differently, with six selection criteria" }
+      "llms": {
+        "section": "Core pages",
+        "label": "LLM gateway comparison",
+        "desc": "How SMA, LiteLLM, Portkey, Kong, and Higress position differently, with six selection criteria"
+      }
     },
     {
       "route": "/en/faq",
@@ -98,8 +134,12 @@
       "title": "FAQ: Multi-Model Access, Smart Routing, Cost Governance & Audit | SMA",
       "description": "Frequently asked questions about enterprise AI gateways: differences from self-hosted relay tools, OpenAI-compatible integration, routing logic, cost governance, data boundaries, and failover.",
       "datePublished": "2026-06-10",
-      "dateModified": "2026-06-10",
-      "llms": { "section": "Core pages", "label": "FAQ", "desc": "Direct answers on integration, routing, governance, data boundaries, and failover" }
+      "dateModified": "2026-06-11",
+      "llms": {
+        "section": "Core pages",
+        "label": "FAQ",
+        "desc": "Direct answers on integration, routing, governance, data boundaries, and failover"
+      }
     }
   ]
 }
