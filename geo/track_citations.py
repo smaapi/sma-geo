@@ -202,7 +202,7 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
     rows = list(csv.DictReader(open(csv_path))) if csv_path.exists() else []
     lines = [f"# 引用率周报 {year}-W{week:02d}", ""]
     lines.append("三层口径(r8):提及 ⊃ 来源引用 / 推荐;失败行计入分母。双模式(C1):web=联网检索;model=纯模型记忆。")
-    lines.append("测量通道:厂商官方直连端点——不经任何注入系统提示/品牌人设的代理(DECISIONS 口径)。")
+    lines.append("脚本覆盖:以上 API 引擎仅统计官方直连或厂商官方 API 测量结果;经我方网关、代理、人设注入或白标通道的结果不计入本表。")
     lines.append("")
     is_brand = lambda r: r.get("query_intent", "") == "品牌"
     for seg_name, seg in [("非品牌", lambda r: not is_brand(r)), ("品牌", is_brand)]:
@@ -211,14 +211,16 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
             if not sub_all:
                 continue
             lines += [f"## {seg_name} × {mode}", "",
-                      "| 日期 | 引擎 | 提及 | 引用 | 推荐 | 失败 | 分母 | 提及率 |", "|---|---|---|---|---|---|---|---|"]
+                      "| 日期 | 引擎 | 提及 | 来源引用 | 推荐 | 失败 | 分母 | 提及率 | 来源引用率 | 推荐率 |",
+                      "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|"]
             for key in sorted({(r["date"], r["engine"]) for r in sub_all}):
                 s = [r for r in sub_all if (r["date"], r["engine"]) == key]
+                n = len(s)
                 m = sum(int(r.get("mentioned", 0) or 0) for r in s)
                 c = sum(int(r.get("cited_smaapi", 0) or 0) for r in s)
                 rec = sum(int(r.get("recommended", 0) or 0) for r in s)
                 err = sum(r.get("status") == "error" for r in s)
-                lines.append(f"| {key[0]} | {key[1]} | {m} | {c} | {rec} | {err} | {len(s)} | {m / len(s):.0%} |")
+                lines.append(f"| {key[0]} | {key[1]} | {m} | {c} | {rec} | {err} | {n} | {m / n:.0%} | {c / n:.0%} | {rec / n:.0%} |")
             lines.append("")
     money = [r for r in rows if not is_brand(r) and r.get("query_weight") == "money"]
     if money:
@@ -241,12 +243,12 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
                                             for a in sorted({r.get('accuracy', '') for r in hits}))]
     # T8a:实体错配独立统计(不计入提及率);root_site 固定保留行(一审:0 也显式列出防漏报)
     mismatches = [r for r in rows if r.get("entity_mismatch")]
-    lines += ["", "## 实体错配(裸 SMA 被解析为他方实体,不计入提及)", ""]
-    rs = sum(1 for r in mismatches if (r.get("entity_mismatch") or "").startswith("root_site"))
-    lines.append(f"- root_site(根域混同,固定保留行) ×{rs}")
+    lines += ["", "## 实体错配(不计入提及)", ""]
     for label in sorted({r["entity_mismatch"] for r in mismatches if not r["entity_mismatch"].startswith("root_site")}):
         sub = [r for r in mismatches if r["entity_mismatch"] == label]
         lines.append(f"- {label} ×{len(sub)}({', '.join(r['query_id'] for r in sub[:6])})")
+    rs = sum(1 for r in mismatches if (r.get("entity_mismatch") or "").startswith("root_site"))
+    lines.append(f"- root_site(根域上游站混同) ×{rs}")
     lines += ["", "## 效果挂钩表(T 动作 ↔ 记分牌,自 2026-W25 起回填)", "",
               "| T 动作 | 外发/上线日 | 关联查询簇 | 提及率变化 | 备注 |", "|---|---|---|---|---|",
               "| (下期起回填) | | | | |"]
