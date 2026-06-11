@@ -45,7 +45,8 @@ for (const [ua, rules] of groups) {
 }
 
 if (!groups.has('*')) errors.push('缺少 User-agent: * 默认组');
-if (!/^Sitemap: https:\/\/smaapi\.com\/sitemap\.xml$/m.test(txt)) errors.push('缺少 Sitemap 行');
+const site = JSON.parse(read('src/data/pages.json')).site;
+if (!txt.split('\n').includes(`Sitemap: ${site}/sitemap.xml`)) errors.push('缺少 Sitemap 行(应与注册表 site 基址一致)');
 
 if (errors.length) {
   console.error(`robots.txt 校验失败(${errors.length} 项):`);

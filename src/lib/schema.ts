@@ -5,9 +5,9 @@ export const organization: WithContext<Organization> = {
   '@type': 'Organization',
   name: '菌路科技',
   alternateName: 'Slime Mould Tech',
-  url: 'https://smaapi.com',
+  url: 'https://www.smaapi.com',
   // R-B 暂裁:logo 指向部署包内真实文件;sameAs 待 P2 组织主页就位后回填,当前不声明
-  logo: 'https://smaapi.com/logo.png',
+  logo: 'https://www.smaapi.com/logo.png',
 };
 
 export const softwareApplication: WithContext<SoftwareApplication> = {
