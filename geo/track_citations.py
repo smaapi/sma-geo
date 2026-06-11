@@ -243,7 +243,7 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
                                             for a in sorted({r.get('accuracy', '') for r in hits}))]
     # T8a:实体错配独立统计(不计入提及率);root_site 固定保留行(一审:0 也显式列出防漏报)
     mismatches = [r for r in rows if r.get("entity_mismatch")]
-    lines += ["", "## 实体错配(不计入提及)", ""]
+    lines += ["", "## 实体错配（不计入提及）", ""]
     for label in sorted({r["entity_mismatch"] for r in mismatches if not r["entity_mismatch"].startswith("root_site")}):
         sub = [r for r in mismatches if r["entity_mismatch"] == label]
         lines.append(f"- {label} ×{len(sub)}({', '.join(r['query_id'] for r in sub[:6])})")
