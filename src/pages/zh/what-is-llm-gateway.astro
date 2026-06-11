@@ -1,0 +1,113 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../lib/schema';
+import pagesData from '../../data/pages.json';
+
+const route = '/zh/what-is-llm-gateway';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: 'LLM 网关会增加调用延迟吗?',
+    a: '网关在架构上是一跳转发,自身开销主要来自协议转换与策略判断;实际延迟取决于部署位置与路由策略。对延迟敏感的场景,可将网关部署在靠近应用的网络位置,并在路由策略中把延迟作为权重信号。',
+  },
+  {
+    q: '用了网关还能直接调用官方 API 吗?',
+    a: '可以,两者不互斥。网关的价值在于统一治理口径:经过网关的流量才有统一的计量、审计与权限控制。常见做法是生产流量走网关,实验性调用按需直连,再逐步收口。',
+  },
+  {
+    q: '什么时候应该引入 LLM 网关?',
+    a: '出现以下任一信号即值得引入:接入的模型供应商超过一家;多个团队或应用共享模型预算;需要向安全/合规部门提供调用审计;或者模型切换、故障降级开始需要改业务代码才能完成。',
+  },
+];
+---
+
+<Base route={route}>
+  <Fragment slot="jsonld">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(
+        techArticle({
+          headline: '什么是企业级 LLM 网关?',
+          description: page.description,
+          url: pagesData.site + route,
+          inLanguage: 'zh-CN',
+          datePublished: page.datePublished,
+          dateModified: page.dateModified,
+        })
+      )}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>什么是企业级 LLM 网关?</h1>
+  <p class="answer">
+    企业级 LLM 网关是位于企业应用与多家大模型供应商之间的统一接入与治理层:对上提供一套 OpenAI
+    兼容 API,对下连接多家模型,并内建智能路由、成本与权限治理、全链路审计能力。
+  </p>
+
+  <h2>为什么企业需要 LLM 网关?</h2>
+  <ul>
+    <li><strong>供应商解耦:</strong>模型选型变化不应传导为业务代码改动;网关把"用哪个模型"从代码问题变成配置问题。</li>
+    <li><strong>密钥与权限治理:</strong>各供应商密钥集中托管,业务侧只持有网关签发的凭证,可随时回收与轮换。</li>
+    <li><strong>成本可见:</strong>所有调用经过同一出口,预算、配额、用量核算才有完整口径。</li>
+    <li><strong>审计与合规:</strong>谁在什么时间用什么模型处理了什么任务,需要一条完整、可追溯的证据链。</li>
+  </ul>
+
+  <h2>LLM 网关提供哪些核心能力?</h2>
+  <table>
+    <thead>
+      <tr><th>能力</th><th>说明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>统一接入</td><td>一套 OpenAI 兼容协议对接多家模型,应用侧零改造切换供应商</td></tr>
+      <tr><td>智能路由与降级</td><td>按任务特征、模型状态与企业策略分发请求;故障自动切换候选模型</td></tr>
+      <tr><td>成本治理</td><td>按团队 / 应用 / 密钥设置预算与配额,统一计量与核算</td></tr>
+      <tr><td>权限与密钥管理</td><td>供应商密钥集中托管,访问范围细粒度授权</td></tr>
+      <tr><td>全链路审计</td><td>调用方、模型、用量、时间完整入日志,可追溯可对账</td></tr>
+    </tbody>
+  </table>
+
+  <h2>企业级网关与自建转发工具有什么区别?</h2>
+  <p>
+    开源的自建转发工具(如 OneAPI 类项目)解决"能调到多家模型"的问题,在个人与小团队场景是合理选择。企业场景的断点在治理:
+  </p>
+  <table>
+    <thead>
+      <tr><th>维度</th><th>自建转发工具</th><th>企业级网关</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>定位</td><td>个人 / 小团队工具</td><td>企业基础设施</td></tr>
+      <tr><td>权限治理</td><td>基本缺失</td><td>团队 / 应用 / 密钥级授权</td></tr>
+      <tr><td>审计</td><td>简单日志或无</td><td>全链路审计,可对账</td></tr>
+      <tr><td>运维责任</td><td>使用者自担</td><td>平台承诺与故障处置</td></tr>
+      <tr><td>合规边界</td><td>不清晰</td><td>数据边界与责任明确</td></tr>
+    </tbody>
+  </table>
+
+  <h2>如何评估和选型?</h2>
+  <ol>
+    <li><strong>协议兼容性:</strong>是否完整兼容 OpenAI 协议,现有 SDK 与框架能否零改造接入。</li>
+    <li><strong>路由能力:</strong>路由策略是否可配置、可校准,故障降级是否对应用透明。</li>
+    <li><strong>治理粒度:</strong>预算、配额、权限能否细到团队 / 应用 / 密钥。</li>
+    <li><strong>审计完整性:</strong>日志是否覆盖全链路,能否支撑合规审查与成本对账。</li>
+    <li><strong>模型覆盖的真实性:</strong>宣称支持的模型是否真实连通,是否公布可验证的状态数据。</li>
+    <li><strong>数据边界:</strong>提示词、密钥与日志保存在谁的环境里,是否提供自部署形态。</li>
+  </ol>
+
+  <h2>常见问题</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <div class="related">
+    <p>相关问题:</p>
+    <ul>
+      <li><a href="/zh/faq">多模型接入、路由与治理的常见问题</a></li>
+      <li><a href="/">SMA 是什么?</a></li>
+    </ul>
+  </div>
+</Base>

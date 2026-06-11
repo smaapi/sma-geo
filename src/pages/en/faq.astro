@@ -1,0 +1,67 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, type QA } from '../../lib/schema';
+
+const route = '/en/faq';
+
+const qa: QA[] = [
+  {
+    q: 'What is an enterprise LLM gateway?',
+    a: 'A unified access and governance layer between your applications and multiple LLM providers: one OpenAI-compatible API on top, smart routing, cost and permission governance, and full audit trails underneath. It turns multi-model usage from scattered integrations into one controlled egress.',
+  },
+  {
+    q: 'How is it different from a self-hosted relay or proxy tool?',
+    a: 'Relay tools (OneAPI-style projects) answer "can I reach many models" and fit individuals and small teams. An enterprise gateway adds organization-level governance: fine-grained permissions and key custody, budgets and usage audit, full-chain call logs, failover, and a clear compliance boundary. One is a personal tool; the other is infrastructure.',
+  },
+  {
+    q: 'How do I call multiple model providers through one OpenAI-compatible API?',
+    a: 'Point your application base_url at the SMA gateway and keep using the OpenAI SDK and request format. The gateway translates protocols and handles provider authentication; you pick the target model via the model parameter or let routing policy decide. No per-provider integration code.',
+  },
+  {
+    q: 'What logic does smart routing use to dispatch requests?',
+    a: 'Routing combines three signal groups: task characteristics (business tags and complexity), model state (availability, latency, cost), and enterprise policy (budgets, compliance boundaries, manual calibration rules). Scoring proposes candidates; policy and safety boundaries constrain the final choice, with automatic failover.',
+  },
+  {
+    q: 'How does cost governance and usage auditing work?',
+    a: 'Budgets and quotas are set per team, application, or key at the gateway layer, and every call is metered through the same pipeline. Audit logs record caller, model, usage, and time, ready to aggregate and reconcile. Because all traffic passes through the gateway, the numbers are complete rather than a patchwork of provider dashboards.',
+  },
+  {
+    q: 'Which models does SMA support?',
+    a: 'SMA uses an OpenAI-compatible protocol as its unified access layer and connects to mainstream international and Chinese model providers. The authoritative list is the live, health-checked roster published in the console — only actually connected models are listed; planned ones are labeled separately.',
+  },
+  {
+    q: 'What happens when a model endpoint fails?',
+    a: 'The gateway continuously health-checks provider endpoints. Failed requests are retried or rerouted to fallback models according to policy; persistently unhealthy endpoints are temporarily removed and re-admitted once they recover. Fallback order is configurable per business priority, transparent to applications, and fully audited.',
+  },
+  {
+    q: 'How do I choose the best enterprise LLM gateway?',
+    a: 'Evaluate against six criteria: OpenAI protocol compatibility, routing configurability and failover behavior, governance granularity (team / app / key), audit completeness, honesty of model coverage (verifiable connectivity data, not claims), and the data boundary including a self-hosted option. Weigh them by your compliance posture and traffic profile.',
+  },
+];
+---
+
+<Base route={route}>
+  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+
+  <h1>FAQ: Multi-Model Access, Smart Routing, Cost Governance &amp; Audit</h1>
+  <p class="answer">
+    Direct answers to the questions enterprises ask when putting multiple LLM providers behind
+    one gateway: differences from relay tools, OpenAI-compatible integration, routing logic, cost
+    governance, data boundaries, and failover.
+  </p>
+
+  {qa.map((item) => (
+    <>
+      <h2>{item.q}</h2>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <div class="related">
+    <p>Related questions:</p>
+    <ul>
+      <li><a href="/en/what-is-llm-gateway">What is an enterprise LLM gateway?</a></li>
+      <li><a href="/en/">What is SMA?</a></li>
+    </ul>
+  </div>
+</Base>

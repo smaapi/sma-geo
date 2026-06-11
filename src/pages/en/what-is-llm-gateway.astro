@@ -1,0 +1,128 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../lib/schema';
+import pagesData from '../../data/pages.json';
+
+const route = '/en/what-is-llm-gateway';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: 'Does an LLM gateway add latency?',
+    a: 'Architecturally it is a single hop; the overhead comes from protocol translation and policy evaluation. Real-world latency depends on where the gateway is deployed and how routing is configured. For latency-sensitive workloads, deploy the gateway close to your applications and weight latency in the routing policy.',
+  },
+  {
+    q: 'Can I still call provider APIs directly alongside a gateway?',
+    a: 'Yes — the two are not mutually exclusive. The gateway is where unified metering, audit, and permissions live, so only traffic through it is governed. A common pattern is to route production traffic through the gateway while allowing direct calls for experiments, then converging over time.',
+  },
+  {
+    q: 'When should a team adopt an LLM gateway?',
+    a: 'Any of these signals justifies one: you use more than one model provider; multiple teams or applications share a model budget; security or compliance asks for call-level audit; or switching models and handling provider failures has started to require code changes.',
+  },
+];
+---
+
+<Base route={route}>
+  <Fragment slot="jsonld">
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(
+        techArticle({
+          headline: 'What is an enterprise LLM gateway?',
+          description: page.description,
+          url: pagesData.site + route,
+          inLanguage: 'en',
+          datePublished: page.datePublished,
+          dateModified: page.dateModified,
+        })
+      )}
+    />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>What is an enterprise LLM gateway?</h1>
+  <p class="answer">
+    An enterprise LLM gateway is a unified access and governance layer that sits between your
+    applications and multiple LLM providers: one OpenAI-compatible API on top, many models
+    underneath, with smart routing, cost and permission governance, and full audit trails built
+    in.
+  </p>
+
+  <h2>Why do enterprises need an LLM gateway?</h2>
+  <ul>
+    <li>
+      <strong>Provider decoupling:</strong> model choices change; that change should be
+      configuration, not a code migration.
+    </li>
+    <li>
+      <strong>Key and permission governance:</strong> provider keys stay centrally managed;
+      applications hold only gateway-issued credentials that can be revoked and rotated.
+    </li>
+    <li>
+      <strong>Cost visibility:</strong> with all calls passing through one egress, budgets,
+      quotas, and accounting finally share one source of truth.
+    </li>
+    <li>
+      <strong>Audit and compliance:</strong> who used which model for what, and when — answered
+      by one traceable evidence chain.
+    </li>
+  </ul>
+
+  <h2>What capabilities does an LLM gateway provide?</h2>
+  <table>
+    <thead>
+      <tr><th>Capability</th><th>What it means</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Unified access</td><td>One OpenAI-compatible protocol for many providers; switching costs drop to zero on the application side</td></tr>
+      <tr><td>Smart routing &amp; failover</td><td>Dispatch by task profile, model state, and enterprise policy; automatic fallback on failures</td></tr>
+      <tr><td>Cost governance</td><td>Budgets and quotas per team / application / key, with unified metering</td></tr>
+      <tr><td>Key &amp; permission management</td><td>Central custody of provider keys; fine-grained access scopes</td></tr>
+      <tr><td>Full audit trail</td><td>Caller, model, usage, and timestamps logged end to end, reconcilable for compliance</td></tr>
+    </tbody>
+  </table>
+
+  <h2>How is it different from a self-hosted relay tool?</h2>
+  <p>
+    Open-source relay tools (OneAPI-style projects) solve "can I reach many models" and are a
+    reasonable choice for individuals and small teams. Enterprise scenarios break on governance:
+  </p>
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th>Self-hosted relay tool</th><th>Enterprise gateway</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Positioning</td><td>Personal / small-team tool</td><td>Enterprise infrastructure</td></tr>
+      <tr><td>Permission governance</td><td>Mostly absent</td><td>Team / app / key-level authorization</td></tr>
+      <tr><td>Audit</td><td>Basic logs or none</td><td>Full-chain audit, reconcilable</td></tr>
+      <tr><td>Operations</td><td>You run it, you own outages</td><td>Platform commitment and incident handling</td></tr>
+      <tr><td>Compliance boundary</td><td>Unclear</td><td>Explicit data boundary and responsibility</td></tr>
+    </tbody>
+  </table>
+
+  <h2>How should you evaluate one?</h2>
+  <ol>
+    <li><strong>Protocol compatibility:</strong> full OpenAI compatibility, so existing SDKs and frameworks work unmodified.</li>
+    <li><strong>Routing capability:</strong> configurable, calibratable policies; failover transparent to applications.</li>
+    <li><strong>Governance granularity:</strong> budgets, quotas, and permissions down to team / application / key.</li>
+    <li><strong>Audit completeness:</strong> logs that cover the full chain and support compliance review and cost reconciliation.</li>
+    <li><strong>Honesty of model coverage:</strong> are the claimed models actually connected, with verifiable status data published?</li>
+    <li><strong>Data boundary:</strong> where prompts, keys, and logs live — and whether a self-hosted deployment is offered.</li>
+  </ol>
+
+  <h2>Frequently asked questions</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <div class="related">
+    <p>Related questions:</p>
+    <ul>
+      <li><a href="/en/faq">FAQ on multi-model access, routing, and governance</a></li>
+      <li><a href="/en/">What is SMA?</a></li>
+    </ul>
+  </div>
+</Base>

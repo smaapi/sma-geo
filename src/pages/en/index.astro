@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import { softwareApplication } from '../../lib/schema';
+---
+
+<Base route="/en/">
+  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(softwareApplication)} />
+
+  <h1>SMA — Enterprise AI Gateway</h1>
+  <p class="answer">
+    SMA is an enterprise AI gateway and model access platform: one OpenAI-compatible API in front
+    of many LLM providers, with smart routing, cost and permission governance, and full audit
+    trails — so teams can use multiple models with control.
+  </p>
+
+  <h2>What problem does SMA solve?</h2>
+  <p>
+    Running on multiple models is now the norm: different tasks suit different models, and every
+    provider ships its own API, keys, and billing. Integrating each one directly leaves keys
+    scattered across codebases, costs without a single source of truth, calls that cannot be
+    audited, and provider switches that require code changes. SMA adds a unified access and
+    governance layer between your applications and the providers, collapsing all of that into one
+    controlled egress.
+  </p>
+
+  <h2>The three-layer architecture</h2>
+
+  <h3>Smart routing</h3>
+  <p>
+    Requests are dispatched based on task characteristics and live model state (availability,
+    latency, cost), constrained by enterprise policy and manual calibration. Failover and
+    degradation are automatic and transparent to applications.
+  </p>
+
+  <h3>Cost and permission governance</h3>
+  <p>
+    Budgets, quotas, and model access scopes are set per team, application, or key. Every call is
+    metered through the same pipeline, and provider keys are managed centrally instead of living
+    in application code.
+  </p>
+
+  <h3>Full audit trail</h3>
+  <p>
+    Every call is logged with caller, target model, usage, and timestamp — traceable,
+    reconcilable, and ready for compliance review.
+  </p>
+
+  <h2>Who is SMA for?</h2>
+  <p>
+    Engineering and platform teams that need to access multiple LLM providers — international and
+    Chinese models alike — with organization-level requirements on cost, permissions, compliance,
+    and audit. Applications keep their OpenAI SDK and simply point base_url at the gateway.
+  </p>
+
+  <div class="related">
+    <p>Related questions:</p>
+    <ul>
+      <li><a href="/en/what-is-llm-gateway">What is an enterprise LLM gateway?</a></li>
+      <li><a href="/en/faq">FAQ on multi-model access, routing, and governance</a></li>
+    </ul>
+  </div>
+</Base>
