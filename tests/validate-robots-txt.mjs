@@ -39,7 +39,7 @@ for (const ua of expected) {
 
 for (const [ua, rules] of groups) {
   if (rules.some((r) => /^Disallow:\s*\/\s*$/i.test(r))) errors.push(`整站封禁(违反 Allow 反转): ${ua}`);
-  for (const path of ['/console/', '/admin/', '/api/internal/', '/_review/']) {
+  for (const path of ['/console/', '/admin/', '/api/internal/']) {
     if (!rules.includes(`Disallow: ${path}`)) errors.push(`UA 组 ${ua} 未屏蔽内部路径 ${path}`);
   }
 }

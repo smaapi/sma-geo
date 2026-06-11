@@ -20,7 +20,8 @@ for (const ua of [...upstream, ...cn]) {
 }
 const uas = [...merged.values()];
 
-const INTERNAL_DISALLOWS = ['/console/', '/admin/', '/api/internal/', '/_review/'];
+// 注:/_review/ token 区不进 robots——公开 robots 列隐藏路径属反向泄密;隔离靠响应头+token(DECISIONS 第 17 条修订)
+const INTERNAL_DISALLOWS = ['/console/', '/admin/', '/api/internal/'];
 const disallowBlock = INTERNAL_DISALLOWS.map((p) => `Disallow: ${p}`).join('\n');
 
 const groups = uas.map((ua) => `User-agent: ${ua}\nAllow: /\n${disallowBlock}`);
