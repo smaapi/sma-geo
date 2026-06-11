@@ -97,8 +97,30 @@ def iter_lines(patterns):
                 yield from fh
 
 
-def parse(patterns, ua_list, ip_ranges):
-    """bot -> {paths/status/hosts: Counter, bytes, verified, ua_only, first, last}(r10 D1 维度)。"""
+_PROBE_PATH_RE = re.compile(r"^/(console|admin|api/internal|\.env|wp-|\.git|phpmyadmin)", re.IGNORECASE)
+
+
+def load_self_ips():
+    """自有取证/测试 IP 清单(geo/self-ips.txt,一行一 IP,# 注释)。
+
+    根因修复(r15 独立复核):本机 curl 取证流量(如 curl -A "GPTBot" 做裸 HTML 验收)
+    会以伪装 UA 进入日志,污染"仅 UA 观察档"基线。命中自有 IP 的请求单列 self_probe 档,
+    既不计入 verified 也不计入 ua_only(外部观察),避免把自家测试流量当外部信号。
+    """
+    p = ROOT / "geo" / "self-ips.txt"
+    if not p.exists():
+        return set()
+    out = set()
+    for ln in p.read_text().splitlines():
+        ln = ln.split("#", 1)[0].strip()
+        if ln:
+            out.add(ln)
+    return out
+
+
+def parse(patterns, ua_list, ip_ranges, self_ips=None):
+    """bot -> {paths/status/hosts: Counter, bytes, verified, ua_only, self_probe, first, last}。"""
+    self_ips = self_ips or set()
     stats = {}
     total_lines = 0
     bot_patterns = compile_bot_patterns(ua_list)
@@ -112,7 +134,8 @@ def parse(patterns, ua_list, ip_ranges):
         if bot is None:
             continue
         entry = stats.setdefault(bot, {"paths": Counter(), "status": Counter(), "hosts": Counter(),
-                                       "bytes": 0, "verified": 0, "ua_only": 0, "first": None, "last": None})
+                                       "bytes": 0, "verified": 0, "ua_only": 0, "self_probe": 0,
+                                       "ext_probe_paths": set(), "first": None, "last": None})
         entry["paths"][rec["path"]] += 1
         entry["status"][f"{rec['status'] // 100}xx"] += 1
         entry["hosts"][rec["host"]] += 1
@@ -120,7 +143,12 @@ def parse(patterns, ua_list, ip_ranges):
         if rec["time"]:
             entry["first"] = min(entry["first"] or rec["time"], rec["time"])
             entry["last"] = max(entry["last"] or rec["time"], rec["time"])
-        if bot in ip_ranges:
+        is_self = rec["ip"] in self_ips
+        if not is_self and _PROBE_PATH_RE.match(rec["path"]):
+            entry["ext_probe_paths"].add(rec["path"])  # 仅外部 IP 的探测计入观察信号
+        if is_self:
+            entry["self_probe"] += 1  # 自有取证流量,不计外部信号
+        elif bot in ip_ranges:
             try:
                 ok = any(ipaddress.ip_address(rec["ip"]) in net for net in ip_ranges[bot])
             except ValueError:
@@ -140,10 +168,10 @@ def write_reports(stats, total_lines, ip_ranges, out_dir):
     # 分表(r10 D1):bot 级一行一 bot(无重复计数),path 级单列明细
     with open(f"{base}-bots.csv", "w", newline="") as fh:
         w = csv.writer(fh)
-        w.writerow(["bot", "total_hits", "verified_hits", "ua_only_hits", "s2xx", "s3xx", "s4xx", "s5xx",
+        w.writerow(["bot", "total_hits", "verified_hits", "ua_only_hits", "self_probe_hits", "s2xx", "s3xx", "s4xx", "s5xx",
                     "bytes", "hosts", "first_seen", "last_seen", "ranges_published"])
         for bot, e in sorted(stats.items(), key=lambda kv: -sum(kv[1]["paths"].values())):
-            w.writerow([bot, sum(e["paths"].values()), e["verified"], e["ua_only"],
+            w.writerow([bot, sum(e["paths"].values()), e["verified"], e["ua_only"], e.get("self_probe", 0),
                         e["status"].get("2xx", 0), e["status"].get("3xx", 0), e["status"].get("4xx", 0), e["status"].get("5xx", 0),
                         e["bytes"], ";".join(sorted(e["hosts"])), fmt(e["first"]), fmt(e["last"]), bot in ip_ranges])
     with open(f"{base}-paths.csv", "w", newline="") as fh:
@@ -155,31 +183,34 @@ def write_reports(stats, total_lines, ip_ranges, out_dir):
 
     lines = [f"# AI 爬虫周报 {year}-W{week:02d}", "", f"- 解析日志行: {total_lines}", f"- 命中 AI 爬虫: {len(stats)} 个", ""]
     if stats:
-        lines += ["| Bot | 总命中 | 已验真 | 仅 UA | 2xx/3xx/4xx/5xx | 流量 | Host 分布 | 官方段 | 首次 | 最近 |", "|---|---|---|---|---|---|---|---|---|---|"]
+        lines += ["| Bot | 总命中 | 已验真 | 外部仅 UA | 自有取证 | 2xx/3xx/4xx/5xx | 流量 | Host 分布 | 官方段 | 首次 | 最近 |", "|---|---|---|---|---|---|---|---|---|---|---|"]
         for bot, e in sorted(stats.items(), key=lambda kv: -sum(kv[1]["paths"].values())):
             total = sum(e["paths"].values())
             sc = "/".join(str(e["status"].get(k, 0)) for k in ("2xx", "3xx", "4xx", "5xx"))
             hosts = " ".join(f"{h}×{c}" for h, c in e["hosts"].most_common(3)) or "-"
-            lines.append(f"| {bot} | {total} | {e['verified']} | {e['ua_only']} | {sc} | {e['bytes'] // 1024}KB | {hosts} | {'有' if bot in ip_ranges else '无'} | {fmt(e['first'])} | {fmt(e['last'])} |")
-        lines += ["", "> Host 口径:`www.smaapi.com` = 我方主站;裸域/`smaapi.com` = 上游站点流量(经旧日志或代理而来),不计为我方站点访问;`-` = 旧格式日志无 host 字段。"]
+            lines.append(f"| {bot} | {total} | {e['verified']} | {e['ua_only']} | {e.get('self_probe', 0)} | {sc} | {e['bytes'] // 1024}KB | {hosts} | {'有' if bot in ip_ranges else '无'} | {fmt(e['first'])} | {fmt(e['last'])} |")
+        sp = sum(e.get("self_probe", 0) for e in stats.values())
+        lines += ["", f"> Host 口径:`www.smaapi.com` = 我方主站;裸域/`smaapi.com` = 上游站点流量,不计为我方站点访问;`-` = 旧格式日志无 host 字段。",
+                  f"> **自有取证档(r15 根因修复)**:本机取证/验收流量(geo/self-ips.txt 内 IP,本期 {sp} 次)单列,既不计已验真也不计外部仅 UA,避免污染外部信号基线。"]
         lines += ["", "## 热门路径(每 bot 前 5)", ""]
         for bot, e in sorted(stats.items()):
             tops = e["paths"].most_common(5)
             lines.append(f"- **{bot}**: " + ", ".join(f"`{p}`×{c}" for p, c in tops))
     else:
         lines.append("本周无 AI 爬虫命中(冷启动期属预期)。")
-    # r11 §3-1:仅 UA 档观察阈值——周命中 >100 或非公开路径探测 → 观察级备注(不告警不门禁)
-    PROBE_RE = __import__("re").compile(r"^/(console|admin|api/internal|\.env|wp-|\.git|phpmyadmin)", __import__("re").IGNORECASE)
+    # r11 §3-1:仅 UA 档观察阈值——外部仅 UA >100 或外部探测非公开路径 → 观察级备注(不告警不门禁)
     observations = []
-    for bot, e in stats.items():
-        total = sum(e["paths"].values())
-        probes = [p for p in e["paths"] if PROBE_RE.match(p)]
-        if total > 100 and e["verified"] == 0:
-            observations.append(f"- {bot}: 周命中 {total} 且零验真,超观察阈值(>100)")
-        if probes:
-            observations.append(f"- {bot}: 探测非公开路径 {sorted(probes)[:5]}")
+    for bot, e in sorted(stats.items()):
+        external = e["ua_only"]  # 外部仅 UA(已剔除自有取证)
+        ext_probes = sorted(e.get("ext_probe_paths", set()))
+        if external > 100 and e["verified"] == 0:
+            observations.append(f"- {bot}: 外部仅 UA 命中 {external} 且零验真,超观察阈值(>100)")
+        if ext_probes:
+            observations.append(f"- {bot}: 外部 IP 探测非公开路径 {ext_probes[:5]}")
     if observations:
-        lines += ["", "## 观察级备注(仅 UA 档伪装流量,r11 §3-1 阈值)", ""] + observations
+        lines += ["", "## 观察级备注(外部仅 UA 档伪装流量,r11 §3-1 阈值;自有取证 IP 的探测已剔除)", ""] + observations
+    else:
+        lines += ["", "## 观察级备注", "", "本期无外部 IP 的非公开路径探测(凭证扫描类探测均来自自有取证 IP,见自有取证档)。"]
     ranged = sorted(ip_ranges)
     lines += ["", "## 覆盖口径(三档,r12 E2)", "",
               f"- **官方 IP 验真档**({len(ranged)} 源): {', '.join(ranged)} —— 可出\"已验真\"结论;",
@@ -196,7 +227,7 @@ def main():
     ap.add_argument("--logs", nargs="+", required=True, help="访问日志 glob(支持 .gz)")
     ap.add_argument("--out-dir", default=str(ROOT / "geo" / "reports"))
     args = ap.parse_args()
-    stats, total = parse(args.logs, load_ua_list(), load_ip_ranges())
+    stats, total = parse(args.logs, load_ua_list(), load_ip_ranges(), load_self_ips())
     write_reports(stats, total, load_ip_ranges(), Path(args.out_dir))
     return 0
 

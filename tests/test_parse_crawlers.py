@@ -60,6 +60,17 @@ with tempfile.TemporaryDirectory() as td2:
     check(any(_pl.Path(td2).glob("crawlers-*-bots.csv")), "应产出 bot 级分表")
     check(any(_pl.Path(td2).glob("crawlers-*-paths.csv")), "应产出 path 级分表")
 
+# r15 根因修复:自有取证 IP 命中单列 self_probe,不计外部信号(verified/ua_only)
+# fixture 中 1.2.3.4 是 GPTBot 的伪装 IP(原计 ua_only);声明为自有 IP 后应移入 self_probe
+stats_self, _ = parse([fixture], ua_list, ip_ranges, self_ips={"1.2.3.4"})
+g = stats_self.get("GPTBot", {})
+check(g.get("self_probe") == 1, f"自有 IP 命中应记 self_probe,实为 {g.get('self_probe')}")
+check(g.get("ua_only") == 0, f"自有 IP 不应计入外部仅 UA,实为 {g.get('ua_only')}")
+check(g.get("verified") == 2, "自有 IP 剔除不影响官方段验真计数(仍 2)")
+# 外部探测路径只记非自有 IP:把 GPTBot 官方段 IP 段外的请求源声明为自有后,ext_probe 不含其路径
+stats_noself, _ = parse([fixture], ua_list, ip_ranges)
+check("ext_probe_paths" in stats_noself.get("GPTBot", {}), "应追踪外部探测路径集合")
+
 # r11 §3-1:观察阈值(>100 零验真 / 非公开路径探测)
 from collections import Counter as _C
 synth = {
