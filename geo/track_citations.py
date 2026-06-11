@@ -9,6 +9,7 @@
 """
 import argparse
 import csv
+import hashlib
 import json
 import os
 import re
@@ -22,7 +23,16 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "geo" / "data" / "citations.csv"
-CSV_FIELDS = ["date", "engine", "mode", "query_id", "mentioned", "snippet", "sentiment", "accuracy", "mislabel", "entity_mismatch"]
+# r8 批次 A 测量分层 schema v3:三层(提及/来源引用/推荐),失败行计入分母
+CSV_FIELDS = ["run_id", "date", "engine", "mode", "query_id", "query_intent", "query_weight",
+              "status", "error", "mentioned", "cited_smaapi", "level", "source_urls",
+              "snippet", "sentiment", "accuracy", "mislabel", "entity_mismatch", "answer_hash"]
+
+OUR_HOST = "www.smaapi.com"
+# 推荐层启发式(宽口径,人工抽检兜底)
+RECOMMEND_RE = re.compile(r"推荐|建议(使用|选)|首选|优先考虑|recommend|best (option|choice|fit)", re.IGNORECASE)
+# r9 §3:根域上游站混同观察子类
+ROOT_SITE_RE = re.compile(r"AI\s*API\s*服务平台")
 
 # T8a(REVIEW r5 §2)实体解析:命中仅当消歧到我方实体;裸 SMA 碰撞多重同名实体
 STRONG_RES = [re.compile(r"smaapi", re.IGNORECASE), re.compile(r"菌路"), re.compile(r"slime\s*mould", re.IGNORECASE)]
@@ -34,6 +44,7 @@ COLLISION_RES = [
     (re.compile(r"射频|同轴|连接器|connector|coaxial", re.IGNORECASE), "SMA 射频接头"),
     (re.compile(r"形状记忆|shape[- ]memory", re.IGNORECASE), "形状记忆合金"),
     (re.compile(r"肌萎缩|muscular atrophy", re.IGNORECASE), "脊髓性肌萎缩症"),
+    (re.compile(r"AI\s*API\s*服务平台"), "root_site(根域上游站)"),
 ]
 
 # C2 专项:AI 把 SMA 描述为"中转站"= P0 级纠偏事件(addendum 02v2)
@@ -117,31 +128,59 @@ def ask_openai_compatible(engine, query, mode_params):
     )
     with urllib.request.urlopen(req, timeout=120, context=SSL_CTX) as resp:
         data = json.loads(resp.read().decode())
-    return data["choices"][0]["message"]["content"]
+    citations = data.get("citations") or data.get("search_results") or []
+    urls = [c if isinstance(c, str) else (c.get("url") or "") for c in citations]
+    return data["choices"][0]["message"]["content"], [u for u in urls if u]
 
 
-def run_queries(queries, engines, ask_fn=ask_openai_compatible, today=None, classify_fn=classify_quality):
-    """对每个 api 引擎 × query × 支持的模式各跑一次,返回结果行列表。命中时附质量标注(C2)。"""
+def run_queries(queries, engines, ask_fn=ask_openai_compatible, today=None, classify_fn=classify_quality, run_id=None):
+    """对每个 api 引擎 × query × 支持的模式各跑一次,返回结果行列表(schema v3)。
+
+    三层口径(r8):mention(回答提及) ⊂ cited(来源引用含我方 www 主机) / recommended(推荐语境)。
+    失败请求落 status=error 行,计入分母——失败不可隐身。
+    """
     rows = []
     today = today or date.today().isoformat()
+    run_id = run_id or f"{today}-{hashlib.sha256(repr(engines).encode()).hexdigest()[:6]}"
     for engine in engines:
         for mode, mode_params in engine["modes"].items():
             for q in queries:
+                base = {"run_id": run_id, "date": today, "engine": engine["name"], "mode": mode,
+                        "query_id": q["id"], "query_intent": q.get("intent", ""),
+                        "query_weight": q.get("weight", ""), "status": "ok", "error": "",
+                        "mentioned": 0, "cited_smaapi": 0, "level": "", "source_urls": "",
+                        "snippet": "", "sentiment": "", "accuracy": "", "mislabel": 0,
+                        "entity_mismatch": "", "answer_hash": ""}
                 try:
-                    answer = ask_fn(engine, q["query"], mode_params)
-                except Exception as exc:  # 单点失败不中断全量
+                    result = ask_fn(engine, q["query"], mode_params)
+                except Exception as exc:  # 失败行计入分母
                     print(f"  ! {engine['name']}/{mode}/{q['id']}: {exc}", file=sys.stderr)
+                    base.update(status="error", error=str(exc)[:160])
+                    rows.append(base)
                     continue
+                answer, source_urls = result if isinstance(result, tuple) else (result, [])
                 mentioned, snippet, mismatch = detect_mention(answer)
+                cited = any(_host(u) == OUR_HOST for u in source_urls)
+                recommended = bool(mentioned and RECOMMEND_RE.search(answer))
+                level = "recommended" if recommended else ("cited" if cited else ("mention" if mentioned else ""))
+                if mentioned and not mismatch and ROOT_SITE_RE.search(answer):
+                    mismatch = "root_site(混同,保留提及)"
                 sentiment, accuracy = classify_fn(answer) if mentioned else ("", "")
-                rows.append(
-                    {"date": today, "engine": engine["name"], "mode": mode,
-                     "query_id": q["id"], "mentioned": int(mentioned), "snippet": snippet,
-                     "sentiment": sentiment, "accuracy": accuracy,
-                     "mislabel": int(mentioned and detect_mislabel(answer)),
-                     "entity_mismatch": mismatch}
-                )
+                base.update(mentioned=int(mentioned), cited_smaapi=int(cited), level=level,
+                            source_urls=" ".join(source_urls[:8]), snippet=snippet,
+                            sentiment=sentiment, accuracy=accuracy,
+                            mislabel=int(mentioned and detect_mislabel(answer)),
+                            entity_mismatch=mismatch,
+                            answer_hash=hashlib.sha256(answer.encode()).hexdigest()[:12])
+                rows.append(base)
     return rows
+
+
+def _host(url):
+    try:
+        return re.match(r"https?://([^/]+)", url).group(1).lower()
+    except AttributeError:
+        return ""
 
 
 def append_csv(rows, csv_path=CSV_PATH):
@@ -159,19 +198,31 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
     out_dir.mkdir(parents=True, exist_ok=True)
     year, week, _ = date.today().isocalendar()
     rows = list(csv.DictReader(open(csv_path))) if csv_path.exists() else []
-    dates = sorted({r["date"] for r in rows})
     lines = [f"# 引用率周报 {year}-W{week:02d}", ""]
-    lines.append("双模式口径(C1):web=联网检索(先行指标);model=纯模型记忆(品牌资产指标)。冷启动期双曲线为 0 即基线。")
+    lines.append("三层口径(r8):提及 ⊃ 来源引用 / 推荐;失败行计入分母。双模式(C1):web=联网检索;model=纯模型记忆。")
     lines.append("")
-    lines += ["| 日期 | 引擎 | 模式 | 提及/总数 | 提及率 |", "|---|---|---|---|---|"]
-    for d in dates:
-        day = [r for r in rows if r["date"] == d]
-        for key in sorted({(r["engine"], r["mode"]) for r in day}):
-            sub = [r for r in day if (r["engine"], r["mode"]) == key]
-            hit = sum(int(r["mentioned"]) for r in sub)
-            lines.append(f"| {d} | {key[0]} | {key[1]} | {hit}/{len(sub)} | {hit / len(sub):.0%} |")
-    if not dates:
-        lines.append("| - | - | - | 0/0 | 暂无数据 |")
+    is_brand = lambda r: r.get("query_intent", "") == "品牌"
+    for seg_name, seg in [("非品牌", lambda r: not is_brand(r)), ("品牌", is_brand)]:
+        for mode in ("web", "model"):
+            sub_all = [r for r in rows if seg(r) and r["mode"] == mode]
+            if not sub_all:
+                continue
+            lines += [f"## {seg_name} × {mode}", "",
+                      "| 日期 | 引擎 | 提及 | 引用 | 推荐 | 失败 | 分母 | 提及率 |", "|---|---|---|---|---|---|---|---|"]
+            for key in sorted({(r["date"], r["engine"]) for r in sub_all}):
+                s = [r for r in sub_all if (r["date"], r["engine"]) == key]
+                m = sum(int(r.get("mentioned", 0) or 0) for r in s)
+                c = sum(int(r.get("cited_smaapi", 0) or 0) for r in s)
+                rec = sum(r.get("level") == "recommended" for r in s)
+                err = sum(r.get("status") == "error" for r in s)
+                lines.append(f"| {key[0]} | {key[1]} | {m} | {c} | {rec} | {err} | {len(s)} | {m / len(s):.0%} |")
+            lines.append("")
+    money = [r for r in rows if not is_brand(r) and r.get("query_weight") == "money"]
+    if money:
+        mm = sum(int(r.get("mentioned", 0) or 0) for r in money)
+        lines.append(f"**主 KPI(非品牌 money 提及率): {mm}/{len(money)} = {mm / len(money):.0%}**")
+    if not rows:
+        lines.append("暂无数据。")
     # C2:提及质量子标注 + 中转站误称 P0 单列
     hits = [r for r in rows if r.get("mentioned") == "1"]
     if hits:

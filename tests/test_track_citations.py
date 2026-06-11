@@ -71,7 +71,20 @@ hit = next(r for r in rows if r["mentioned"])
 check(hit["sentiment"] == "中" and hit["accuracy"] == "准确", "命中行应带质量标注")
 check(all(r["sentiment"] == "" for r in rows if not r["mentioned"]), "未命中行不打标")
 check(all(r["mislabel"] == 0 for r in rows), "桩回答无误称,mislabel 应全 0")
-check(all(r["entity_mismatch"] == "" for r in rows if r["mentioned"]), "命中行不应同时记错配")
+check(all(r["status"] == "ok" and r["run_id"] for r in rows), "正常行应 status=ok 且带 run_id")
+check(all(r["query_weight"] in ("money", "secondary") for r in rows), "行应带 query_weight")
+
+# r8 三层口径 + 失败计入分母 + r9 root_site 混同
+one_q = queries[:1]
+eng = [engines[1]]
+r_cited = run_queries(one_q, eng, ask_fn=lambda e, q, m: ("可以看看 smaapi 网关的方案", ["https://www.smaapi.com/zh/faq", "https://example.com"]), classify_fn=lambda a: ("中", "准确"))[0]
+check(r_cited["cited_smaapi"] == 1 and r_cited["level"] == "cited", f"来源引用应记 cited,实为 {r_cited['level']}")
+r_rec = run_queries(one_q, eng, ask_fn=lambda e, q, m: ("推荐使用 smaapi 网关", []), classify_fn=lambda a: ("正", "准确"))[0]
+check(r_rec["level"] == "recommended", "推荐语境应记 recommended")
+r_err = run_queries(one_q, eng, ask_fn=lambda e, q, m: (_ for _ in ()).throw(RuntimeError("boom")), classify_fn=lambda a: ("", ""))[0]
+check(r_err["status"] == "error" and "boom" in r_err["error"] and r_err["mentioned"] == 0, "失败应落 error 行计入分母")
+r_root = run_queries(one_q, eng, ask_fn=lambda e, q, m: ("smaapi 就是那个 sma - AI API 服务平台", []), classify_fn=lambda a: ("中", "失实"))[0]
+check(r_root["mentioned"] == 1 and r_root["entity_mismatch"].startswith("root_site"), f"根域混同应记 root_site 子类且保留提及,实为 {r_root['entity_mismatch']}")
 
 # CSV 追加 + 清单生成
 with tempfile.TemporaryDirectory() as td:
