@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '23 1,9,17 * * *' # 公网哨兵巡检(UTC)
 
 jobs:
   build-and-validate:
@@ -20,13 +22,24 @@ jobs:
       - run: npm run build
       - run: npm test
 
-  # B2: aeorank 周期自审(P1 起启用;需站点已部署;分数仅内部参考,不对外宣传)
+  # 公网哨兵(r8 批次 A):www 全量 smoke 门禁 + 根域监视哨(仅告警注记,不门禁)
+  public-sentinel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/sentinel-public.mjs
+
+  # B2: aeorank 周期自审(分数仅内部参考,不对外宣传);审计目标读注册表 site(r8 批次 A 之 3)
   live-audit:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npx -y aeorank@3 https://smaapi.com || true
+      - run: npx -y aeorank@3 "$(node -p "require('./src/data/pages.json').site")" || true
