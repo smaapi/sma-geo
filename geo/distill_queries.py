@@ -25,25 +25,33 @@ ENGINE = {
     "api_key_env": os.environ.get("DISTILL_KEY_ENV", "SMA_API_KEY"),
 }
 
-PROMPT = (
-    "你是企业采购研究员。给定一条企业用户可能在 AI 搜索里输入的查询,生成 {n} 条同义变体:"
+PROMPT_ZH = (
+    "你是企业采购研究员。给定一条企业用户可能在 AI 搜索里输入的查询,生成 {n} 条中文同义变体:"
     "保持同一采购/使用意图,只改变问法(口语化、场景化、角色化均可),不引入原查询没有的新需求,"
     "不出现具体厂商承诺词。每行一条,不编号,不解释。\n原查询:{q}"
+)
+PROMPT_EN = (
+    "You are an enterprise procurement researcher. Given a query an enterprise user might type "
+    "into AI search, produce {n} paraphrased variants IN ENGLISH ONLY: same procurement/usage "
+    "intent, rephrased (colloquial, scenario-based, or role-based), no new needs beyond the "
+    "original, no vendor promise words. One per line, no numbering, no explanation.\nQuery: {q}"
 )
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--per-query", type=int, default=2)
-    ap.add_argument("--only-money", action="store_true", default=True)
+    # 修复(r8 批次 C):原 --only-money store_true+default=True 永真;改为反向开关
+    ap.add_argument("--all-queries", action="store_true", help="不限 money 权重,全矩阵蒸馏")
     args = ap.parse_args()
 
     queries = yaml.safe_load((ROOT / "geo" / "queries.yaml").read_text())
-    targets = [q for q in queries if not args.only_money or q.get("weight") == "money"]
+    targets = [q for q in queries if args.all_queries or q.get("weight") == "money"]
     lines = [f"# 蒸馏查询候选 {date.today()} —— 人工筛选后方可入库(上限 40 条,含权重与 intent 标注)", ""]
     for q in targets:
+        prompt = PROMPT_EN if q.get("lang") == "en" else PROMPT_ZH
         try:
-            raw = ask_openai_compatible(ENGINE, PROMPT.format(n=args.per_query, q=q["query"]), {})
+            raw, _urls = ask_openai_compatible(ENGINE, prompt.format(n=args.per_query, q=q["query"]), {})
         except Exception as exc:
             print(f"  ! {q['id']}: {exc}", file=sys.stderr)
             continue
