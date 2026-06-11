@@ -1,0 +1,21 @@
+{
+  "name": "sma-geo-site",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "SMA enterprise AI gateway content site (GEO)",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/generate-robots.mjs && node scripts/generate-llms.mjs && node scripts/generate-sitemap.mjs",
+    "preview": "astro preview",
+    "test": "node tests/validate-robots-txt.mjs && node tests/validate-llms-txt.mjs",
+    "update:robots-data": "node scripts/update-robots-data.mjs",
+    "indexnow": "node scripts/indexnow-submit.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "schema-dts": "^2.0.0"
+  }
+}

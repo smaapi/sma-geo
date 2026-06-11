@@ -1,7 +1,10 @@
-data/
+/data/
 .DS_Store
 __pycache__/
 *.pyc
 .env
 docs/internal/
 REVIEW-*.md
+node_modules/
+dist/
+.astro/
