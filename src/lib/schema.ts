@@ -5,7 +5,8 @@ import pagesData from '../data/pages.json';
 const SITE = pagesData.site;
 
 // r8 批次 B:sameAs 结构就位,值随 GitHub 组织 / 百科词条落地回填(只列我方控制的组织级主页)
-const SAME_AS: string[] = [];
+// 2026-06-11:GitHub 组织 smaapi 建成,回填第一环(T8 实体闭环);百科义项 URL 待 T8c 工商落地后追加
+const SAME_AS: string[] = ['https://github.com/smaapi'];
 
 export const organization: WithContext<Organization> = {
   '@context': 'https://schema.org',
