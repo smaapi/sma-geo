@@ -1,0 +1,32 @@
+{
+  "GPTBot": {
+    "file": "GPTBot.json",
+    "source": "https://openai.com/gptbot.json",
+    "prefixCount": 21,
+    "fetched": "2026-06-10"
+  },
+  "OAI-SearchBot": {
+    "file": "OAI-SearchBot.json",
+    "source": "https://openai.com/searchbot.json",
+    "prefixCount": 35,
+    "fetched": "2026-06-10"
+  },
+  "ChatGPT-User": {
+    "file": "ChatGPT-User.json",
+    "source": "https://openai.com/chatgpt-user.json",
+    "prefixCount": 253,
+    "fetched": "2026-06-10"
+  },
+  "PerplexityBot": {
+    "file": "PerplexityBot.json",
+    "source": "https://www.perplexity.ai/perplexitybot.json",
+    "prefixCount": 8,
+    "fetched": "2026-06-10"
+  },
+  "Perplexity-User": {
+    "file": "Perplexity-User.json",
+    "source": "https://www.perplexity.ai/perplexity-user.json",
+    "prefixCount": 4,
+    "fetched": "2026-06-10"
+  }
+}
