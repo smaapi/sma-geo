@@ -50,7 +50,7 @@
       "title": "API 中转站适合企业吗?自建中转与企业级网关的场景边界",
       "description": "OneAPI 类自建 API 中转适合个人与小团队;企业场景的断点在治理:权限、审计、SLA、合规责任。本文给出场景边界与迁移判断。",
       "datePublished": "2026-06-10",
-      "dateModified": "2026-06-10",
+      "dateModified": "2026-06-11",
       "llms": {
         "section": "核心页面",
         "label": "自建转发工具与企业级网关的边界",
@@ -75,8 +75,8 @@
       "route": "/en/",
       "lang": "en",
       "alternate": "/",
-      "title": "smaapi (SMA) — Enterprise AI Gateway: Unified Multi-Model Access, Smart Routing, Governance & Audit",
-      "description": "smaapi (SMA, Slime Mould Architecture) is an enterprise AI gateway / model access platform: one OpenAI-compatible API for many LLM providers, with smart routing, cost and permission governance, and full audit trails.",
+      "title": "smaapi Gateway (SMA by Slime Mould Tech) — Enterprise AI Gateway",
+      "description": "smaapi Gateway (SMA by Slime Mould Tech, www.smaapi.com) is an enterprise AI gateway / model access platform: one OpenAI-compatible API for many LLM providers, with smart routing, cost and permission governance, and full audit trails.",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-11",
       "llms": {
