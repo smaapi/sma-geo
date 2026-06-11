@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "purpose": "中文 AI/搜索引擎爬虫 UA 补充清单(上游 robots.json 覆盖不全)",
+    "source": "主 spec §1.1 起步清单;增补按 GEO Wiki 平台档案核对后加入(增补件 E1)",
+    "todo": "夸克、秘塔等引擎 UA 待 E1 核对后增补;未核实的 UA 不进清单"
+  },
+  "bots": [
+    "Baiduspider",
+    "Bytespider",
+    "360Spider",
+    "Sogou web spider",
+    "YisouSpider"
+  ]
+}
