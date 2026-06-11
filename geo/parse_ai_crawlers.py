@@ -155,11 +155,13 @@ def write_reports(stats, total_lines, ip_ranges, out_dir):
 
     lines = [f"# AI 爬虫周报 {year}-W{week:02d}", "", f"- 解析日志行: {total_lines}", f"- 命中 AI 爬虫: {len(stats)} 个", ""]
     if stats:
-        lines += ["| Bot | 总命中 | 已验真 | 仅 UA | 2xx/3xx/4xx/5xx | 流量 | 官方段 | 首次 | 最近 |", "|---|---|---|---|---|---|---|---|---|"]
+        lines += ["| Bot | 总命中 | 已验真 | 仅 UA | 2xx/3xx/4xx/5xx | 流量 | Host 分布 | 官方段 | 首次 | 最近 |", "|---|---|---|---|---|---|---|---|---|---|"]
         for bot, e in sorted(stats.items(), key=lambda kv: -sum(kv[1]["paths"].values())):
             total = sum(e["paths"].values())
             sc = "/".join(str(e["status"].get(k, 0)) for k in ("2xx", "3xx", "4xx", "5xx"))
-            lines.append(f"| {bot} | {total} | {e['verified']} | {e['ua_only']} | {sc} | {e['bytes'] // 1024}KB | {'有' if bot in ip_ranges else '无'} | {fmt(e['first'])} | {fmt(e['last'])} |")
+            hosts = " ".join(f"{h}×{c}" for h, c in e["hosts"].most_common(3)) or "-"
+            lines.append(f"| {bot} | {total} | {e['verified']} | {e['ua_only']} | {sc} | {e['bytes'] // 1024}KB | {hosts} | {'有' if bot in ip_ranges else '无'} | {fmt(e['first'])} | {fmt(e['last'])} |")
+        lines += ["", "> Host 口径:`www.smaapi.com` = 我方主站;裸域/`smaapi.com` = 上游站点流量(经旧日志或代理而来),不计为我方站点访问;`-` = 旧格式日志无 host 字段。"]
         lines += ["", "## 热门路径(每 bot 前 5)", ""]
         for bot, e in sorted(stats.items()):
             tops = e["paths"].most_common(5)

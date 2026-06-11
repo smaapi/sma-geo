@@ -202,6 +202,7 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
     rows = list(csv.DictReader(open(csv_path))) if csv_path.exists() else []
     lines = [f"# 引用率周报 {year}-W{week:02d}", ""]
     lines.append("三层口径(r8):提及 ⊃ 来源引用 / 推荐;失败行计入分母。双模式(C1):web=联网检索;model=纯模型记忆。")
+    lines.append("测量通道:厂商官方直连端点——不经任何注入系统提示/品牌人设的代理(DECISIONS 口径)。")
     lines.append("")
     is_brand = lambda r: r.get("query_intent", "") == "品牌"
     for seg_name, seg in [("非品牌", lambda r: not is_brand(r)), ("品牌", is_brand)]:
@@ -226,6 +227,8 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
         cc = sum(int(r.get("cited_smaapi", 0) or 0) for r in money)
         rr = sum(int(r.get("recommended", 0) or 0) for r in money)
         lines.append(f"**主 KPI(非品牌 money,三率并列): 提及 {mm}/{n}={mm / n:.0%} · 来源引用 {cc}/{n}={cc / n:.0%} · 推荐 {rr}/{n}={rr / n:.0%}**")
+    else:
+        lines.append("**主 KPI(非品牌 money,三率并列): 本期无 money 查询运行数据(矩阵 v2 自下期运行生效)——三率均待测,不以旧矩阵数据冒充。**")
     if not rows:
         lines.append("暂无数据。")
     # C2:提及质量子标注 + 中转站误称 P0 单列
@@ -236,13 +239,14 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
                                               for s in sorted({r.get('sentiment', '') for r in hits})),
                   f"- 准确性: " + " / ".join(f"{a or '未标'}×{sum(1 for r in hits if r.get('accuracy','') == a)}"
                                             for a in sorted({r.get('accuracy', '') for r in hits}))]
-    # T8a:实体错配独立统计(不计入提及率)
+    # T8a:实体错配独立统计(不计入提及率);root_site 固定保留行(一审:0 也显式列出防漏报)
     mismatches = [r for r in rows if r.get("entity_mismatch")]
-    if mismatches:
-        lines += ["", "## 实体错配(裸 SMA 被解析为他方实体,不计入提及)", ""]
-        for label in sorted({r["entity_mismatch"] for r in mismatches}):
-            sub = [r for r in mismatches if r["entity_mismatch"] == label]
-            lines.append(f"- {label} ×{len(sub)}({', '.join(r['query_id'] for r in sub[:6])})")
+    lines += ["", "## 实体错配(裸 SMA 被解析为他方实体,不计入提及)", ""]
+    rs = sum(1 for r in mismatches if (r.get("entity_mismatch") or "").startswith("root_site"))
+    lines.append(f"- root_site(根域混同,固定保留行) ×{rs}")
+    for label in sorted({r["entity_mismatch"] for r in mismatches if not r["entity_mismatch"].startswith("root_site")}):
+        sub = [r for r in mismatches if r["entity_mismatch"] == label]
+        lines.append(f"- {label} ×{len(sub)}({', '.join(r['query_id'] for r in sub[:6])})")
     lines += ["", "## 效果挂钩表(T 动作 ↔ 记分牌,自 2026-W25 起回填)", "",
               "| T 动作 | 外发/上线日 | 关联查询簇 | 提及率变化 | 备注 |", "|---|---|---|---|---|",
               "| (下期起回填) | | | | |"]
