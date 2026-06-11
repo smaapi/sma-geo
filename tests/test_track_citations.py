@@ -49,6 +49,13 @@ check(len(queries) == 40, f"查询矩阵 v2 应 40 条,实为 {len(queries)}")
 check(sum(q["lang"] == "zh" for q in queries) == 23, "中文应 23 条")
 check(sum(q.get("weight") == "money" for q in queries) == 18, "money 权重应 18 条")
 check(all(q.get("weight") in ("money", "secondary") for q in queries), "每条必须有权重标注")
+plan = ROOT / "docs" / "internal" / "battle-plan-v3.0-source.html"
+if plan.exists():
+    plan_text = plan.read_text()
+    qn = len(queries)
+    check(f"共 {qn} 条" in plan_text, "作战方案查询总数应与 queries.yaml 同步")
+    check(f"{qn} 查询双模式" in plan_text, "作战方案测量口径应与 queries.yaml 同步")
+    check(f"0/{qn}" in plan_text and "0/46" not in plan_text, "作战方案基线分母应与 queries.yaml 同步")
 
 engines = [
     {"name": "dual", "model": "m", "api_key_env": "K", "base_url": "http://x", "modes": {"web": {"enable_search": True}, "model": {}}},
