@@ -31,7 +31,8 @@ const EXEMPT = [
   /^geo\/track_citations\.py$/,
 ];
 // 扫描范围:对外可见面(源码、页面、产物、CI 配置);跳过依赖与版本库
-const SKIP_DIRS = new Set(['node_modules', '.git', '.astro', 'docs', 'data']);
+// reports = 内部周报产物(gitignored,非对外文本,且含 C2 规则语言)
+const SKIP_DIRS = new Set(['node_modules', '.git', '.astro', 'docs', 'data', 'reports']);
 const EXTS = new Set(['.astro', '.ts', '.mjs', '.js', '.json', '.md', '.txt', '.yml', '.yaml', '.html', '.xml']);
 
 const files = [];
