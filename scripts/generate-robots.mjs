@@ -20,7 +20,7 @@ for (const ua of [...upstream, ...cn]) {
 }
 const uas = [...merged.values()];
 
-const INTERNAL_DISALLOWS = ['/console/', '/admin/', '/api/internal/'];
+const INTERNAL_DISALLOWS = ['/console/', '/admin/', '/api/internal/', '/_review/'];
 const disallowBlock = INTERNAL_DISALLOWS.map((p) => `Disallow: ${p}`).join('\n');
 
 const groups = uas.map((ua) => `User-agent: ${ua}\nAllow: /\n${disallowBlock}`);
