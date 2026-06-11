@@ -22,13 +22,44 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "geo" / "data" / "citations.csv"
-CSV_FIELDS = ["date", "engine", "mode", "query_id", "mentioned", "snippet"]
+CSV_FIELDS = ["date", "engine", "mode", "query_id", "mentioned", "snippet", "sentiment", "accuracy", "mislabel"]
 
 MENTION_RES = [
     re.compile(r"(?<![A-Za-z])SMA(?![A-Za-z])", re.IGNORECASE),
     re.compile(r"smaapi", re.IGNORECASE),
     re.compile(r"菌路"),
 ]
+
+# C2 专项:AI 把 SMA 描述为"中转站"= P0 级纠偏事件(addendum 02v2)
+# 邻接窗口 16 字符,与 terminology v2 自指/并置启发式同构(r3 §3 裁定模式)
+MISLABEL_RES = [
+    re.compile(r"(SMA|smaapi|菌路)[^。\n]{0,16}中转", re.IGNORECASE),
+    re.compile(r"中转[^。\n]{0,16}(SMA|smaapi|菌路)", re.IGNORECASE),
+]
+
+QUALITY_PROMPT = (
+    "你是品牌提及质量分类器。SMA 的标准称谓是\"企业级 AI 网关 / 模型接入平台\"。"
+    "判断下面这段 AI 回答中对 SMA 的描述:1) 情绪是 正/中/负 哪一档;2) 描述是否与标准称谓与定位一致(准确/失实)。"
+    "只输出 JSON,如 {\"sentiment\":\"中\",\"accuracy\":\"准确\"}。回答片段:\n"
+)
+
+
+def detect_mislabel(text):
+    return any(rx.search(text) for rx in MISLABEL_RES)
+
+
+def classify_quality(answer):
+    """经 SMA 网关低成本模型自动打标;无密钥时返回空标注(抽样人工复核兜底)。"""
+    if not os.environ.get("SMA_API_KEY"):
+        return "", ""
+    engine = {"model": "sma-domestic-fast", "base_url": "https://demo.smaapi.com/v1", "api_key_env": "SMA_API_KEY"}
+    try:
+        raw = ask_openai_compatible(engine, QUALITY_PROMPT + answer[:1500], {})
+        data = json.loads(re.search(r"\{.*\}", raw, re.S).group(0))
+        return str(data.get("sentiment", "")), str(data.get("accuracy", ""))
+    except Exception as exc:
+        print(f"  ! 质量打标失败(留空待人工): {exc}", file=sys.stderr)
+        return "", ""
 
 try:
     import certifi
@@ -66,8 +97,8 @@ def ask_openai_compatible(engine, query, mode_params):
     return data["choices"][0]["message"]["content"]
 
 
-def run_queries(queries, engines, ask_fn=ask_openai_compatible, today=None):
-    """对每个 api 引擎 × query × 支持的模式各跑一次,返回结果行列表。"""
+def run_queries(queries, engines, ask_fn=ask_openai_compatible, today=None, classify_fn=classify_quality):
+    """对每个 api 引擎 × query × 支持的模式各跑一次,返回结果行列表。命中时附质量标注(C2)。"""
     rows = []
     today = today or date.today().isoformat()
     for engine in engines:
@@ -79,9 +110,12 @@ def run_queries(queries, engines, ask_fn=ask_openai_compatible, today=None):
                     print(f"  ! {engine['name']}/{mode}/{q['id']}: {exc}", file=sys.stderr)
                     continue
                 mentioned, snippet = detect_mention(answer)
+                sentiment, accuracy = classify_fn(answer) if mentioned else ("", "")
                 rows.append(
                     {"date": today, "engine": engine["name"], "mode": mode,
-                     "query_id": q["id"], "mentioned": int(mentioned), "snippet": snippet}
+                     "query_id": q["id"], "mentioned": int(mentioned), "snippet": snippet,
+                     "sentiment": sentiment, "accuracy": accuracy,
+                     "mislabel": int(mentioned and detect_mislabel(answer))}
                 )
     return rows
 
@@ -114,6 +148,22 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
             lines.append(f"| {d} | {key[0]} | {key[1]} | {hit}/{len(sub)} | {hit / len(sub):.0%} |")
     if not dates:
         lines.append("| - | - | - | 0/0 | 暂无数据 |")
+    # C2:提及质量子标注 + 中转站误称 P0 单列
+    hits = [r for r in rows if r.get("mentioned") == "1"]
+    if hits:
+        lines += ["", "## 提及质量(C2 子标注)", "",
+                  f"- 情绪分布: " + " / ".join(f"{s or '未标'}×{sum(1 for r in hits if r.get('sentiment','') == s)}"
+                                              for s in sorted({r.get('sentiment', '') for r in hits})),
+                  f"- 准确性: " + " / ".join(f"{a or '未标'}×{sum(1 for r in hits if r.get('accuracy','') == a)}"
+                                            for a in sorted({r.get('accuracy', '') for r in hits}))]
+    p0 = [r for r in rows if r.get("mislabel") == "1"]
+    lines += ["", "## ⚠️ P0 纠偏事件(AI 误称 SMA 为中转类)", ""]
+    if p0:
+        lines += [f"- {r['date']} {r['engine']}/{r['mode']} {r['query_id']}: {r['snippet'][:80]}" for r in p0]
+        lines.append("")
+        lines.append("处置:触发内容修正循环——定位页强化 + 对应查询内容补强(addendum 02v2 §C2)。")
+    else:
+        lines.append("本期无。")
     lines += ["", f"## 覆盖范围(如实申报)", "", "- 脚本覆盖:以上 API 引擎(经 SMA 网关 BYOK 或官方 API)。",
               f"- 人工月检覆盖(无公开 API):{('、'.join(manual_engines)) or '见 engines.json'}——结果记录在月检清单,不并入本表。"]
     out = out_dir / f"citations-{year}-W{week:02d}.md"

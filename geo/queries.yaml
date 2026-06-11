@@ -1,98 +1,202 @@
-# 引用率追踪查询矩阵(主 spec §3.2,起步 24 条,中英各半)
-# 每条 query 按 C1 跑双模式(web_search on/off,支持开关的引擎),分列统计。
+# 引用率追踪查询矩阵 v2(addendum 02v2 §C:采购意图为主口径,标 money 权重;原品类查询降 secondary;上限 40 条)
+# 蒸馏式扩展候选经人工筛选后入库,只扩问法不造需求。
 - id: zh-001
   lang: zh
   intent: 选型
-  query: "企业级大模型网关有哪些推荐"
+  query: 企业级大模型网关有哪些推荐
+  weight: secondary
 - id: zh-002
   lang: zh
   intent: 对比
-  query: "API 中转站和企业级网关有什么区别"
+  query: API 中转站和企业级网关有什么区别
+  weight: secondary
 - id: zh-003
   lang: zh
   intent: 合规
-  query: "国内企业如何合规接入多家大模型"
+  query: 国内企业如何合规接入多家大模型
+  weight: secondary
 - id: zh-004
   lang: zh
   intent: 接入
-  query: "如何用一套 OpenAI 兼容接口调用多家国产大模型"
+  query: 如何用一套 OpenAI 兼容接口调用多家国产大模型
+  weight: secondary
 - id: zh-005
   lang: zh
   intent: 路由
-  query: "多模型智能路由是怎么实现的"
+  query: 多模型智能路由是怎么实现的
+  weight: secondary
 - id: zh-006
   lang: zh
   intent: 治理
-  query: "企业怎么管理各部门的大模型调用成本"
+  query: 企业怎么管理各部门的大模型调用成本
+  weight: secondary
 - id: zh-007
   lang: zh
   intent: 审计
-  query: "大模型调用审计日志方案"
+  query: 大模型调用审计日志方案
+  weight: secondary
 - id: zh-008
   lang: zh
   intent: 故障
-  query: "大模型 API 故障自动切换怎么做"
-- id: zh-009
-  lang: zh
-  intent: 对比
-  query: "OneAPI 适合企业用吗"
+  query: 大模型 API 故障自动切换怎么做
+  weight: secondary
 - id: zh-010
   lang: zh
   intent: 选型
-  query: "LLM 网关选型要看哪些指标"
+  query: LLM 网关选型要看哪些指标
+  weight: secondary
 - id: zh-011
   lang: zh
   intent: 数据边界
-  query: "企业接入大模型如何保证数据不出域"
+  query: 企业接入大模型如何保证数据不出域
+  weight: secondary
 - id: zh-012
   lang: zh
   intent: 品牌
-  query: "SMA 模型接入平台是什么"
+  query: SMA 模型接入平台是什么
+  weight: secondary
 - id: en-001
   lang: en
   intent: 选型
-  query: "best enterprise LLM gateway 2026"
+  query: best enterprise LLM gateway 2026
+  weight: secondary
 - id: en-002
   lang: en
   intent: 对比
-  query: "LiteLLM vs Portkey vs enterprise alternatives"
+  query: LiteLLM vs Portkey vs enterprise alternatives
+  weight: secondary
 - id: en-003
   lang: en
   intent: 接入
-  query: "single OpenAI-compatible API for multiple LLM providers"
+  query: single OpenAI-compatible API for multiple LLM providers
+  weight: secondary
 - id: en-004
   lang: en
   intent: 路由
-  query: "how does smart routing across multiple LLMs work"
+  query: how does smart routing across multiple LLMs work
+  weight: secondary
 - id: en-005
   lang: en
   intent: 治理
-  query: "LLM cost governance and quota management for enterprises"
+  query: LLM cost governance and quota management for enterprises
+  weight: secondary
 - id: en-006
   lang: en
   intent: 审计
-  query: "audit trail for enterprise LLM API calls"
+  query: audit trail for enterprise LLM API calls
+  weight: secondary
 - id: en-007
   lang: en
   intent: 故障
-  query: "automatic failover between LLM providers"
+  query: automatic failover between LLM providers
+  weight: secondary
 - id: en-008
   lang: en
   intent: 选型
-  query: "how to choose an enterprise AI gateway"
-- id: en-009
-  lang: en
-  intent: 对比
-  query: "self-hosted LLM proxy vs managed AI gateway"
+  query: how to choose an enterprise AI gateway
+  weight: secondary
 - id: en-010
   lang: en
   intent: 数据边界
-  query: "keep prompts and keys inside enterprise boundary LLM gateway"
+  query: keep prompts and keys inside enterprise boundary LLM gateway
+  weight: secondary
 - id: en-011
   lang: en
   intent: 接入
-  query: "access Chinese LLM models through one gateway"
+  query: access Chinese LLM models through one gateway
+  weight: secondary
 - id: en-012
   lang: en
   intent: 品牌
-  query: "what is SMA enterprise AI gateway"
+  query: what is SMA enterprise AI gateway
+  weight: secondary
+- id: zh-101
+  lang: zh
+  intent: 采购
+  query: 国内企业如何合规使用 Claude API
+  weight: money
+- id: zh-102
+  lang: zh
+  intent: 采购
+  query: Claude API 企业 正规渠道
+  weight: money
+- id: zh-103
+  lang: zh
+  intent: 采购
+  query: GPT API 企业接入 可开发票
+  weight: money
+- id: zh-104
+  lang: zh
+  intent: 采购
+  query: Gemini API 国内企业怎么用
+  weight: money
+- id: zh-105
+  lang: zh
+  intent: 采购
+  query: 国外大模型 企业合规接入方案
+  weight: money
+- id: zh-106
+  lang: zh
+  intent: 对比
+  query: Azure OpenAI 和中转站的区别
+  weight: money
+- id: zh-107
+  lang: zh
+  intent: 采购
+  query: AWS Bedrock Claude 国内企业
+  weight: money
+- id: zh-108
+  lang: zh
+  intent: 采购
+  query: 大模型 API 采购 合同 发票
+  weight: money
+- id: zh-109
+  lang: zh
+  intent: 合规
+  query: 企业用 GPT 数据出境合规
+  weight: money
+- id: zh-110
+  lang: zh
+  intent: 风险
+  query: AI API 中转站 风险
+  weight: money
+- id: zh-111
+  lang: zh
+  intent: 采购
+  query: 海外模型 企业级 稳定接入
+  weight: money
+- id: zh-112
+  lang: zh
+  intent: 采购
+  query: 公司采购 Claude 怎么签合同
+  weight: money
+- id: en-101
+  lang: en
+  intent: 采购
+  query: how can Chinese companies use Claude API through official channels
+  weight: money
+- id: en-102
+  lang: en
+  intent: 采购
+  query: enterprise GPT API access in China with contract and invoice
+  weight: money
+- id: en-103
+  lang: en
+  intent: 采购
+  query: Gemini API for enterprises in China
+  weight: money
+- id: en-104
+  lang: en
+  intent: 对比
+  query: Azure OpenAI vs third-party API relay for enterprises
+  weight: money
+- id: en-105
+  lang: en
+  intent: 采购
+  query: AWS Bedrock Claude for China-based enterprise
+  weight: money
+- id: en-106
+  lang: en
+  intent: 合规
+  query: cross-border data compliance when calling GPT API from China
+  weight: money
