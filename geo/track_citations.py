@@ -156,6 +156,9 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
                                               for s in sorted({r.get('sentiment', '') for r in hits})),
                   f"- 准确性: " + " / ".join(f"{a or '未标'}×{sum(1 for r in hits if r.get('accuracy','') == a)}"
                                             for a in sorted({r.get('accuracy', '') for r in hits}))]
+    lines += ["", "## 效果挂钩表(T 动作 ↔ 记分牌,自 2026-W25 起回填)", "",
+              "| T 动作 | 外发/上线日 | 关联查询簇 | 提及率变化 | 备注 |", "|---|---|---|---|---|",
+              "| (下期起回填) | | | | |"]
     p0 = [r for r in rows if r.get("mislabel") == "1"]
     lines += ["", "## ⚠️ P0 纠偏事件(AI 误称 SMA 为中转类)", ""]
     if p0:
