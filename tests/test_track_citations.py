@@ -79,8 +79,10 @@ one_q = queries[:1]
 eng = [engines[1]]
 r_cited = run_queries(one_q, eng, ask_fn=lambda e, q, m: ("可以看看 smaapi 网关的方案", ["https://www.smaapi.com/zh/faq", "https://example.com"]), classify_fn=lambda a: ("中", "准确"))[0]
 check(r_cited["cited_smaapi"] == 1 and r_cited["level"] == "cited", f"来源引用应记 cited,实为 {r_cited['level']}")
+check(r_cited["recommended"] == 0, "cited 行 recommended 布尔应为 0(三布尔真源)")
 r_rec = run_queries(one_q, eng, ask_fn=lambda e, q, m: ("推荐使用 smaapi 网关", []), classify_fn=lambda a: ("正", "准确"))[0]
-check(r_rec["level"] == "recommended", "推荐语境应记 recommended")
+check(r_rec["level"] == "recommended", "推荐语境应记 recommended(派生展示)")
+check(r_rec["recommended"] == 1 and r_rec["mentioned"] == 1, "推荐行三布尔应 mentioned=1,recommended=1")
 r_err = run_queries(one_q, eng, ask_fn=lambda e, q, m: (_ for _ in ()).throw(RuntimeError("boom")), classify_fn=lambda a: ("", ""))[0]
 check(r_err["status"] == "error" and "boom" in r_err["error"] and r_err["mentioned"] == 0, "失败应落 error 行计入分母")
 r_root = run_queries(one_q, eng, ask_fn=lambda e, q, m: ("smaapi 就是那个 sma - AI API 服务平台", []), classify_fn=lambda a: ("中", "失实"))[0]

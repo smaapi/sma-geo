@@ -178,6 +178,11 @@ def write_reports(stats, total_lines, ip_ranges, out_dir):
             observations.append(f"- {bot}: 探测非公开路径 {sorted(probes)[:5]}")
     if observations:
         lines += ["", "## 观察级备注(仅 UA 档伪装流量,r11 §3-1 阈值)", ""] + observations
+    ranged = sorted(ip_ranges)
+    lines += ["", "## 覆盖口径(三档,r12 E2)", "",
+              f"- **官方 IP 验真档**({len(ranged)} 源): {', '.join(ranged)} —— 可出\"已验真\"结论;",
+              "- **仅 UA 观察档**: 其余 UA 命中(含 cn-bots)—— 只可表述\"观察到\",不得称\"已覆盖/已验真\";",
+              "- **人工回答检测档**: 引用率月检清单,与本表无交集。"]
     lines += ["", "> 已验真 = 来源 IP 落在厂商公布段内;仅 UA 匹配 = UA 命中但 IP 不在段内(疑似伪装)或厂商未公布段——此列固定保留为伪装流量观察位(r11 裁定)。",
               "> 计数口径:bot 级表一行一 bot,verified/ua_only 为请求级计数;path 明细见 -paths.csv,不与 bot 表混算。"]
     Path(f"{base}.md").write_text("\n".join(lines) + "\n")

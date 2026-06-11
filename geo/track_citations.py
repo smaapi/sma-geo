@@ -25,8 +25,9 @@ ROOT = Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "geo" / "data" / "citations.csv"
 # r8 批次 A 测量分层 schema v3:三层(提及/来源引用/推荐),失败行计入分母
 CSV_FIELDS = ["run_id", "date", "engine", "mode", "query_id", "query_intent", "query_weight",
-              "status", "error", "mentioned", "cited_smaapi", "level", "source_urls",
+              "status", "error", "mentioned", "cited_smaapi", "recommended", "level", "source_urls",
               "snippet", "sentiment", "accuracy", "mislabel", "entity_mismatch", "answer_hash"]
+# E1(r12):mentioned/cited_smaapi/recommended 三布尔为真源;level 仅为派生展示字段
 
 OUR_HOST = "www.smaapi.com"
 # 推荐层启发式(宽口径,人工抽检兜底)
@@ -148,7 +149,7 @@ def run_queries(queries, engines, ask_fn=ask_openai_compatible, today=None, clas
                 base = {"run_id": run_id, "date": today, "engine": engine["name"], "mode": mode,
                         "query_id": q["id"], "query_intent": q.get("intent", ""),
                         "query_weight": q.get("weight", ""), "status": "ok", "error": "",
-                        "mentioned": 0, "cited_smaapi": 0, "level": "", "source_urls": "",
+                        "mentioned": 0, "cited_smaapi": 0, "recommended": 0, "level": "", "source_urls": "",
                         "snippet": "", "sentiment": "", "accuracy": "", "mislabel": 0,
                         "entity_mismatch": "", "answer_hash": ""}
                 try:
@@ -166,7 +167,8 @@ def run_queries(queries, engines, ask_fn=ask_openai_compatible, today=None, clas
                 if mentioned and not mismatch and ROOT_SITE_RE.search(answer):
                     mismatch = "root_site(混同,保留提及)"
                 sentiment, accuracy = classify_fn(answer) if mentioned else ("", "")
-                base.update(mentioned=int(mentioned), cited_smaapi=int(cited), level=level,
+                base.update(mentioned=int(mentioned), cited_smaapi=int(cited),
+                            recommended=int(recommended), level=level,
                             source_urls=" ".join(source_urls[:8]), snippet=snippet,
                             sentiment=sentiment, accuracy=accuracy,
                             mislabel=int(mentioned and detect_mislabel(answer)),
@@ -213,14 +215,17 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
                 s = [r for r in sub_all if (r["date"], r["engine"]) == key]
                 m = sum(int(r.get("mentioned", 0) or 0) for r in s)
                 c = sum(int(r.get("cited_smaapi", 0) or 0) for r in s)
-                rec = sum(r.get("level") == "recommended" for r in s)
+                rec = sum(int(r.get("recommended", 0) or 0) for r in s)
                 err = sum(r.get("status") == "error" for r in s)
                 lines.append(f"| {key[0]} | {key[1]} | {m} | {c} | {rec} | {err} | {len(s)} | {m / len(s):.0%} |")
             lines.append("")
     money = [r for r in rows if not is_brand(r) and r.get("query_weight") == "money"]
     if money:
+        n = len(money)
         mm = sum(int(r.get("mentioned", 0) or 0) for r in money)
-        lines.append(f"**主 KPI(非品牌 money 提及率): {mm}/{len(money)} = {mm / len(money):.0%}**")
+        cc = sum(int(r.get("cited_smaapi", 0) or 0) for r in money)
+        rr = sum(int(r.get("recommended", 0) or 0) for r in money)
+        lines.append(f"**主 KPI(非品牌 money,三率并列): 提及 {mm}/{n}={mm / n:.0%} · 来源引用 {cc}/{n}={cc / n:.0%} · 推荐 {rr}/{n}={rr / n:.0%}**")
     if not rows:
         lines.append("暂无数据。")
     # C2:提及质量子标注 + 中转站误称 P0 单列
@@ -249,8 +254,11 @@ def write_report(csv_path=CSV_PATH, out_dir=None, manual_engines=()):
         lines.append("处置:触发内容修正循环——定位页强化 + 对应查询内容补强(addendum 02v2 §C2)。")
     else:
         lines.append("本期无。")
-    lines += ["", f"## 覆盖范围(如实申报)", "", "- 脚本覆盖:以上 API 引擎(经 SMA 网关 BYOK 或官方 API)。",
-              f"- 人工月检覆盖(无公开 API):{('、'.join(manual_engines)) or '见 engines.json'}——结果记录在月检清单,不并入本表。"]
+    lines += ["", "## 覆盖口径(三档,r12 E2;无官方 UA/IP 的平台不得称\"已覆盖\")", "",
+              "| 档 | 口径 | 范围 |", "|---|---|---|",
+              "| 自动·API 直连 | 程序化提问,回答全文检测 | 上表所列引擎 |",
+              f"| 人工·回答检测 | 同一矩阵人工月检 | {('、'.join(manual_engines)) or '见 engines.json'} |",
+              "| 未覆盖 | 无 API 且未入月检的引擎 | 如实留白 |"]
     out = out_dir / f"citations-{year}-W{week:02d}.md"
     out.write_text("\n".join(lines) + "\n")
     print(f"报告: {out}")
