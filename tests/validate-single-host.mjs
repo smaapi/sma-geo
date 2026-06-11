@@ -17,13 +17,23 @@ const files = [];
 })(resolve(root, 'dist'));
 
 const URL_RE = /https?:\/\/[a-z0-9.-]*smaapi\.com[^\s"'<)\]]*/gi;
+// r9 §2:裸域 smaapi.com 已指向上游站点,产物自指必须用完整主机(例外区:讨论第三方/类别语境,目前无)
+const BARE_RE = /(?<![\w.])smaapi\.com/g;
+const BARE_EXEMPT = []; // 形如 /^zh\/compare\// 的相对路径正则,经评审确认后加入
 const errors = [];
 for (const f of files) {
   const text = readFileSync(f, 'utf8');
+  const rel = relative(resolve(root, 'dist'), f);
   for (const m of text.match(URL_RE) ?? []) {
     const host = new URL(m).host;
     if (host !== expectedHost) {
       errors.push(`${relative(root, f)}: ${m.slice(0, 80)} (host=${host},期望 ${expectedHost})`);
+    }
+  }
+  if (!BARE_EXEMPT.some((re) => re.test(rel))) {
+    let bm;
+    while ((bm = BARE_RE.exec(text)) !== null) {
+      errors.push(`${relative(root, f)}: 裸域自指 "…${text.slice(Math.max(0, bm.index - 20), bm.index + 12).replace(/\n/g, ' ')}…"`);
     }
   }
 }

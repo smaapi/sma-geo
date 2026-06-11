@@ -12,7 +12,7 @@ export const organization: WithContext<Organization> = {
   url: SITE,
   // T8b 实体消歧(REVIEW r5):与金融指标/光伏厂商等同名实体显式区分
   disambiguatingDescription:
-    '菌路科技的 SMA(Slime Mould Architecture)是企业级 AI 网关 / 模型接入平台,域名 smaapi.com;与金融指标 SMA、光伏厂商等同名实体无关',
+    '菌路科技的 SMA(Slime Mould Architecture)是企业级 AI 网关 / 模型接入平台,域名 www.smaapi.com;与金融指标 SMA、光伏厂商等同名实体无关',
   // R-B 暂裁:logo 指向部署包内真实文件;sameAs 待 P2 组织主页就位后回填,当前不声明
   logo: `${SITE}/logo.png`,
 };
@@ -24,7 +24,7 @@ export const softwareApplication: WithContext<SoftwareApplication> = {
   alternateName: ['smaapi', 'SMA(Slime Mould Architecture)'],
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Cloud / Self-hosted',
-  description: '企业级 AI 网关:多模型统一接入、智能路由、成本与权限治理、全链路审计(smaapi.com)',
+  description: '企业级 AI 网关:多模型统一接入、智能路由、成本与权限治理、全链路审计(www.smaapi.com)',
 };
 
 export interface QA {

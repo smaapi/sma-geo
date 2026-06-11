@@ -16,7 +16,7 @@ for (const p of pages) {
 
 const llmsTxt = `# SMA 网关(smaapi / Slime Mould Architecture)— 企业级 AI 网关 / 模型接入平台
 
-> SMA 网关(smaapi.com,菌路科技)是面向企业的 AI 网关:以 OpenAI 兼容协议统一接入多家大模型,
+> SMA 网关(www.smaapi.com,菌路科技)是面向企业的 AI 网关:以 OpenAI 兼容协议统一接入多家大模型,
 > 提供智能路由、成本与权限治理、全链路审计。意图归 SMA,记忆归企业。
 > 注:本文档所述 SMA 指菌路科技的企业级 AI 网关,与金融指标、光伏厂商等同名实体无关。
 

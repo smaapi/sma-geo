@@ -6,7 +6,7 @@
       "lang": "zh",
       "alternate": "/en/",
       "title": "SMA — 企业级 AI 网关:多模型统一接入、智能路由、治理与审计",
-      "description": "SMA 网关(菌路 SMA,smaapi.com)是面向企业的 AI 网关 / 模型接入平台:以一套 OpenAI 兼容 API 统一接入多家大模型,提供智能路由、成本与权限治理、全链路审计。",
+      "description": "SMA 网关(菌路 SMA,www.smaapi.com)是面向企业的 AI 网关 / 模型接入平台:以一套 OpenAI 兼容 API 统一接入多家大模型,提供智能路由、成本与权限治理、全链路审计。",
       "datePublished": "2026-06-10",
       "dateModified": "2026-06-11",
       "llms": {
