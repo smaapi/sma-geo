@@ -1,63 +1,153 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { softwareApplication } from '../../lib/schema';
+import RouteCore from '../../components/RouteCore.astro';
 ---
 
-<Base route="/en/">
+<Base route="/en/" theme="dark">
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(softwareApplication)} />
 
-  <h1>smaapi Gateway — Enterprise AI Gateway (SMA by Slime Mould Tech)</h1>
-  <p class="answer">
-    smaapi Gateway (SMA by Slime Mould Tech, www.smaapi.com) is an enterprise AI gateway and
-    model access platform: one OpenAI-compatible API in front
-    of many LLM providers, with smart routing, cost and permission governance, and full audit
-    trails — so teams can use multiple models with control.
-  </p>
-
-  <h2>What problem does SMA solve?</h2>
-  <p>
-    Running on multiple models is now the norm: different tasks suit different models, and every
-    provider ships its own API, keys, and billing. Integrating each one directly leaves keys
-    scattered across codebases, costs without a single source of truth, calls that cannot be
-    audited, and provider switches that require code changes. SMA adds a unified access and
-    governance layer between your applications and the providers, collapsing all of that into one
-    controlled egress.
-  </p>
-
-  <h2>The three-layer architecture</h2>
-
-  <h3>Smart routing</h3>
-  <p>
-    Requests are dispatched based on task characteristics and live model state (availability,
-    latency, cost), constrained by enterprise policy and manual calibration. Failover and
-    degradation are automatic and transparent to applications.
-  </p>
-
-  <h3>Cost and permission governance</h3>
-  <p>
-    Budgets, quotas, and model access scopes are set per team, application, or key. Every call is
-    metered through the same pipeline, and provider keys are managed centrally instead of living
-    in application code.
-  </p>
-
-  <h3>Full audit trail</h3>
-  <p>
-    Every call is logged with caller, target model, usage, and timestamp — traceable,
-    reconcilable, and ready for compliance review.
-  </p>
-
-  <h2>Who is SMA for?</h2>
-  <p>
-    Engineering and platform teams that need to access multiple LLM providers — international and
-    Chinese models alike — with organization-level requirements on cost, permissions, compliance,
-    and audit. Applications keep their OpenAI SDK and simply point base_url at the gateway.
-  </p>
-
-  <div class="related">
-    <p>Related questions:</p>
-    <ul>
-      <li><a href="/en/what-is-llm-gateway">What is an enterprise LLM gateway?</a></li>
-      <li><a href="/en/faq">FAQ on multi-model access, routing, and governance</a></li>
-    </ul>
-  </div>
+  <section class="landing">
+    <div class="landing-fx" aria-hidden="true"></div>
+    <div class="landing-inner">
+      <span class="hero-chip"><span class="chip-dot"></span>Smart routing · System live</span>
+      <div class="landing-core">
+        <RouteCore size={360} class="landing-core-viz" />
+      </div>
+      <h1>smaapi Gateway — Enterprise AI Gateway</h1>
+      <p class="landing-slogan">Enterprise-controlled access — the right model for every task.</p>
+      <p class="landing-slogan-en">SMA by Slime Mould Tech · one OpenAI-compatible API for many models.</p>
+      <div class="landing-cta">
+        <a class="btn btn-solid" href="/en/sma">Explore SMA</a>
+        <a class="btn btn-ghost" href="/en/what-is-llm-gateway">What is an LLM gateway</a>
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style>
+  /* —— Minimal cinematic landing: full-screen dark + centered gold routing core —— */
+  .landing {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - 3.6rem);
+    display: grid;
+    place-items: center;
+    margin: -1.5rem 0 0;
+    padding: 1.5rem 0 3rem;
+    text-align: center;
+  }
+  .landing-fx {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(46% 40% at 50% 38%, rgba(215, 166, 66, 0.16), transparent 62%),
+      radial-gradient(60% 50% at 50% 120%, rgba(34, 110, 96, 0.16), transparent 60%);
+    -webkit-mask-image: radial-gradient(80% 70% at 50% 42%, #000 40%, transparent 85%);
+    mask-image: radial-gradient(80% 70% at 50% 42%, #000 40%, transparent 85%);
+  }
+  .landing-inner {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 680px;
+  }
+  .hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid rgba(215, 166, 66, 0.4);
+    border-radius: 999px;
+    background: rgba(215, 166, 66, 0.08);
+    color: #f2c75c;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f2c75c;
+    box-shadow: 0 0 0 0 rgba(242, 199, 92, 0.6);
+    animation: chipPulse 2.4s ease-out infinite;
+  }
+  @keyframes chipPulse {
+    0% { box-shadow: 0 0 0 0 rgba(242, 199, 92, 0.55); }
+    70%, 100% { box-shadow: 0 0 0 8px rgba(242, 199, 92, 0); }
+  }
+  .landing-core {
+    margin: 1rem 0 0.5rem;
+  }
+  .landing-core :global(.landing-core-viz) {
+    filter: drop-shadow(0 0 40px rgba(215, 166, 66, 0.28));
+  }
+  .landing h1 {
+    margin: 0.4rem 0 0.6rem;
+    color: #fff;
+    font-size: 2.3rem;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+  }
+  .landing-slogan {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #ffe6a8;
+  }
+  .landing-slogan-en {
+    margin: 0.3rem 0 0;
+    font-size: 0.84rem;
+    color: #93bdab;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .landing-cta {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1.8rem;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.62rem 1.4rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.5;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:hover {
+    text-decoration: none;
+  }
+  .btn-solid {
+    background: linear-gradient(180deg, #f2c75c, #d7a642);
+    color: #1a1205;
+    box-shadow: 0 6px 20px rgba(215, 166, 66, 0.3);
+  }
+  .btn-solid:hover {
+    background: linear-gradient(180deg, #f6d271, #e0b14e);
+  }
+  .btn-ghost {
+    border: 1px solid rgba(174, 244, 212, 0.34);
+    color: #d3efe1;
+  }
+  .btn-ghost:hover {
+    border-color: rgba(174, 244, 212, 0.7);
+    color: #fff;
+  }
+  @media (max-width: 600px) {
+    .landing h1 {
+      font-size: 1.7rem;
+    }
+    .landing-core :global(.landing-core-viz) {
+      width: 264px !important;
+      height: 264px !important;
+    }
+  }
+</style>

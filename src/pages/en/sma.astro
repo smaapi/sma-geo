@@ -1,0 +1,203 @@
+---
+import Base from '../../layouts/Base.astro';
+
+// Integration example: static syntax highlighting (no runtime JS)
+const codeHtml = [
+  '<span class="k">from</span> openai <span class="k">import</span> OpenAI',
+  '',
+  'client = OpenAI(',
+  '    base_url=<span class="s">"https://www.smaapi.com/v1"</span>,  <span class="c"># point to the SMA gateway</span>',
+  '    api_key=<span class="s">"YOUR_SMA_KEY"</span>,                <span class="c"># gateway key; provider keys stay inside the enterprise</span>',
+  ')',
+  '',
+  'resp = client.chat.completions.create(',
+  '    model=<span class="s">"deepseek-chat"</span>,  <span class="c"># model name is routable per policy</span>',
+  '    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"Hello"</span>}],',
+  ')',
+].join('\n');
+
+const toc = [
+  { href: '#problem', label: 'Problem' },
+  { href: '#governance', label: 'Governance' },
+  { href: '#integrate', label: 'Integrate' },
+  { href: '#team', label: 'Team' },
+  { href: '#who', label: "Who it's for" },
+];
+---
+
+<Base route="/en/sma" theme="dark">
+  <section class="page-head">
+    <p class="eyebrow"><span class="eyebrow-no">SMA</span> Product</p>
+    <h1>smaapi Gateway (SMA) — Enterprise AI Gateway</h1>
+    <p class="answer">
+      smaapi Gateway (SMA by Slime Mould Tech, www.smaapi.com) is an enterprise AI gateway and model
+      access platform: one OpenAI-compatible API in front of many LLM providers, with smart routing,
+      cost and permission governance, and full audit trails — so teams can use multiple models with
+      control.
+    </p>
+    <nav class="toc" aria-label="On this page">
+      {toc.map((t) => <a href={t.href}>{t.label}</a>)}
+    </nav>
+  </section>
+
+  <section class="band" id="problem">
+    <p class="eyebrow"><span class="eyebrow-no">01</span> Problem</p>
+    <h2>What problem does SMA solve?</h2>
+    <p>
+      Running on multiple models is now the norm: different tasks suit different models, and every
+      provider ships its own API, keys, and billing. Integrating each one directly leaves keys
+      scattered across codebases, costs without a single source of truth, calls that cannot be
+      audited, and provider switches that require code changes. SMA adds a unified access and
+      governance layer between your applications and the providers, collapsing all of that into one
+      controlled egress.
+    </p>
+  </section>
+
+  <section class="band" id="governance">
+    <p class="eyebrow"><span class="eyebrow-no">02</span> Governance</p>
+    <h2>Three layers, three kinds of trust</h2>
+    <p>
+      A gateway's value is not only that it connects, but that you can entrust it. SMA's three
+      capabilities map to the three kinds of evidence an enterprise needs to trust an AI platform:
+    </p>
+    <div class="trust">
+      <div class="trust-card">
+        <span class="trust-num" aria-hidden="true">01</span>
+        <span class="trust-tag">Layer 1 · Routing you can trust</span>
+        <h3>Smart routing</h3>
+        <p>
+          Traffic is dispatched by request characteristics and live model state — availability,
+          latency, cost — constrained by enterprise policy and manual calibration. Failover and
+          degradation are automatic and transparent to applications. Routing decisions are
+          accountable, not a black box.
+        </p>
+      </div>
+      <div class="trust-card">
+        <span class="trust-num" aria-hidden="true">02</span>
+        <span class="trust-tag">Layer 2 · Boundaries you can trust</span>
+        <h3>Cost &amp; permission governance</h3>
+        <p>
+          Budgets, quotas, and model-access scopes per team, application, and key. Every call is
+          metered through one pipeline; costs are attributable by dimension; provider keys are
+          managed centrally instead of scattered in application code.
+        </p>
+      </div>
+      <div class="trust-card">
+        <span class="trust-num" aria-hidden="true">03</span>
+        <span class="trust-tag">Layer 3 · Records you can trust</span>
+        <h3>Full audit trail</h3>
+        <p>
+          Every call is logged with caller, target model, usage, and timestamp — traceable and
+          reconcilable, a complete evidence chain for compliance review. Any single call can be
+          replayed and questioned after the fact.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="integrate">
+    <p class="eyebrow"><span class="eyebrow-no">03</span> Integrate</p>
+    <h2>One line of config to integrate</h2>
+    <p>Keep your OpenAI SDK and point <code>base_url</code> at the gateway:</p>
+    <figure class="codeblock">
+      <figcaption>
+        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+        <span class="codefile">app.py</span>
+      </figcaption>
+      <pre><code set:html={codeHtml} /></pre>
+    </figure>
+    <p class="footnote">
+      Model names are nominative; available models and routing policy follow your console configuration.
+    </p>
+  </section>
+
+  <section class="band" id="team">
+    <p class="eyebrow"><span class="eyebrow-no">04</span> Team</p>
+    <h2>Chief Scientist</h2>
+    <div class="scientist sci-ph">
+      <span class="sci-ph-badge" aria-hidden="true">★</span>
+      <div>
+        <p class="sci-ph-role">Chief Scientist</p>
+        <p class="sci-ph-note">
+          A full profile is being finalized and will be published here following review.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="who">
+    <p class="eyebrow"><span class="eyebrow-no">05</span> Who it's for</p>
+    <h2>Who is SMA for?</h2>
+    <p>
+      Engineering and platform teams that need to access multiple LLM providers — international and
+      Chinese models alike — with organization-level requirements on cost, permissions, compliance,
+      and audit. Applications keep their OpenAI SDK and simply point base_url at the gateway.
+    </p>
+  </section>
+
+  <div class="related">
+    <p>Related questions:</p>
+    <ul>
+      <li><a href="/en/what-is-llm-gateway">What is an enterprise LLM gateway?</a></li>
+      <li><a href="/en/faq">FAQ on multi-model access, routing, and governance</a></li>
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .page-head {
+    margin: 0.5rem 0 1rem;
+  }
+  .page-head h1 {
+    margin: 0.4rem 0 0.6rem;
+    color: #fff;
+    font-size: 1.85rem;
+    line-height: 1.25;
+  }
+  .toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1.1rem;
+  }
+  .toc a {
+    padding: 0.32rem 0.85rem;
+    border: 1px solid rgba(140, 200, 180, 0.22);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #cfe6db;
+    font-size: 0.85rem;
+  }
+  .toc a:hover {
+    text-decoration: none;
+    border-color: rgba(242, 199, 92, 0.6);
+    color: #f2c75c;
+  }
+  /* Placeholder team card (profile pending authorization) */
+  .sci-ph {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .sci-ph-badge {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px dashed rgba(242, 199, 92, 0.5);
+    color: #f2c75c;
+    font-size: 1.1rem;
+  }
+  .sci-ph-role {
+    margin: 0 0 0.2rem;
+    color: #fff;
+    font-weight: 700;
+  }
+  .sci-ph-note {
+    margin: 0;
+    color: #9fb8ad;
+    font-size: 0.9rem;
+  }
+</style>

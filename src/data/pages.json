@@ -18,6 +18,7 @@
     {
       "route": "/zh/sma",
       "lang": "zh",
+      "alternate": "/en/sma",
       "title": "SMA 企业级 AI 网关 — 产品介绍:智能路由、治理与审计、接入与团队 | smaapi",
       "description": "SMA 网关(菌路 SMA,www.smaapi.com)产品介绍:一套 OpenAI 兼容 API 统一接入多家大模型,提供智能路由、成本与权限治理、全链路审计;含接入示例与首席科学家团队。",
       "datePublished": "2026-06-12",
@@ -96,6 +97,20 @@
         "section": "Core pages",
         "label": "What SMA is",
         "desc": "One-line definition and the three-layer architecture of the enterprise AI gateway"
+      }
+    },
+    {
+      "route": "/en/sma",
+      "lang": "en",
+      "alternate": "/zh/sma",
+      "title": "smaapi Gateway (SMA) — Enterprise AI Gateway: Routing, Governance, Audit & Integration",
+      "description": "Product overview of smaapi Gateway (SMA by Slime Mould Tech, www.smaapi.com): one OpenAI-compatible API for many LLM providers, with smart routing, cost and permission governance, full audit trails, and a one-line integration.",
+      "datePublished": "2026-06-12",
+      "dateModified": "2026-06-12",
+      "llms": {
+        "section": "Core pages",
+        "label": "SMA product overview",
+        "desc": "One-line definition, three-layer governance, integration example, and team"
       }
     },
     {
