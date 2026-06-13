@@ -17,14 +17,30 @@ import RouteCore from '../components/RouteCore.astro';
       <h1>SMA — 企业级 AI 网关</h1>
       <p class="landing-slogan">寻最优之路，铸不变之稳。</p>
       <p class="landing-slogan-en">Always optimal, always stable.</p>
-      <p class="landing-def">
-        SMA 网关(菌路 SMA)是面向企业的 AI 网关 / 模型接入平台:一套 OpenAI 兼容 API 统一接入多家大模型,提供智能路由、成本与权限治理与全链路审计。
-      </p>
       <div class="landing-cta">
         <a class="btn btn-solid" href="/zh/sma">了解 SMA 产品</a>
         <a class="btn btn-ghost" href="/zh/what-is-llm-gateway">什么是 LLM 网关</a>
       </div>
     </div>
+  </section>
+
+  <section class="home-brief" aria-label="产品概览">
+    <p class="answer">
+      SMA 网关(菌路 SMA,www.smaapi.com)是面向企业的 AI 网关 / 模型接入平台:以一套 OpenAI 兼容 API
+      统一接入多家大模型,提供智能路由、成本与权限治理、全链路审计,让企业可控地使用多模型能力。
+    </p>
+    <p>
+      多模型并存已是企业用 AI 的常态:不同任务适合不同模型,供应商各有独立接口、密钥与计费。逐家直连的结果是密钥散落、成本没有统一口径、调用无法审计、切换供应商要改代码。SMA
+      在企业应用与模型供应商之间加一层统一的接入与治理层,把这些问题收敛到一个出口。
+    </p>
+    <p>
+      <strong>三层能力一体:</strong>智能路由按业务特征与各模型实时状态(可用性、延迟、成本)分发流量,故障时自动降级与切换;成本与权限治理为团队、应用、密钥设置预算、配额与模型访问范围,所有调用统一计量;全链路审计记录每次调用的调用方、目标模型、用量与时间,可追溯、可对账。
+    </p>
+    <p>
+      适合需要同时接入国产与国际多家模型、并对成本、权限、合规与审计有组织级要求的企业团队。应用侧沿用
+      OpenAI SDK,把 base_url 指向网关即可接入。
+    </p>
+    <p class="home-more"><a href="/zh/sma">查看完整产品介绍:三层治理、接入示例与首席科学家团队 →</a></p>
   </section>
 </Base>
 
@@ -109,12 +125,21 @@ import RouteCore from '../components/RouteCore.astro';
     color: #93bdab;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  .landing-def {
-    margin: 1.1rem 0 0;
-    max-width: 560px;
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: #b9cfc6;
+  .home-brief {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1.5rem 0 1rem;
+    border-top: 1px solid rgba(140, 200, 180, 0.14);
+  }
+  .home-brief p {
+    margin: 0.95rem 0;
+  }
+  .home-brief strong {
+    color: #fff;
+  }
+  .home-more {
+    margin-top: 1.3rem !important;
+    font-weight: 600;
   }
   .landing-cta {
     display: flex;

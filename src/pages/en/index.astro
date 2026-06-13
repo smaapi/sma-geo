@@ -17,14 +17,38 @@ import RouteCore from '../../components/RouteCore.astro';
       <h1>smaapi Gateway — Enterprise AI Gateway</h1>
       <p class="landing-slogan">Always optimal, always stable.</p>
       <p class="landing-slogan-en">寻最优之路，铸不变之稳。</p>
-      <p class="landing-def">
-        smaapi Gateway (SMA by Slime Mould Tech) is an enterprise AI gateway and model access platform: one OpenAI-compatible API in front of many LLM providers, with smart routing, cost and permission governance, and full audit trails.
-      </p>
       <div class="landing-cta">
         <a class="btn btn-solid" href="/en/sma">Explore SMA</a>
         <a class="btn btn-ghost" href="/en/what-is-llm-gateway">What is an LLM gateway</a>
       </div>
     </div>
+  </section>
+
+  <section class="home-brief" aria-label="Product overview">
+    <p class="answer">
+      smaapi Gateway (SMA by Slime Mould Tech, www.smaapi.com) is an enterprise AI gateway and model
+      access platform: one OpenAI-compatible API in front of many LLM providers, with smart routing,
+      cost and permission governance, and full audit trails — so teams can use multiple models with control.
+    </p>
+    <p>
+      Running on multiple models is now the norm: different tasks suit different models, and every provider
+      ships its own API, keys, and billing. Integrating each one directly leaves keys scattered, costs without
+      a single source of truth, calls that cannot be audited, and provider switches that need code changes. SMA
+      adds a unified access and governance layer between your applications and the providers, collapsing all of
+      that into one controlled egress.
+    </p>
+    <p>
+      <strong>Three layers, one platform:</strong> smart routing dispatches by task and live model state
+      (availability, latency, cost) with automatic failover; cost and permission governance sets budgets,
+      quotas, and model-access scopes per team, application, and key, metering every call; the full audit trail
+      logs caller, target model, usage, and timestamp for every call — traceable and reconcilable.
+    </p>
+    <p>
+      Built for engineering and platform teams that need multiple LLM providers — international and Chinese
+      models alike — with organization-level requirements on cost, permissions, compliance, and audit. Keep your
+      OpenAI SDK and point base_url at the gateway.
+    </p>
+    <p class="home-more"><a href="/en/sma">See the full product overview: governance, integration, and team →</a></p>
   </section>
 </Base>
 
@@ -109,12 +133,21 @@ import RouteCore from '../../components/RouteCore.astro';
     color: #93bdab;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  .landing-def {
-    margin: 1.1rem 0 0;
-    max-width: 580px;
-    font-size: 0.95rem;
-    line-height: 1.65;
-    color: #b9cfc6;
+  .home-brief {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 1.5rem 0 1rem;
+    border-top: 1px solid rgba(140, 200, 180, 0.14);
+  }
+  .home-brief p {
+    margin: 0.95rem 0;
+  }
+  .home-brief strong {
+    color: #fff;
+  }
+  .home-more {
+    margin-top: 1.3rem !important;
+    font-weight: 600;
   }
   .landing-cta {
     display: flex;
