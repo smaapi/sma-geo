@@ -1,12 +1,28 @@
 ---
 import Base from '../layouts/Base.astro';
 import { softwareApplication } from '../lib/schema';
+import Logo from '../components/Logo.astro';
+import PathfindingViz from '../components/PathfindingViz.astro';
 ---
 
 <Base route="/">
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(softwareApplication)} />
 
-  <h1>SMA — 企业级 AI 网关</h1>
+  <section class="hero">
+    <div class="hero-head">
+      <Logo size={56} pulse class="hero-logo" />
+      <div>
+        <h1>SMA — 企业级 AI 网关</h1>
+        <p class="hero-slogan">数据可控,为每个任务选择最合适的模型。</p>
+        <p class="hero-slogan-en">Enterprise-controlled access — the right model for every task.</p>
+      </div>
+    </div>
+    <PathfindingViz class="hero-viz" />
+    <p class="hero-caption">
+      智能路由的生物学灵感:像黏菌网络一样,在多条候选路径中持续探索,把流量沉淀到当前最合适的那一条。
+    </p>
+  </section>
+
   <p class="answer">
     SMA 网关(菌路 SMA,www.smaapi.com)是面向企业的 AI 网关 / 模型接入平台:以一套 OpenAI 兼容 API
     统一接入多家大模型,提供智能路由、成本与权限治理、全链路审计,让企业可控地使用多模型能力。
@@ -18,22 +34,57 @@ import { softwareApplication } from '../lib/schema';
     在企业应用与模型供应商之间加一层统一的接入与治理层,把这些问题收敛到一个出口。
   </p>
 
-  <h2>三层能力架构</h2>
-
-  <h3>智能路由</h3>
+  <h2>三层治理,三层可信度</h2>
   <p>
-    按请求的业务特征与各模型的实时状态(可用性、延迟、成本)分发流量,支持企业策略约束与人工校准;模型故障时自动降级与切换,对应用透明。
+    网关的价值不止于"接得上",更在于"敢交给它"。SMA 的三层能力,对应企业信任一套 AI 基础设施所需的三层证据:
   </p>
+  <div class="trust">
+    <div class="trust-card">
+      <span class="trust-tag">第一层 · 路由可信</span>
+      <h3>智能路由</h3>
+      <p>
+        按请求的业务特征与各模型的实时状态(可用性、延迟、成本)分发流量,支持企业策略约束与人工校准;模型故障时自动降级与切换,对应用透明。路由决策有据可查,而非黑箱。
+      </p>
+    </div>
+    <div class="trust-card">
+      <span class="trust-tag">第二层 · 边界可信</span>
+      <h3>成本与权限治理</h3>
+      <p>
+        为团队、应用、密钥设置预算、配额与模型访问范围;所有调用统一计量,成本可按维度核算,密钥集中管理而非散落在业务代码里。花了多少、谁能用什么,边界由企业自己划定。
+      </p>
+    </div>
+    <div class="trust-card">
+      <span class="trust-tag">第三层 · 留痕可信</span>
+      <h3>全链路审计</h3>
+      <p>
+        每一次调用的调用方、目标模型、用量与时间都进入审计日志,可追溯、可对账,为合规审查提供完整证据链。事后任何一笔调用都经得起回放与质询。
+      </p>
+    </div>
+  </div>
 
-  <h3>成本与权限治理</h3>
-  <p>
-    为团队、应用、密钥设置预算、配额与模型访问范围;所有调用统一计量,成本可按维度核算,密钥集中管理而非散落在业务代码里。
-  </p>
+  <h2>接入只改一行配置</h2>
+  <p>应用侧沿用 OpenAI SDK,把 <code>base_url</code> 指向网关即可:</p>
+  <pre is:raw><code>from openai import OpenAI
 
-  <h3>全链路审计</h3>
-  <p>
-    每一次调用的调用方、目标模型、用量与时间都进入审计日志,可追溯、可对账,为合规审查提供完整证据链。
-  </p>
+client = OpenAI(
+    base_url="https://www.smaapi.com/v1",  # 指向 SMA 网关
+    api_key="YOUR_SMA_KEY",                # 网关密钥,模型厂商密钥不出企业
+)
+
+resp = client.chat.completions.create(
+    model="deepseek-chat",  # 模型名按路由策略可换可路由
+    messages=[{"role": "user", "content": "你好"}],
+)</code></pre>
+  <p class="footnote">模型名称为指明性使用;可接入模型范围与路由策略以控制台实际配置为准。</p>
+
+  <h2>学术顾问</h2>
+  <div class="advisor">
+    <p class="advisor-name"><strong>谢源 教授</strong> · 学术顾问</p>
+    <p>
+      研究关注持续学习与企业 AI 系统。在 SMA,他关注的核心命题是"记忆归企业"——模型可以替换,但企业的使用记忆、路由经验与治理规则,应当沉淀在企业自己手里。这一命题贯穿
+      SMA 的路由校准与审计设计。
+    </p>
+  </div>
 
   <h2>谁适合使用 SMA?</h2>
   <p>
@@ -49,3 +100,96 @@ import { softwareApplication } from '../lib/schema';
     </ul>
   </div>
 </Base>
+
+<style>
+  /* 深色 hero(Logo 设计说明 §4 推荐深底 #07130F;Logo 用反白版:浅主体+深底) */
+  .hero {
+    background: var(--dark);
+    border-radius: 14px;
+    padding: 1.75rem 1.75rem 1.25rem;
+    margin: 0.5rem 0 2rem;
+    color: #e6f2ea;
+  }
+  .hero-head {
+    display: flex;
+    gap: 1.1rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+  .hero :global(.hero-logo) {
+    flex: none;
+    margin-top: 0.3rem;
+    --logo-core: #e9f4ee;
+    --logo-cut: #07130f;
+    --logo-node: #5fd6a3;
+  }
+  .hero h1 {
+    margin: 0 0 0.4rem;
+    color: #fff;
+    font-size: 1.7rem;
+  }
+  .hero-slogan {
+    margin: 0;
+    font-weight: 600;
+    color: #aef4d4;
+  }
+  .hero-slogan-en {
+    margin: 0.15rem 0 0;
+    font-size: 0.85rem;
+    color: #9fc7b6;
+  }
+  .hero :global(.hero-viz) {
+    margin: 0 auto;
+  }
+  .hero-caption {
+    margin: 0.75rem 0 0.25rem;
+    font-size: 0.85rem;
+    color: #9fc7b6;
+  }
+  @media (max-width: 560px) {
+    .hero-head {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+
+  .trust {
+    display: grid;
+    gap: 1rem;
+    margin: 1.25rem 0 2rem;
+  }
+  .trust-card {
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--core);
+    border-radius: 10px;
+    background: var(--soft);
+    padding: 0.9rem 1.1rem;
+  }
+  .trust-card h3 {
+    margin: 0.25rem 0 0.4rem;
+    color: var(--core);
+  }
+  .trust-card p {
+    margin: 0;
+  }
+  .trust-tag {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--node);
+  }
+
+  .advisor {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 0.9rem 1.1rem;
+    background: #fff;
+  }
+  .advisor-name {
+    margin: 0 0 0.4rem;
+    color: var(--core);
+  }
+  .advisor p:last-child {
+    margin: 0;
+  }
+</style>

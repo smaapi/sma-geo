@@ -1,0 +1,62 @@
+---
+// 菌路 SMA 标识 — 内联 SVG(基于 logo 设计说明:深绿几何核心 #123C34 + 白色斜向负空间路径 + 中央切换节点)
+// 矢量化复刻 public/logo-mark.png;中央节点支持"寻路闪烁"(呼应黏菌寻路意象,不画菌丝——守 logo 规范)
+interface Props {
+  size?: number;
+  pulse?: boolean; // 中央节点是否做寻路闪烁
+  class?: string;
+}
+const { size = 40, pulse = false, class: cls = '' } = Astro.props;
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 512 512"
+  role="img"
+  aria-label="菌路 SMA 标识"
+  class={cls}
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <!-- 六边形安全核心(深绿主体),斜向负空间路径以白色切口表达受控数据路径 -->
+  <defs>
+    <clipPath id="hexClip">
+      <path d="M256 40 L443 148 L443 364 L256 472 L69 364 L69 148 Z" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#hexClip)">
+    <rect x="0" y="0" width="512" height="512" fill="var(--logo-core, #123C34)" />
+    <!-- 斜向受控路径:从右上贯穿到左下的白色负空间 -->
+    <path d="M470 150 L150 470 L210 470 L512 168 Z" fill="var(--logo-cut, #ffffff)" />
+    <path d="M362 110 L60 412 L60 360 L320 100 Z" fill="var(--logo-cut, #ffffff)" opacity="0.0" />
+  </g>
+  <!-- 六边形描边(可选,保持边界硬朗) -->
+  <path
+    d="M256 40 L443 148 L443 364 L256 472 L69 364 L69 148 Z"
+    stroke="var(--logo-core, #123C34)"
+    stroke-width="6"
+    fill="none"
+    opacity="0.0"
+  />
+  <!-- 中央切换节点:路由决策核;pulse 时做寻路闪烁 -->
+  <g class={pulse ? 'node node--pulse' : 'node'}>
+    <rect x="222" y="222" width="68" height="68" rx="10" transform="rotate(45 256 256)" fill="var(--logo-core, #123C34)" />
+    <rect x="232" y="232" width="48" height="48" rx="7" transform="rotate(45 256 256)" fill="var(--logo-cut, #ffffff)" />
+    <circle cx="256" cy="256" r="13" fill="var(--logo-node, #2f7d5e)" />
+  </g>
+</svg>
+
+<style>
+  .node--pulse circle {
+    animation: nodePulse 2.4s ease-in-out infinite;
+    transform-origin: 256px 256px;
+  }
+  @keyframes nodePulse {
+    0%, 100% { opacity: 0.55; r: 11px; }
+    45% { opacity: 1; r: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .node--pulse circle { animation: none; }
+  }
+</style>

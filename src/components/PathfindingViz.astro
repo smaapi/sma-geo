@@ -1,0 +1,98 @@
+---
+// 真菌寻路可视化 — 抽象黏菌(Physarum)寻路网络:企业请求经候选模型,沿最优路径高亮流动。
+// 呼应 SMA 智能路由的生物学灵感(L1 真菌寻路),不画具象菌丝(守 logo 规范)。纯 SVG+CSS,无运行时 JS。
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+
+<div class={`pf ${cls}`} aria-hidden="true">
+  <svg viewBox="0 0 440 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="pfGlow" x="-40%" y="-40%" width="180%" height="180%">
+        <feGaussianBlur stdDeviation="3.2" result="b" />
+        <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+      <radialGradient id="pfField" cx="50%" cy="50%" r="75%">
+        <stop offset="0%" stop-color="#1c5645" stop-opacity="0.16" />
+        <stop offset="100%" stop-color="#07130f" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <rect x="0" y="0" width="440" height="280" fill="url(#pfField)" />
+
+    <!-- 候选路径(暗淡):多条可能,黏菌探索 -->
+    <g stroke="#2f7d5e" stroke-width="1.4" opacity="0.28" stroke-linecap="round">
+      <path d="M40 140 C100 90, 110 70, 150 55" />
+      <path d="M40 140 C100 150, 110 200, 150 225" />
+      <path d="M150 55 C210 70, 240 120, 290 140" />
+      <path d="M150 225 C210 210, 240 160, 290 140" />
+      <path d="M150 55 C220 120, 230 200, 150 225" opacity="0.5" />
+    </g>
+
+    <!-- 最优路径(高亮流动):入口 → 候选B → 路由核 → 最优模型 -->
+    <path
+      class="pf-best"
+      d="M40 140 C110 140, 110 140, 150 140 C210 140, 240 140, 290 140 L410 140"
+      stroke="#5fd6a3" stroke-width="2.4" stroke-linecap="round" filter="url(#pfGlow)"
+    />
+    <!-- 流动光点:沿最优路径推进的寻路脉冲 -->
+    <circle class="pf-pulse" r="4.5" fill="#aef4d4" filter="url(#pfGlow)" />
+
+    <!-- 节点 -->
+    <g class="pf-nodes">
+      <circle cx="40" cy="140" r="7" class="n-in" />
+      <circle cx="150" cy="55" r="6" class="n" />
+      <circle cx="150" cy="225" r="6" class="n" />
+      <circle cx="150" cy="140" r="6.5" class="n n-on" />
+      <!-- 路由决策核(呼应 logo 中央节点) -->
+      <rect x="278" y="128" width="24" height="24" rx="5" transform="rotate(45 290 140)" class="n-core" />
+      <circle cx="410" cy="140" r="7.5" class="n-out" />
+    </g>
+
+    <text x="34" y="168" class="pf-label">请求</text>
+    <text x="290" y="178" class="pf-label" text-anchor="middle">路由核</text>
+    <text x="410" y="168" class="pf-label" text-anchor="middle">最优模型</text>
+  </svg>
+</div>
+
+<style>
+  .pf { width: 100%; max-width: 440px; }
+  .pf svg { width: 100%; height: auto; display: block; }
+
+  .pf-nodes .n { fill: #2f7d5e; }
+  .pf-nodes .n-in { fill: #8fe6bf; }
+  .pf-nodes .n-out { fill: #5fd6a3; }
+  .pf-nodes .n-on { fill: #aef4d4; }
+  .pf-nodes .n-core { fill: #0d2a22; stroke: #5fd6a3; stroke-width: 2; }
+  .pf-label { fill: #9fc7b6; font-size: 11px; font-family: inherit; }
+
+  .pf-best {
+    stroke-dasharray: 10 8;
+    animation: flow 1.6s linear infinite;
+  }
+  @keyframes flow { to { stroke-dashoffset: -18; } }
+
+  .pf-pulse {
+    offset-path: path("M40 140 C110 140, 110 140, 150 140 C210 140, 240 140, 290 140 L410 140");
+    offset-rotate: 0deg;
+    animation: travel 2.8s cubic-bezier(.5,0,.5,1) infinite;
+  }
+  @keyframes travel {
+    0% { offset-distance: 0%; opacity: 0; }
+    12% { opacity: 1; }
+    88% { opacity: 1; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
+
+  .n-on { animation: nodeOn 2.8s ease-in-out infinite; transform-origin: center; }
+  .n-out { animation: nodeOut 2.8s ease-in-out infinite; transform-origin: center; }
+  @keyframes nodeOn { 0%,100% { opacity: .6 } 40% { opacity: 1 } }
+  @keyframes nodeOut { 0%,80% { opacity: .55 } 92% { opacity: 1 } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pf-best, .pf-pulse, .n-on, .n-out { animation: none; }
+    .pf-pulse { opacity: 0; }
+  }
+</style>
