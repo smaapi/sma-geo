@@ -46,6 +46,10 @@ const qa: QA[] = [
     a: 'Two layers: channel and scenario. On channel, access should run through legitimate enterprise-grade routes with a full contract chain and audit records — not personal accounts or resale of unknown origin. On scenario, internal business use and public-facing services are different regimes: services offered to the Chinese public must use government-registered models. SMA provides unified access, routing, and audit on top of legitimate channels, and can route public-facing traffic to registered domestic models.',
   },
   {
+    q: 'How do you keep access to Claude, GPT, and other overseas models stable?',
+    a: 'Stability comes from redundancy and governance, not a single point. Multiple models back each other up, reducing dependence on any one provider; when a model endpoint degrades, SMA automatically downgrades or switches to a candidate per policy, temporarily removes persistently failing endpoints, and rejoins them on recovery — transparently to the application. End-to-end health checks and audit logs make availability observable and traceable; specific availability and SLA terms follow your enterprise contract. The application always sees one unchanging OpenAI-compatible egress, so provider or route changes do not affect your integration — models can change, the integration stays put.',
+  },
+  {
     q: 'What are your upstream channels?',
     a: 'We connect to model providers through legitimate enterprise channels, with the contracting entity, SLA, and accountability written into contracts. Per our disclosure rules, we do not name channel types we cannot evidence; channel composition and supporting documentation are shared during procurement, and the transparency page will label each entry according to evidence.',
   },
