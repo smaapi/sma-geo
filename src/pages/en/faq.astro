@@ -64,7 +64,7 @@ const qa: QA[] = [
 ];
 ---
 
-<Base route={route}>
+<Base route={route} theme="dark">
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
 
   <h1>FAQ: Multi-Model Access, Smart Routing, Cost Governance &amp; Audit</h1>

@@ -386,6 +386,24 @@ const nav = zh
     background: rgba(255, 255, 255, 0.08);
     color: #d9efe4;
   }
+  /* 内容页元素:标题层级 + 对比表格(深色) */
+  body.theme-dark h3 {
+    color: #fff;
+  }
+  body.theme-dark th,
+  body.theme-dark td {
+    border-color: rgba(140, 200, 180, 0.16);
+  }
+  body.theme-dark th {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+  }
+  body.theme-dark td {
+    color: #cdded5;
+  }
+  body.theme-dark tbody tr:nth-child(2n) td {
+    background: rgba(255, 255, 255, 0.02);
+  }
   body.theme-dark .related {
     border-top-color: rgba(120, 180, 160, 0.14);
   }
