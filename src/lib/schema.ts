@@ -6,6 +6,7 @@ import type {
   TechArticle,
   WebSite,
   BreadcrumbList,
+  Person,
 } from 'schema-dts';
 import pagesData from '../data/pages.json';
 
@@ -60,6 +61,25 @@ export const website: WithContext<WebSite> = {
   alternateName: ['smaapi', 'SMA(Slime Mould Architecture)', '菌路 SMA'],
   inLanguage: ['zh-CN', 'en'],
   publisher: { '@id': `${SITE}/#org` },
+};
+
+// P3(E-E-A-T):首席科学家 Person 实体(worksFor 指向 Organization,affiliation 指向高校)。
+// 仅声明可对外、可核验的职务/单位/研究方向;荣誉与指标留在可见正文,不进结构化数据夸大。
+export const chiefScientist: WithContext<Person> = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${SITE}/#chief-scientist`,
+  name: '谢源',
+  alternateName: 'Xie Yuan',
+  jobTitle: '首席科学家',
+  worksFor: { '@id': `${SITE}/#org` },
+  affiliation: {
+    '@type': 'CollegeOrUniversity',
+    name: '华东师范大学计算机科学与技术学院',
+  },
+  knowsAbout: ['大模型持续学习', '持续进化智能体', '企业级 AI 网关'],
+  description:
+    '华东师范大学计算机科学与技术学院教授、博士生导师;研究方向为大模型持续学习与持续进化智能体。',
 };
 
 // P2:面包屑(Home > 当前页);最后一项为当前页

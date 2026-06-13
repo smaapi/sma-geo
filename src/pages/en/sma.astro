@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { softwareApplication } from '../../lib/schema';
+import { softwareApplication, chiefScientist } from '../../lib/schema';
 
 // Integration example: static syntax highlighting (no runtime JS)
 const codeHtml = [
@@ -24,10 +24,24 @@ const toc = [
   { href: '#team', label: 'Team' },
   { href: '#who', label: "Who it's for" },
 ];
+
+const sciStats = [
+  { n: '100+', l: 'Papers · top venues & journals' },
+  { n: '100+', l: 'CCF-A papers · first/corresponding author' },
+  { n: '21,000+', l: 'Google Scholar citations' },
+];
+const sciTags = [
+  'NSFC Excellent Young Scientist',
+  'IEEE TIP Associate Editor',
+  'Area Chair: AAAI · IJCAI · CIKM · ACM MM',
+  'Shanghai Sci-Tech Progress Special Prize',
+  'CSIG Sci-Tech Progress First Prize',
+];
 ---
 
 <Base route="/en/sma" theme="dark">
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(softwareApplication)} />
+  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(chiefScientist)} />
 
   <section class="page-head">
     <p class="eyebrow"><span class="eyebrow-no">SMA</span> Product</p>
@@ -117,14 +131,44 @@ const toc = [
   <section class="band" id="team">
     <p class="eyebrow"><span class="eyebrow-no">04</span> Team</p>
     <h2>Chief Scientist</h2>
-    <div class="scientist sci-ph">
-      <span class="sci-ph-badge" aria-hidden="true">★</span>
-      <div>
-        <p class="sci-ph-role">Chief Scientist</p>
-        <p class="sci-ph-note">
-          A full profile is being finalized and will be published here following review.
-        </p>
+    <div class="scientist">
+      <div class="sci-head">
+        <span class="sci-mono" aria-hidden="true">谢</span>
+        <div class="sci-id">
+          <p class="sci-name"><strong>Prof. Xie Yuan</strong> <span class="sci-role">Chief Scientist</span></p>
+          <p class="sci-titles">
+            Professor, School of Computer Science &amp; Technology, East China Normal University · Full-time
+            mentor, National Institute of AI (Shanghai) · Ph.D. supervisor
+          </p>
+        </div>
       </div>
+
+      <div class="sci-stats">
+        {sciStats.map((s) => (
+          <div class="sci-stat">
+            <span class="sci-stat-n">{s.n}</span>
+            <span class="sci-stat-l">{s.l}</span>
+          </div>
+        ))}
+      </div>
+
+      <p class="sci-bio">
+        Core member of the Ministry of Education's military-civil fusion innovation team. Has led
+        projects under the MOST "New Generation AI" (Sci-Tech Innovation 2030) program, a
+        national-defense innovation special-zone project of the CMC Science and Technology Commission,
+        and National Natural Science Foundation grants. Over 100 papers in authoritative journals and
+        top conferences — including 100+ CCF-A papers as first/corresponding author — with more than
+        21,000 Google Scholar citations.
+      </p>
+
+      <div class="sci-tags">
+        {sciTags.map((t) => <span class="sci-tag">{t}</span>)}
+      </div>
+
+      <p class="sci-research">
+        <span class="sci-research-k">Research</span>Continual learning for large models and
+        continually-evolving agents — closely related to SMA's memory-retention and routing-calibration design.
+      </p>
     </div>
   </section>
 
@@ -175,32 +219,5 @@ const toc = [
     text-decoration: none;
     border-color: rgba(242, 199, 92, 0.6);
     color: #f2c75c;
-  }
-  /* Placeholder team card (profile pending authorization) */
-  .sci-ph {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  .sci-ph-badge {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 1px dashed rgba(242, 199, 92, 0.5);
-    color: #f2c75c;
-    font-size: 1.1rem;
-  }
-  .sci-ph-role {
-    margin: 0 0 0.2rem;
-    color: #fff;
-    font-weight: 700;
-  }
-  .sci-ph-note {
-    margin: 0;
-    color: #9fb8ad;
-    font-size: 0.9rem;
   }
 </style>

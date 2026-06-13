@@ -25,7 +25,7 @@ const crumb = isHome
       { name: zh ? '首页' : 'Home', url: zh ? site + '/' : site + '/en/' },
       { name: page.llms?.label ?? page.title, url: canonical },
     ]);
-const ogImage = site + '/logo-mark.png';
+const ogImage = site + '/og-banner.png';
 // API 接口为第一方 API 子域外链(业务侧指定 2026-06-12);其余为站内页
 const nav = zh
   ? [
@@ -61,8 +61,10 @@ const nav = zh
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={zh ? 'zh_CN' : 'en_US'} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:image:alt" content="菌路 SMA 标识" />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="SMA — 企业级 AI 网关 / Enterprise AI Gateway" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content={ogImage} />
     <script type="application/ld+json" set:html={JSON.stringify(organization)} />
     <script type="application/ld+json" set:html={JSON.stringify(website)} />
