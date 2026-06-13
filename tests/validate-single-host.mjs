@@ -6,6 +6,9 @@ import { fileURLToPath } from 'node:url';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const site = JSON.parse(readFileSync(resolve(root, 'src/data/pages.json'), 'utf8')).site;
 const expectedHost = new URL(site).host;
+// 首页导航「API 接口」链接的第一方 API 子域(业务侧指定,2026-06-12);
+// 自指主机仍统一 www,此处仅放行该 API 端点主机。**待评审追认**(api.smaapi.com 现解析至 43.136.14.69)。
+const ALLOWED_HOSTS = new Set([expectedHost, 'api.smaapi.com']);
 
 const files = [];
 (function walk(dir) {
@@ -26,8 +29,8 @@ for (const f of files) {
   const rel = relative(resolve(root, 'dist'), f);
   for (const m of text.match(URL_RE) ?? []) {
     const host = new URL(m).host;
-    if (host !== expectedHost) {
-      errors.push(`${relative(root, f)}: ${m.slice(0, 80)} (host=${host},期望 ${expectedHost})`);
+    if (!ALLOWED_HOSTS.has(host)) {
+      errors.push(`${relative(root, f)}: ${m.slice(0, 80)} (host=${host},期望 ${[...ALLOWED_HOSTS].join(' | ')})`);
     }
   }
   if (!BARE_EXEMPT.some((re) => re.test(rel))) {
@@ -43,4 +46,4 @@ if (errors.length) {
   for (const e of errors.slice(0, 10)) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log(`单一主机断言通过: ${files.length} 个产物文件,smaapi.com 系 URL 全部为 ${expectedHost}`);
+console.log(`单一主机断言通过: ${files.length} 个产物文件,smaapi.com 系 URL 主机 ∈ {${[...ALLOWED_HOSTS].join(', ')}}`);

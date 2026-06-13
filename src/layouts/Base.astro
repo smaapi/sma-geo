@@ -5,9 +5,11 @@ import Logo from '../components/Logo.astro';
 
 interface Props {
   route: string;
+  theme?: 'light' | 'dark';
 }
 
-const { route } = Astro.props;
+const { route, theme = 'light' } = Astro.props;
+const isDark = theme === 'dark';
 const site = pagesData.site;
 const page = pagesData.pages.find((p) => p.route === route);
 if (!page) throw new Error(`route not in src/data/pages.json registry: ${route}`);
@@ -15,16 +17,19 @@ const alt = pagesData.pages.find((p) => p.route === page.alternate);
 const zh = page.lang === 'zh';
 const canonical = site + route;
 const xDefault = zh ? (alt ? site + alt.route : canonical) : canonical;
+// API 接口为第一方 API 子域外链(业务侧指定 2026-06-12);其余为站内页
 const nav = zh
   ? [
       { href: '/', label: '首页' },
       { href: '/zh/what-is-llm-gateway', label: '什么是 LLM 网关' },
       { href: '/zh/faq', label: 'FAQ' },
+      { href: 'https://api.smaapi.com', label: 'API 接口', external: true },
     ]
   : [
       { href: '/en/', label: 'Home' },
       { href: '/en/what-is-llm-gateway', label: 'What is an LLM gateway' },
       { href: '/en/faq', label: 'FAQ' },
+      { href: 'https://api.smaapi.com', label: 'API', external: true },
     ];
 ---
 
@@ -48,18 +53,22 @@ const nav = zh
     <script type="application/ld+json" set:html={JSON.stringify(organization)} />
     <slot name="jsonld" />
   </head>
-  <body>
+  <body class={isDark ? 'theme-dark' : undefined}>
     <header>
       <nav>
         <a class="brand" href={zh ? '/' : '/en/'}>
-          <Logo size={26} eager />
+          <Logo size={26} eager light={isDark} />
           <span>{zh ? '菌路 SMA' : 'smaapi Gateway'}</span>
         </a>
-        {nav.map((item) => (
-          <a href={item.href} aria-current={item.href === route ? 'page' : undefined}>
-            {item.label}
-          </a>
-        ))}
+        {nav.map((item) =>
+          item.external ? (
+            <a class="nav-api" href={item.href} target="_blank" rel="noopener">{item.label}<span class="ext" aria-hidden="true">↗</span></a>
+          ) : (
+            <a href={item.href} aria-current={item.href === route ? 'page' : undefined}>
+              {item.label}
+            </a>
+          )
+        )}
         {alt && <a class="lang-switch" href={alt.route}>{zh ? 'English' : '中文'}</a>}
       </nav>
     </header>
@@ -68,7 +77,7 @@ const nav = zh
     </main>
     <footer>
       <div class="foot-brand">
-        <Logo size={22} />
+        <Logo size={22} light={isDark} />
         <p class="slogans">
           <span class="slogan-zh">数据可控,为每个任务选择最合适的模型。</span>
           <span class="slogan-en">Enterprise-controlled access — the right model for every task.</span>
@@ -279,5 +288,105 @@ const nav = zh
     padding: 0.1em 0.35em;
     border-radius: 4px;
     font-size: 0.92em;
+  }
+  .nav-api {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    padding: 0.12rem 0.62rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .nav-api:hover {
+    text-decoration: none;
+    border-color: var(--accent);
+  }
+  .nav-api .ext {
+    font-size: 0.8em;
+    opacity: 0.7;
+  }
+
+  /* ===== 暗色科技主题(仅首页 body.theme-dark;站内内容页保持浅色) ===== */
+  body.theme-dark {
+    color: #dfeee8;
+    background-color: #060f12;
+    background-image:
+      radial-gradient(rgba(120, 200, 175, 0.045) 1px, transparent 1.5px),
+      radial-gradient(60% 48% at 86% 0%, rgba(215, 166, 66, 0.1), transparent 60%),
+      radial-gradient(52% 44% at 2% 10%, rgba(34, 110, 96, 0.16), transparent 55%),
+      linear-gradient(180deg, #08161b 0%, #060f12 58%);
+    background-size: 24px 24px, auto, auto, auto;
+    background-attachment: fixed;
+  }
+  body.theme-dark header nav,
+  body.theme-dark main,
+  body.theme-dark footer .foot-brand,
+  body.theme-dark footer p {
+    max-width: 960px;
+  }
+  body.theme-dark header {
+    background: rgba(8, 18, 20, 0.72);
+    border-bottom-color: rgba(120, 180, 160, 0.14);
+  }
+  body.theme-dark .brand {
+    color: #eaf3ef;
+  }
+  body.theme-dark a {
+    color: #84dcb6;
+  }
+  body.theme-dark main a {
+    color: #f2c75c;
+  }
+  body.theme-dark header nav a {
+    color: #c9e0d6;
+  }
+  body.theme-dark header nav a:hover {
+    color: #fff;
+  }
+  body.theme-dark header nav a[aria-current='page'] {
+    color: #f2c75c;
+  }
+  body.theme-dark .nav-api {
+    color: #f2c75c;
+    border-color: rgba(242, 199, 92, 0.4);
+    background: rgba(242, 199, 92, 0.08);
+  }
+  body.theme-dark .nav-api:hover {
+    border-color: rgba(242, 199, 92, 0.75);
+  }
+  body.theme-dark h1,
+  body.theme-dark h2 {
+    color: #fff;
+  }
+  body.theme-dark .answer {
+    background: rgba(215, 166, 66, 0.06);
+    border-left-color: #f2c75c;
+    color: #eef6f1;
+  }
+  body.theme-dark code {
+    background: rgba(255, 255, 255, 0.08);
+    color: #d9efe4;
+  }
+  body.theme-dark .related {
+    border-top-color: rgba(120, 180, 160, 0.14);
+  }
+  body.theme-dark .footnote {
+    color: #8aa79b;
+  }
+  body.theme-dark footer {
+    background: rgba(8, 18, 20, 0.55);
+    border-top-color: rgba(120, 180, 160, 0.12);
+    color: #9fb8ad;
+  }
+  body.theme-dark .slogan-zh {
+    color: #ffe6a8;
+  }
+  body.theme-dark :focus-visible {
+    outline-color: #f2c75c;
+  }
+  body.theme-dark ::selection {
+    background: rgba(242, 199, 92, 0.32);
+    color: #fff;
   }
 </style>

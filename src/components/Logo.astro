@@ -5,12 +5,14 @@ interface Props {
   size?: number;
   class?: string;
   eager?: boolean;
+  light?: boolean; // 深底场景用反白版(白色标识)
 }
-const { size = 40, class: cls = '', eager = false } = Astro.props;
+const { size = 40, class: cls = '', eager = false, light = false } = Astro.props;
+const src = light ? '/brand/logo-mark-light.png' : '/logo-mark.png';
 ---
 
 <img
-  src="/logo-mark.png"
+  src={src}
   width={size}
   height={size}
   alt="菌路 SMA 标识"
