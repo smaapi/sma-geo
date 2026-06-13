@@ -17,6 +17,9 @@ import RouteCore from '../components/RouteCore.astro';
       <h1>SMA — 企业级 AI 网关</h1>
       <p class="landing-slogan">数据可控,为每个任务选择最合适的模型。</p>
       <p class="landing-slogan-en">Enterprise-controlled access — the right model for every task.</p>
+      <p class="landing-def">
+        SMA 网关(菌路 SMA)是面向企业的 AI 网关 / 模型接入平台:一套 OpenAI 兼容 API 统一接入多家大模型,提供智能路由、成本与权限治理与全链路审计。
+      </p>
       <div class="landing-cta">
         <a class="btn btn-solid" href="/zh/sma">了解 SMA 产品</a>
         <a class="btn btn-ghost" href="/zh/what-is-llm-gateway">什么是 LLM 网关</a>
@@ -105,6 +108,13 @@ import RouteCore from '../components/RouteCore.astro';
     font-size: 0.86rem;
     color: #93bdab;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .landing-def {
+    margin: 1.1rem 0 0;
+    max-width: 560px;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    color: #b9cfc6;
   }
   .landing-cta {
     display: flex;

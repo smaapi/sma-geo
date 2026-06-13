@@ -1,6 +1,6 @@
 ---
 import pagesData from '../data/pages.json';
-import { organization } from '../lib/schema';
+import { organization, website, breadcrumb } from '../lib/schema';
 import Logo from '../components/Logo.astro';
 
 interface Props {
@@ -17,6 +17,15 @@ const alt = pagesData.pages.find((p) => p.route === page.alternate);
 const zh = page.lang === 'zh';
 const canonical = site + route;
 const xDefault = zh ? (alt ? site + alt.route : canonical) : canonical;
+// P2 面包屑:非首页生成 Home > 当前页(短标签取自注册表 llms.label)
+const isHome = route === '/' || route === '/en/';
+const crumb = isHome
+  ? null
+  : breadcrumb([
+      { name: zh ? '首页' : 'Home', url: zh ? site + '/' : site + '/en/' },
+      { name: page.llms?.label ?? page.title, url: canonical },
+    ]);
+const ogImage = site + '/logo-mark.png';
 // API 接口为第一方 API 子域外链(业务侧指定 2026-06-12);其余为站内页
 const nav = zh
   ? [
@@ -51,8 +60,13 @@ const nav = zh
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content={zh ? 'zh_CN' : 'en_US'} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content="菌路 SMA 标识" />
     <meta name="twitter:card" content="summary" />
+    <meta name="twitter:image" content={ogImage} />
     <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    <script type="application/ld+json" set:html={JSON.stringify(website)} />
+    {crumb && <script type="application/ld+json" set:html={JSON.stringify(crumb)} />}
     <slot name="jsonld" />
   </head>
   <body class={isDark ? 'theme-dark' : undefined}>

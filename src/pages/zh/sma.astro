@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { softwareApplication } from '../../lib/schema';
 
 // 接入示例:静态语法着色(无运行时 JS)
 const codeHtml = [
@@ -38,6 +39,8 @@ const toc = [
 ---
 
 <Base route="/zh/sma" theme="dark">
+  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(softwareApplication)} />
+
   <section class="page-head">
     <p class="eyebrow"><span class="eyebrow-no">SMA</span> 产品介绍</p>
     <h1>SMA — 企业级 AI 网关</h1>

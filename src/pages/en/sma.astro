@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { softwareApplication } from '../../lib/schema';
 
 // Integration example: static syntax highlighting (no runtime JS)
 const codeHtml = [
@@ -26,6 +27,8 @@ const toc = [
 ---
 
 <Base route="/en/sma" theme="dark">
+  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(softwareApplication)} />
+
   <section class="page-head">
     <p class="eyebrow"><span class="eyebrow-no">SMA</span> Product</p>
     <h1>smaapi Gateway (SMA) — Enterprise AI Gateway</h1>

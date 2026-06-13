@@ -1,4 +1,12 @@
-import type { WithContext, Organization, SoftwareApplication, FAQPage, TechArticle } from 'schema-dts';
+import type {
+  WithContext,
+  Organization,
+  SoftwareApplication,
+  FAQPage,
+  TechArticle,
+  WebSite,
+  BreadcrumbList,
+} from 'schema-dts';
 import pagesData from '../data/pages.json';
 
 // O1:基址单一真源(pages.json site)
@@ -34,7 +42,39 @@ export const softwareApplication: WithContext<SoftwareApplication> = {
   applicationCategory: 'DeveloperApplication',
   operatingSystem: 'Cloud / Self-hosted',
   description: '企业级 AI 网关:多模型统一接入、智能路由、成本与权限治理、全链路审计(www.smaapi.com)',
+  featureList: [
+    '多模型统一接入(OpenAI 兼容 API)',
+    '智能路由与自动故障切换',
+    '成本与权限治理(预算、配额、密钥范围)',
+    '全链路审计与可追溯',
+  ],
 };
+
+// P2:WebSite 实体(强化站点实体识别;publisher 指向 Organization)
+export const website: WithContext<WebSite> = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${SITE}/#website`,
+  url: SITE,
+  name: 'SMA 网关 / smaapi Gateway',
+  alternateName: ['smaapi', 'SMA(Slime Mould Architecture)', '菌路 SMA'],
+  inLanguage: ['zh-CN', 'en'],
+  publisher: { '@id': `${SITE}/#org` },
+};
+
+// P2:面包屑(Home > 当前页);最后一项为当前页
+export function breadcrumb(items: ReadonlyArray<{ name: string; url: string }>): WithContext<BreadcrumbList> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map((it, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: it.name,
+      item: it.url,
+    })),
+  };
+}
 
 export interface QA {
   q: string;
