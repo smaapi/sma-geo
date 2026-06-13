@@ -16,6 +16,19 @@
       }
     },
     {
+      "route": "/zh/sma",
+      "lang": "zh",
+      "title": "SMA 企业级 AI 网关 — 产品介绍:智能路由、治理与审计、接入与团队 | smaapi",
+      "description": "SMA 网关(菌路 SMA,www.smaapi.com)产品介绍:一套 OpenAI 兼容 API 统一接入多家大模型,提供智能路由、成本与权限治理、全链路审计;含接入示例与首席科学家团队。",
+      "datePublished": "2026-06-12",
+      "dateModified": "2026-06-12",
+      "llms": {
+        "section": "核心页面",
+        "label": "SMA 产品介绍",
+        "desc": "一句话定义、三层治理、接入示例与首席科学家团队"
+      }
+    },
+    {
       "route": "/zh/what-is-llm-gateway",
       "lang": "zh",
       "alternate": "/en/what-is-llm-gateway",

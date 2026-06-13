@@ -2,228 +2,71 @@
 import Base from '../layouts/Base.astro';
 import { softwareApplication } from '../lib/schema';
 import RouteCore from '../components/RouteCore.astro';
-
-// 接入示例:静态语法着色(无运行时 JS;set:html 注入,token 样式走 :global)
-const codeHtml = [
-  '<span class="k">from</span> openai <span class="k">import</span> OpenAI',
-  '',
-  'client = OpenAI(',
-  '    base_url=<span class="s">"https://www.smaapi.com/v1"</span>,  <span class="c"># 指向 SMA 网关</span>',
-  '    api_key=<span class="s">"YOUR_SMA_KEY"</span>,                <span class="c"># 网关密钥,模型厂商密钥不出企业</span>',
-  ')',
-  '',
-  'resp = client.chat.completions.create(',
-  '    model=<span class="s">"deepseek-chat"</span>,  <span class="c"># 模型名按路由策略可换可路由</span>',
-  '    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"你好"</span>}],',
-  ')',
-].join('\n');
-
-// 首席科学家学术指标(业务侧提供,待本人/业务侧书面确认后对外)
-const sciStats = [
-  { n: '100+', l: '学术论文 · 顶会/权威期刊' },
-  { n: '100+', l: 'CCF-A 论文 · 一作/通讯' },
-  { n: '2.1万+', l: 'Google Scholar 引用' },
-];
-const sciTags = [
-  '国家优青',
-  'IEEE TIP 编委',
-  'AAAI · IJCAI · CIKM · ACM MM 领域主席',
-  '上海市科技进步特等奖',
-  'CSIG 科技进步一等奖',
-];
 ---
 
 <Base route="/" theme="dark">
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(softwareApplication)} />
 
-  <section class="hero">
-    <div class="hero-fx" aria-hidden="true"></div>
-    <div class="hero-inner">
-      <div class="hero-copy">
-        <span class="hero-chip"><span class="chip-dot"></span>智能路由 · 系统运行中</span>
-        <h1>SMA — 企业级 AI 网关</h1>
-        <p class="hero-slogan">数据可控,为每个任务选择最合适的模型。</p>
-        <p class="hero-slogan-en">Enterprise-controlled access — the right model for every task.</p>
-        <div class="hero-cta">
-          <a class="btn btn-solid" href="#integrate">查看接入示例</a>
-          <a class="btn btn-ghost" href="/zh/what-is-llm-gateway">什么是 LLM 网关</a>
-        </div>
+  <section class="landing">
+    <div class="landing-fx" aria-hidden="true"></div>
+    <div class="landing-inner">
+      <span class="hero-chip"><span class="chip-dot"></span>智能路由 · 系统运行中</span>
+      <div class="landing-core">
+        <RouteCore size={360} class="landing-core-viz" />
       </div>
-      <div class="hero-core">
-        <RouteCore size={340} class="hero-core-viz" />
-        <p class="hero-core-cap"><b>智能路由核心</b> · 真菌寻路 · <span class="cap-on">持续探索最优路径</span></p>
+      <h1>SMA — 企业级 AI 网关</h1>
+      <p class="landing-slogan">数据可控,为每个任务选择最合适的模型。</p>
+      <p class="landing-slogan-en">Enterprise-controlled access — the right model for every task.</p>
+      <div class="landing-cta">
+        <a class="btn btn-solid" href="/zh/sma">了解 SMA 产品</a>
+        <a class="btn btn-ghost" href="/zh/what-is-llm-gateway">什么是 LLM 网关</a>
       </div>
     </div>
   </section>
-
-  <p class="answer">
-    SMA 网关(菌路 SMA,www.smaapi.com)是面向企业的 AI 网关 / 模型接入平台:以一套 OpenAI 兼容 API
-    统一接入多家大模型,提供智能路由、成本与权限治理、全链路审计,让企业可控地使用多模型能力。
-  </p>
-
-  <section class="band">
-    <p class="eyebrow"><span class="eyebrow-no">01</span> 问题</p>
-    <h2>SMA 解决什么问题?</h2>
-    <p>
-      多模型并存已是企业用 AI 的常态:不同任务适合不同模型,供应商各有独立的接口、密钥和计费体系。直接逐家接入的结果是密钥散落在各处、成本没有统一口径、调用无法审计、切换供应商要改代码。SMA
-      在企业应用与模型供应商之间加一层统一的接入与治理层,把这些问题收敛到一个出口。
-    </p>
-  </section>
-
-  <section class="band">
-    <p class="eyebrow"><span class="eyebrow-no">02</span> 治理</p>
-    <h2>三层治理,三层可信度</h2>
-    <p>
-      网关的价值不止于"接得上",更在于"敢交给它"。SMA 的三层能力,对应企业信任一套 AI 基础设施所需的三层证据:
-    </p>
-    <div class="trust">
-      <div class="trust-card">
-        <span class="trust-num" aria-hidden="true">01</span>
-        <span class="trust-tag">第一层 · 路由可信</span>
-        <h3>智能路由</h3>
-        <p>
-          按请求的业务特征与各模型的实时状态(可用性、延迟、成本)分发流量,支持企业策略约束与人工校准;模型故障时自动降级与切换,对应用透明。路由决策有据可查,而非黑箱。
-        </p>
-      </div>
-      <div class="trust-card">
-        <span class="trust-num" aria-hidden="true">02</span>
-        <span class="trust-tag">第二层 · 边界可信</span>
-        <h3>成本与权限治理</h3>
-        <p>
-          为团队、应用、密钥设置预算、配额与模型访问范围;所有调用统一计量,成本可按维度核算,密钥集中管理而非散落在业务代码里。花了多少、谁能用什么,边界由企业自己划定。
-        </p>
-      </div>
-      <div class="trust-card">
-        <span class="trust-num" aria-hidden="true">03</span>
-        <span class="trust-tag">第三层 · 留痕可信</span>
-        <h3>全链路审计</h3>
-        <p>
-          每一次调用的调用方、目标模型、用量与时间都进入审计日志,可追溯、可对账,为合规审查提供完整证据链。事后任何一笔调用都经得起回放与质询。
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="band">
-    <p class="eyebrow"><span class="eyebrow-no">03</span> 接入</p>
-    <h2 id="integrate">接入只改一行配置</h2>
-    <p>应用侧沿用 OpenAI SDK,把 <code>base_url</code> 指向网关即可:</p>
-    <figure class="codeblock">
-      <figcaption>
-        <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
-        <span class="codefile">app.py</span>
-      </figcaption>
-      <pre><code set:html={codeHtml} /></pre>
-    </figure>
-    <p class="footnote">模型名称为指明性使用;可接入模型范围与路由策略以控制台实际配置为准。</p>
-  </section>
-
-  <section class="band">
-    <p class="eyebrow"><span class="eyebrow-no">04</span> 团队</p>
-    <h2>首席科学家</h2>
-    <div class="scientist">
-      <div class="sci-head">
-        <span class="sci-mono" aria-hidden="true">谢</span>
-        <div class="sci-id">
-          <p class="sci-name"><strong>谢源</strong> <span class="sci-role">首席科学家</span></p>
-          <p class="sci-titles">
-            华东师范大学计算机科学与技术学院 教授 · 国家人工智能学院(上海)全时导师 · 博士生导师
-          </p>
-        </div>
-      </div>
-
-      <div class="sci-stats">
-        {sciStats.map((s) => (
-          <div class="sci-stat">
-            <span class="sci-stat-n">{s.n}</span>
-            <span class="sci-stat-l">{s.l}</span>
-          </div>
-        ))}
-      </div>
-
-      <p class="sci-bio">
-        教育部军民融合创新团队核心成员;先后主持科技部科技创新 2030"新一代人工智能"重大项目课题、军委科技委国防创新特区项目、国家自然科学基金。在国内外权威期刊和顶级会议上共发表学术论文百余篇,其中第一作者/通讯作者
-        CCF A 类论文百余篇,相关成果 Google Scholar 引用逾 2.1 万次。
-      </p>
-
-      <div class="sci-tags">
-        {sciTags.map((t) => <span class="sci-tag">{t}</span>)}
-      </div>
-
-      <p class="sci-research">
-        <span class="sci-research-k">研究方向</span>大模型持续学习与持续进化智能体——与 SMA 的记忆沉淀、路由校准设计高度相关。
-      </p>
-    </div>
-  </section>
-
-  <section class="band">
-    <p class="eyebrow"><span class="eyebrow-no">05</span> 适用</p>
-    <h2>谁适合使用 SMA?</h2>
-    <p>
-      需要同时接入多家模型(含国产模型与国际模型)、并对成本、权限、合规与审计有组织级要求的企业团队。应用侧沿用
-      OpenAI SDK,把 base_url 指向网关即可接入。
-    </p>
-  </section>
-
-  <div class="related">
-    <p>相关问题:</p>
-    <ul>
-      <li><a href="/zh/what-is-llm-gateway">什么是企业级 LLM 网关?</a></li>
-      <li><a href="/zh/faq">多模型接入、路由与治理的常见问题</a></li>
-    </ul>
-  </div>
 </Base>
 
 <style>
-  /* —— 科技感深色 hero:深海蓝绿底 + 电路点阵 + 金色寻路核心(复用产品动图) —— */
-  .hero {
+  /* —— 极简电影感落地页:满屏暗底 + 金色寻路核心居中 —— */
+  .landing {
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(120, 180, 160, 0.18);
-    border-radius: 18px;
-    padding: 2.25rem 2.25rem 2rem;
-    margin: 0.75rem 0 2rem;
-    color: #e6f2ea;
-    background:
-      radial-gradient(82% 120% at 86% 8%, rgba(215, 166, 66, 0.18) 0%, rgba(215, 166, 66, 0.05) 30%, rgba(7, 17, 16, 0) 58%),
-      radial-gradient(70% 120% at 6% 100%, rgba(34, 110, 96, 0.24) 0%, rgba(7, 17, 16, 0) 55%),
-      linear-gradient(150deg, #0b1a18 0%, #07130f 52%, #050d10 100%);
-    box-shadow: 0 22px 50px rgba(4, 10, 11, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    min-height: calc(100vh - 3.6rem);
+    display: grid;
+    place-items: center;
+    margin: -1.5rem 0 0;
+    padding: 1.5rem 0 3rem;
+    text-align: center;
   }
-  .hero-fx {
+  .landing-fx {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image:
-      radial-gradient(rgba(120, 200, 175, 0.16) 1px, transparent 1.4px),
-      linear-gradient(rgba(120, 200, 175, 0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(120, 200, 175, 0.05) 1px, transparent 1px);
-    background-size: 22px 22px, 22px 22px, 22px 22px;
-    background-position: -1px -1px, 0 0, 0 0;
-    -webkit-mask-image: radial-gradient(120% 90% at 70% 30%, #000 35%, transparent 78%);
-    mask-image: radial-gradient(120% 90% at 70% 30%, #000 35%, transparent 78%);
-    opacity: 0.5;
+    background:
+      radial-gradient(46% 40% at 50% 38%, rgba(215, 166, 66, 0.16), transparent 62%),
+      radial-gradient(60% 50% at 50% 120%, rgba(34, 110, 96, 0.16), transparent 60%);
+    -webkit-mask-image: radial-gradient(80% 70% at 50% 42%, #000 40%, transparent 85%);
+    mask-image: radial-gradient(80% 70% at 50% 42%, #000 40%, transparent 85%);
   }
-  .hero-inner {
+  .landing-inner {
     position: relative;
     z-index: 1;
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    max-width: 680px;
   }
   .hero-chip {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.3rem 0.75rem;
+    padding: 0.3rem 0.8rem;
     border: 1px solid rgba(215, 166, 66, 0.4);
     border-radius: 999px;
     background: rgba(215, 166, 66, 0.08);
     color: #f2c75c;
     font-size: 0.76rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   .chip-dot {
@@ -236,38 +79,45 @@ const sciTags = [
   }
   @keyframes chipPulse {
     0% { box-shadow: 0 0 0 0 rgba(242, 199, 92, 0.55); }
-    70%, 100% { box-shadow: 0 0 0 7px rgba(242, 199, 92, 0); }
+    70%, 100% { box-shadow: 0 0 0 8px rgba(242, 199, 92, 0); }
   }
-  .hero h1 {
-    margin: 0.85rem 0 0.5rem;
+  .landing-core {
+    margin: 1rem 0 0.5rem;
+  }
+  .landing-core :global(.landing-core-viz) {
+    filter: drop-shadow(0 0 40px rgba(215, 166, 66, 0.28));
+  }
+  .landing h1 {
+    margin: 0.4rem 0 0.6rem;
     color: #fff;
-    font-size: 2rem;
-    line-height: 1.25;
+    font-size: 2.4rem;
+    line-height: 1.2;
     letter-spacing: 0.01em;
   }
-  .hero-slogan {
+  .landing-slogan {
     margin: 0;
     font-weight: 600;
-    font-size: 1.05rem;
+    font-size: 1.12rem;
     color: #ffe6a8;
   }
-  .hero-slogan-en {
-    margin: 0.25rem 0 0;
-    font-size: 0.85rem;
+  .landing-slogan-en {
+    margin: 0.3rem 0 0;
+    font-size: 0.86rem;
     color: #93bdab;
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  .hero-cta {
+  .landing-cta {
     display: flex;
-    gap: 0.7rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
-    margin: 1.35rem 0 0;
+    justify-content: center;
+    margin-top: 1.8rem;
   }
   .btn {
     display: inline-block;
-    padding: 0.55rem 1.15rem;
+    padding: 0.62rem 1.4rem;
     border-radius: 10px;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     font-weight: 600;
     line-height: 1.5;
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
@@ -278,7 +128,7 @@ const sciTags = [
   .btn-solid {
     background: linear-gradient(180deg, #f2c75c, #d7a642);
     color: #1a1205;
-    box-shadow: 0 6px 18px rgba(215, 166, 66, 0.28);
+    box-shadow: 0 6px 20px rgba(215, 166, 66, 0.3);
   }
   .btn-solid:hover {
     background: linear-gradient(180deg, #f6d271, #e0b14e);
@@ -291,290 +141,13 @@ const sciTags = [
     border-color: rgba(174, 244, 212, 0.7);
     color: #fff;
   }
-  .hero-core {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.6rem;
-  }
-  .hero-core :global(.hero-core-viz) {
-    filter: drop-shadow(0 0 28px rgba(215, 166, 66, 0.22));
-  }
-  .hero-core-cap {
-    margin: 0;
-    font-size: 0.78rem;
-    color: #9fb8ad;
-    text-align: center;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  .hero-core-cap b {
-    color: #f2c75c;
-    font-weight: 600;
-  }
-  .cap-on {
-    color: #7ee6b6;
-  }
   @media (max-width: 600px) {
-    .hero {
-      padding: 1.5rem 1.25rem 1.5rem;
+    .landing h1 {
+      font-size: 1.85rem;
     }
-    .hero-inner {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-    }
-    .hero-core {
-      order: -1;
-    }
-    .hero-core :global(.hero-core-viz) {
-      width: 240px !important;
-      height: 240px !important;
-    }
-  }
-
-  /* —— 分节:等宽 eyebrow 标签建立层次节奏 —— */
-  .band {
-    margin: 2.4rem 0;
-  }
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    margin: 0 0 0.3rem;
-    font-size: 0.74rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: #84dcb6;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  .eyebrow-no {
-    color: #f2c75c;
-  }
-  .eyebrow::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, rgba(132, 220, 182, 0.4), transparent);
-  }
-  .band :global(h2) {
-    margin-top: 0.1rem;
-  }
-
-  /* —— 三层卡片:暗色玻璃面板 + 金色编号 —— */
-  .trust {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(218px, 1fr));
-    gap: 0.9rem;
-    margin: 1.1rem 0 0.5rem;
-  }
-  .trust-card {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(140, 200, 180, 0.14);
-    border-top: 2px solid rgba(242, 199, 92, 0.55);
-    border-radius: 14px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
-    padding: 1.05rem 1.2rem 1.15rem;
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-  }
-  @media (hover: hover) {
-    .trust-card {
-      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-    }
-    .trust-card:hover {
-      transform: translateY(-3px);
-      border-top-color: #f2c75c;
-      box-shadow: 0 14px 32px rgba(4, 10, 11, 0.5), 0 0 0 1px rgba(242, 199, 92, 0.12);
-    }
-  }
-  .trust-num {
-    position: absolute;
-    top: -0.2rem;
-    right: 0.6rem;
-    font-size: 3.2rem;
-    font-weight: 800;
-    line-height: 1.4;
-    color: rgba(242, 199, 92, 0.12);
-    pointer-events: none;
-    user-select: none;
-  }
-  .trust-card h3 {
-    margin: 0.3rem 0 0.45rem;
-    color: #fff;
-  }
-  .trust-card p {
-    margin: 0;
-    color: #c4d8ce;
-    font-size: 0.94rem;
-  }
-  .trust-tag {
-    font-size: 0.76rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    color: #84dcb6;
-  }
-
-  /* —— 终端式代码块 —— */
-  .codeblock {
-    margin: 1rem 0;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid rgba(140, 200, 180, 0.18);
-    box-shadow: 0 14px 34px rgba(4, 10, 11, 0.5);
-  }
-  .codeblock figcaption {
-    display: flex;
-    align-items: center;
-    gap: 0.42rem;
-    padding: 0.55rem 1rem;
-    background: #0c1f1a;
-    border-bottom: 1px solid rgba(95, 214, 163, 0.16);
-  }
-  .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-  }
-  .d1 { background: #c0703a; }
-  .d2 { background: #d7a642; }
-  .d3 { background: #5fd6a3; }
-  .codefile {
-    margin-left: auto;
-    font-size: 0.78rem;
-    color: #9fc7b6;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  .codeblock pre {
-    margin: 0;
-    border-radius: 0;
-    background: #07130f;
-  }
-  .codeblock :global(.k) { color: #f2c75c; }
-  .codeblock :global(.s) { color: #b6f5d8; }
-  .codeblock :global(.c) { color: #6f8d80; }
-
-  /* —— 首席科学家:重点面板 —— */
-  .scientist {
-    position: relative;
-    overflow: hidden;
-    margin-top: 1.1rem;
-    border: 1px solid rgba(140, 200, 180, 0.16);
-    border-radius: 16px;
-    padding: 1.5rem 1.6rem;
-    background:
-      radial-gradient(70% 120% at 100% 0%, rgba(215, 166, 66, 0.1), transparent 55%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.018));
-    -webkit-backdrop-filter: blur(6px);
-    backdrop-filter: blur(6px);
-    box-shadow: 0 16px 40px rgba(4, 10, 11, 0.4);
-  }
-  .sci-head {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-  }
-  .sci-mono {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 60px;
-    height: 60px;
-    border-radius: 16px;
-    background: linear-gradient(160deg, #f2c75c, #d7a642);
-    color: #1a1205;
-    font-weight: 800;
-    font-size: 1.7rem;
-    box-shadow: 0 8px 22px rgba(215, 166, 66, 0.3);
-  }
-  .sci-name {
-    margin: 0;
-    color: #fff;
-    font-size: 1.25rem;
-  }
-  .sci-role {
-    margin-left: 0.4rem;
-    padding: 0.12rem 0.55rem;
-    border-radius: 999px;
-    background: rgba(242, 199, 92, 0.14);
-    border: 1px solid rgba(242, 199, 92, 0.4);
-    color: #f2c75c;
-    font-size: 0.74rem;
-    font-weight: 600;
-    vertical-align: middle;
-  }
-  .sci-titles {
-    margin: 0.35rem 0 0;
-    color: #c4d8ce;
-    font-size: 0.9rem;
-    line-height: 1.55;
-  }
-  .sci-stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.7rem;
-    margin: 1.2rem 0;
-  }
-  .sci-stat {
-    flex: 1 1 140px;
-    border: 1px solid rgba(140, 200, 180, 0.14);
-    border-radius: 12px;
-    padding: 0.7rem 0.9rem;
-    background: rgba(255, 255, 255, 0.025);
-  }
-  .sci-stat-n {
-    display: block;
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: #f2c75c;
-    line-height: 1.2;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  .sci-stat-l {
-    display: block;
-    margin-top: 0.15rem;
-    font-size: 0.78rem;
-    color: #9fb8ad;
-  }
-  .sci-bio {
-    margin: 0 0 1rem;
-    color: #cbddd3;
-    font-size: 0.95rem;
-  }
-  .sci-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.1rem;
-  }
-  .sci-tag {
-    padding: 0.28rem 0.7rem;
-    border: 1px solid rgba(140, 200, 180, 0.2);
-    border-radius: 999px;
-    background: rgba(132, 220, 182, 0.07);
-    color: #bfe6d6;
-    font-size: 0.78rem;
-  }
-  .sci-research {
-    margin: 0;
-    padding: 0.8rem 1rem;
-    border-left: 3px solid #f2c75c;
-    border-radius: 0 10px 10px 0;
-    background: rgba(242, 199, 92, 0.07);
-    color: #eaf3ef;
-    font-size: 0.95rem;
-  }
-  .sci-research-k {
-    display: inline-block;
-    margin-right: 0.55rem;
-    color: #f2c75c;
-    font-weight: 700;
-    font-size: 0.82rem;
-    letter-spacing: 0.04em;
-  }
-  @media (max-width: 600px) {
-    .sci-head {
-      align-items: flex-start;
+    .landing-core :global(.landing-core-viz) {
+      width: 264px !important;
+      height: 264px !important;
     }
   }
 </style>
