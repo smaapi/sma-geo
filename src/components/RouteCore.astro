@@ -42,8 +42,8 @@ const { size = 320, class: cls = '' } = Astro.props;
     opacity: 0.06;
   }
   .rcx-l {
-    opacity: 0;
-    filter: drop-shadow(0 0 6px rgba(242, 199, 92, 0.75));
+    opacity: 0.45;
+    filter: drop-shadow(0 0 7px rgba(242, 199, 92, 0.8));
   }
   .rcx-center {
     position: absolute;
@@ -63,11 +63,12 @@ const { size = 320, class: cls = '' } = Astro.props;
   .route-core .rcx-mid { animation: rcPath 5.6s ease-in-out infinite; animation-delay: 0.5s; }
   .route-core .rcx-outer { animation: rcPath 5.6s ease-in-out infinite; animation-delay: 1s; }
 
+  /* 金色寻路网络常亮(baseline 0.45),脉冲推到全亮再回落——效果始终在场,不再大段消隐 */
   @keyframes rcPath {
-    0% { opacity: 0; }
-    8% { opacity: 1; }
-    34% { opacity: 0.12; }
-    100% { opacity: 0; }
+    0% { opacity: 0.45; }
+    14% { opacity: 1; }
+    46% { opacity: 0.55; }
+    100% { opacity: 0.45; }
   }
   @keyframes rcCenter {
     0%, 100% { opacity: 0.7; }
