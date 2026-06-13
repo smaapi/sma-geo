@@ -8,7 +8,8 @@ const { site } = JSON.parse(readFileSync(new URL('./src/data/pages.json', import
 export default defineConfig({
   site,
   trailingSlash: 'ignore',
-  // 全站 CSS 内联(站点原本即全内联;改版后首页样式增大触发 auto 外链,显式锁定以保持
-  // 单文件自包含——评审快照可独立查看,且去除渲染阻塞请求利于 LCP。不涉任何 GEO 标签)。
-  build: { inlineStylesheets: 'always' },
+  // CSS 外链化(inlineStylesheets:'auto'):大块样式拆为外部 .css,降低 HTML 噪声占比(首页内联
+  // CSS 曾占 64%),利于 Kimi 等文本抽取型 AI 干净取正文。原 'always' 锁为改版评审期快照自包含,
+  // 已正式上线故解锁。不涉任何 GEO 标签:canonical/hreflang/og/JSON-LD 不变,仅 head 多一条 stylesheet link。
+  build: { inlineStylesheets: 'auto' },
 });
