@@ -1,8 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { softwareApplication } from '../lib/schema';
-import Logo from '../components/Logo.astro';
-import PathfindingViz from '../components/PathfindingViz.astro';
+import RouteCore from '../components/RouteCore.astro';
 
 // 接入示例:静态语法着色(无运行时 JS;set:html 注入,token 样式走 :global)
 const codeHtml = [
@@ -24,22 +23,23 @@ const codeHtml = [
   <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(softwareApplication)} />
 
   <section class="hero">
-    <div class="hero-head">
-      <span class="hero-mark"><Logo size={40} eager /></span>
-      <div>
+    <div class="hero-fx" aria-hidden="true"></div>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="hero-chip"><span class="chip-dot"></span>智能路由 · 系统运行中</span>
         <h1>SMA — 企业级 AI 网关</h1>
         <p class="hero-slogan">数据可控,为每个任务选择最合适的模型。</p>
         <p class="hero-slogan-en">Enterprise-controlled access — the right model for every task.</p>
+        <div class="hero-cta">
+          <a class="btn btn-solid" href="#integrate">查看接入示例</a>
+          <a class="btn btn-ghost" href="/zh/what-is-llm-gateway">什么是 LLM 网关</a>
+        </div>
+      </div>
+      <div class="hero-core">
+        <RouteCore size={340} class="hero-core-viz" />
+        <p class="hero-core-cap"><b>智能路由核心</b> · 真菌寻路 · <span class="cap-on">持续探索最优路径</span></p>
       </div>
     </div>
-    <div class="hero-cta">
-      <a class="btn btn-solid" href="#integrate">查看接入示例</a>
-      <a class="btn btn-ghost" href="/zh/what-is-llm-gateway">什么是 LLM 网关</a>
-    </div>
-    <PathfindingViz class="hero-viz" />
-    <p class="hero-caption">
-      智能路由的生物学灵感:像黏菌网络一样,在多条候选路径中持续探索,把流量沉淀到当前最合适的那一条。
-    </p>
   </section>
 
   <p class="answer">
@@ -123,101 +123,160 @@ const codeHtml = [
 </Base>
 
 <style>
-  /* 深色 hero(Logo 设计说明 §4 深底 #07130F;标识置浅底 tile,合"推荐浅底"规范) */
+  /* —— 科技感深色 hero:深海蓝绿底 + 电路点阵 + 金色寻路核心(复用产品动图) —— */
   .hero {
-    background:
-      radial-gradient(120% 150% at 84% -12%, rgba(47, 125, 94, 0.34) 0%, rgba(18, 60, 52, 0.12) 42%, rgba(7, 19, 15, 0) 70%),
-      var(--dark);
-    border: 1px solid rgba(95, 214, 163, 0.16);
-    border-radius: 16px;
-    padding: 2rem 2rem 1.25rem;
-    margin: 0.75rem 0 2.25rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(120, 180, 160, 0.16);
+    border-radius: 18px;
+    padding: 2.25rem 2.25rem 2rem;
+    margin: 0.75rem 0 2.5rem;
     color: #e6f2ea;
-    box-shadow: 0 16px 40px rgba(7, 19, 15, 0.22);
+    background:
+      radial-gradient(82% 120% at 86% 8%, rgba(215, 166, 66, 0.16) 0%, rgba(215, 166, 66, 0.05) 30%, rgba(7, 17, 16, 0) 58%),
+      radial-gradient(70% 120% at 6% 100%, rgba(34, 110, 96, 0.22) 0%, rgba(7, 17, 16, 0) 55%),
+      linear-gradient(150deg, #0b1a18 0%, #07130f 52%, #060f12 100%);
+    box-shadow: 0 22px 50px rgba(6, 14, 14, 0.4);
   }
-  .hero-head {
-    display: flex;
-    gap: 1.15rem;
+  /* 电路点阵 + 细网格层 */
+  .hero-fx {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgba(120, 200, 175, 0.16) 1px, transparent 1.4px),
+      linear-gradient(rgba(120, 200, 175, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120, 200, 175, 0.05) 1px, transparent 1px);
+    background-size: 22px 22px, 22px 22px, 22px 22px;
+    background-position: -1px -1px, 0 0, 0 0;
+    -webkit-mask-image: radial-gradient(120% 90% at 70% 30%, #000 35%, transparent 78%);
+    mask-image: radial-gradient(120% 90% at 70% 30%, #000 35%, transparent 78%);
+    opacity: 0.5;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 1.5rem;
     align-items: center;
   }
-  .hero-mark {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 64px;
-    height: 64px;
-    border-radius: 16px;
-    background: var(--soft);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 22px rgba(0, 0, 0, 0.38);
+  .hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid rgba(215, 166, 66, 0.4);
+    border-radius: 999px;
+    background: rgba(215, 166, 66, 0.08);
+    color: #f2c75c;
+    font-size: 0.76rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #f2c75c;
+    box-shadow: 0 0 0 0 rgba(242, 199, 92, 0.6);
+    animation: chipPulse 2.4s ease-out infinite;
+  }
+  @keyframes chipPulse {
+    0% { box-shadow: 0 0 0 0 rgba(242, 199, 92, 0.55); }
+    70%, 100% { box-shadow: 0 0 0 7px rgba(242, 199, 92, 0); }
   }
   .hero h1 {
-    margin: 0 0 0.45rem;
+    margin: 0.85rem 0 0.5rem;
     color: #fff;
-    font-size: 1.85rem;
+    font-size: 2rem;
+    line-height: 1.25;
     letter-spacing: 0.01em;
   }
   .hero-slogan {
     margin: 0;
     font-weight: 600;
-    font-size: 1.02rem;
-    color: #aef4d4;
+    font-size: 1.05rem;
+    color: #ffe6a8;
   }
   .hero-slogan-en {
-    margin: 0.2rem 0 0;
-    font-size: 0.84rem;
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
     color: #93bdab;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
   .hero-cta {
     display: flex;
     gap: 0.7rem;
     flex-wrap: wrap;
-    margin: 1.15rem 0 0.4rem;
+    margin: 1.35rem 0 0;
   }
   .btn {
     display: inline-block;
-    padding: 0.5rem 1.05rem;
-    border-radius: 9px;
+    padding: 0.55rem 1.15rem;
+    border-radius: 10px;
     font-size: 0.92rem;
     font-weight: 600;
     line-height: 1.5;
-    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
   }
   .btn:hover {
     text-decoration: none;
   }
   .btn-solid {
-    background: #5fd6a3;
-    color: #07130f;
+    background: linear-gradient(180deg, #f2c75c, #d7a642);
+    color: #1a1205;
+    box-shadow: 0 6px 18px rgba(215, 166, 66, 0.28);
   }
   .btn-solid:hover {
-    background: #7ee6b6;
+    background: linear-gradient(180deg, #f6d271, #e0b14e);
   }
   .btn-ghost {
-    border: 1px solid rgba(174, 244, 212, 0.38);
+    border: 1px solid rgba(174, 244, 212, 0.34);
     color: #d3efe1;
   }
   .btn-ghost:hover {
     border-color: rgba(174, 244, 212, 0.7);
     color: #fff;
   }
-  .hero :global(.hero-viz) {
-    margin: 0.4rem auto 0;
+  .hero-core {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
   }
-  .hero-caption {
-    margin: 0.9rem 0 0.25rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid rgba(95, 214, 163, 0.12);
-    font-size: 0.85rem;
-    color: #93bdab;
+  .hero-core :global(.hero-core-viz) {
+    filter: drop-shadow(0 0 28px rgba(215, 166, 66, 0.22));
   }
-  @media (max-width: 560px) {
+  .hero-core-cap {
+    margin: 0;
+    font-size: 0.78rem;
+    color: #9fb8ad;
+    text-align: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .hero-core-cap b {
+    color: #f2c75c;
+    font-weight: 600;
+  }
+  .cap-on {
+    color: #7ee6b6;
+  }
+  @media (max-width: 600px) {
     .hero {
-      padding: 1.5rem 1.25rem 1rem;
+      padding: 1.5rem 1.25rem 1.5rem;
     }
-    .hero-head {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.85rem;
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    .hero-core {
+      order: -1;
+    }
+    .hero-core :global(.hero-core-viz) {
+      width: 240px !important;
+      height: 240px !important;
     }
   }
 

@@ -1,0 +1,81 @@
+---
+// SMA 智能路由核心 · 真菌寻路动效 —— 复用产品(sma_demo)既有品牌动图资产(分层 PNG 蒙版)。
+// 金色寻路网络从中央核心向外按 inner→mid→outer 次序逐层点亮,呼应黏菌寻路与智能路由(L1)。
+// 纯 CSS 动画,无运行时 JS;prefers-reduced-motion 下定格为静态发光。
+interface Props {
+  size?: number;
+  class?: string;
+}
+const { size = 320, class: cls = '' } = Astro.props;
+---
+
+<div class={`route-core ${cls}`} style={`width:${size}px;height:${size}px`} data-state="idle" aria-label="SMA 智能路由核心 · 真菌寻路">
+  <img class="rcx-base" src="/brand/route-core-base-dark.png" alt="" decoding="async" />
+  <img class="rcx-dim" src="/brand/route-core-gold-mask.png" alt="" decoding="async" />
+  <img class="rcx-l rcx-inner" src="/brand/route-core-gold-inner.png" alt="" decoding="async" />
+  <img class="rcx-l rcx-mid" src="/brand/route-core-gold-mid.png" alt="" decoding="async" />
+  <img class="rcx-l rcx-outer" src="/brand/route-core-gold-outer.png" alt="" decoding="async" />
+  <span class="rcx-center"></span>
+</div>
+
+<style>
+  .route-core {
+    position: relative;
+    display: inline-block;
+    line-height: 0;
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+  .route-core img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+  .rcx-base {
+    position: relative;
+    opacity: 0.95;
+  }
+  .rcx-dim {
+    opacity: 0.06;
+  }
+  .rcx-l {
+    opacity: 0;
+    filter: drop-shadow(0 0 6px rgba(242, 199, 92, 0.75));
+  }
+  .rcx-center {
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    width: 12%;
+    height: 12%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff3c8 0%, #f2c75c 55%, rgba(215, 166, 66, 0) 75%);
+    filter: drop-shadow(0 0 10px rgba(242, 199, 92, 0.9));
+    animation: rcCenter 5.6s ease-in-out infinite;
+  }
+
+  /* 寻路脉冲:中心 → inner → mid → outer 逐层点亮后回落 */
+  .route-core .rcx-inner { animation: rcPath 5.6s ease-in-out infinite; animation-delay: 0s; }
+  .route-core .rcx-mid { animation: rcPath 5.6s ease-in-out infinite; animation-delay: 0.5s; }
+  .route-core .rcx-outer { animation: rcPath 5.6s ease-in-out infinite; animation-delay: 1s; }
+
+  @keyframes rcPath {
+    0% { opacity: 0; }
+    8% { opacity: 1; }
+    34% { opacity: 0.12; }
+    100% { opacity: 0; }
+  }
+  @keyframes rcCenter {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rcx-l { animation: none; opacity: 0.7; }
+    .rcx-center { animation: none; }
+  }
+</style>
