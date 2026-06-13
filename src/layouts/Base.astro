@@ -109,6 +109,9 @@ const nav = zh
           ? 'OpenAI、Anthropic、Google 为各商标持有人,本平台与上述公司无官方合作关系(如有变更以公告为准)。模型名称仅为指明性使用。'
           : 'OpenAI, Anthropic, and Google are trademarks of their respective holders. This platform has no official affiliation with these companies (subject to change by announcement). Model names are used nominatively.'}
       </p>
+      <p class="beian">
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener nofollow">苏ICP备2026034119号-1</a>
+      </p>
     </footer>
   </body>
 </html>
@@ -279,6 +282,16 @@ const nav = zh
     font-size: 0.8rem;
     opacity: 0.85;
   }
+  footer .beian {
+    padding-top: 0;
+    font-size: 0.8rem;
+  }
+  footer .beian a {
+    color: var(--muted);
+  }
+  footer .beian a:hover {
+    color: var(--accent);
+  }
   .related {
     margin-top: 2.5rem;
     border-top: 1px solid var(--line);
@@ -417,6 +430,12 @@ const nav = zh
   }
   body.theme-dark .slogan-zh {
     color: #ffe6a8;
+  }
+  body.theme-dark footer .beian a {
+    color: #8aa79b;
+  }
+  body.theme-dark footer .beian a:hover {
+    color: #cfe6db;
   }
   body.theme-dark :focus-visible {
     outline-color: #f2c75c;
