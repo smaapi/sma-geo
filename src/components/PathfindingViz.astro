@@ -1,98 +1,177 @@
 ---
-// 真菌寻路可视化 — 抽象黏菌(Physarum)寻路网络:企业请求经候选模型,沿最优路径高亮流动。
-// 呼应 SMA 智能路由的生物学灵感(L1 真菌寻路),不画具象菌丝(守 logo 规范)。纯 SVG+CSS,无运行时 JS。
+// 真菌寻路可视化 — 抽象黏菌(Physarum)寻路:多条候选暗淡探索,最优路径发光,
+// 一束光沿最优路径流向目标模型,中央路由核呼应 logo 中央节点。呼应 SMA 智能路由的生物学灵感(L1)。
+// 不画具象菌丝(守 logo 规范)。纯 SVG + CSS,无运行时 JS,带 prefers-reduced-motion 降级。
 interface Props {
   class?: string;
 }
 const { class: cls = '' } = Astro.props;
+
+// 最优路径几何(主线 / 光晕 / 光点共用同一 d,保证流光严丝合缝)
+const BEST = 'M54 116 C150 116 150 108 240 108 C330 108 330 102 426 102';
 ---
 
 <div class={`pf ${cls}`} aria-hidden="true">
-  <svg viewBox="0 0 440 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 480 200" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
     <defs>
-      <filter id="pfGlow" x="-40%" y="-40%" width="180%" height="180%">
-        <feGaussianBlur stdDeviation="3.2" result="b" />
-        <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
-      </filter>
-      <radialGradient id="pfField" cx="50%" cy="50%" r="75%">
-        <stop offset="0%" stop-color="#1c5645" stop-opacity="0.16" />
+      <radialGradient id="pfHalo" cx="50%" cy="54%" r="62%">
+        <stop offset="0%" stop-color="#2f7d5e" stop-opacity="0.28" />
         <stop offset="100%" stop-color="#07130f" stop-opacity="0" />
       </radialGradient>
+      <linearGradient id="pfBestGrad" x1="54" y1="0" x2="426" y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#3f9e78" />
+        <stop offset="55%" stop-color="#5fd6a3" />
+        <stop offset="100%" stop-color="#b6f5d8" />
+      </linearGradient>
+      <filter id="pfSoft" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="4.5" />
+      </filter>
+      <filter id="pfGlow" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur stdDeviation="2.6" result="b" />
+        <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
     </defs>
 
-    <rect x="0" y="0" width="440" height="280" fill="url(#pfField)" />
+    <ellipse cx="240" cy="104" rx="216" ry="86" fill="url(#pfHalo)" />
 
-    <!-- 候选路径(暗淡):多条可能,黏菌探索 -->
-    <g stroke="#2f7d5e" stroke-width="1.4" opacity="0.28" stroke-linecap="round">
-      <path d="M40 140 C100 90, 110 70, 150 55" />
-      <path d="M40 140 C100 150, 110 200, 150 225" />
-      <path d="M150 55 C210 70, 240 120, 290 140" />
-      <path d="M150 225 C210 210, 240 160, 290 140" />
-      <path d="M150 55 C220 120, 230 200, 150 225" opacity="0.5" />
+    <!-- 候选路径:多条可能,黏菌暗淡探索 -->
+    <g class="pf-cand" stroke="#5fd6a3" fill="none" stroke-linecap="round" stroke-width="1.6">
+      <path d="M54 116 C132 60 190 54 240 108" />
+      <path d="M54 116 C132 170 190 176 240 108" />
+      <path class="pf-cand-dead" d="M240 108 C302 78 346 62 408 56" />
     </g>
 
-    <!-- 最优路径(高亮流动):入口 → 候选B → 路由核 → 最优模型 -->
-    <path
-      class="pf-best"
-      d="M40 140 C110 140, 110 140, 150 140 C210 140, 240 140, 290 140 L410 140"
-      stroke="#5fd6a3" stroke-width="2.4" stroke-linecap="round" filter="url(#pfGlow)"
-    />
-    <!-- 流动光点:沿最优路径推进的寻路脉冲 -->
-    <circle class="pf-pulse" r="4.5" fill="#aef4d4" filter="url(#pfGlow)" />
+    <!-- 最优路径:光晕底 + 渐变主线 -->
+    <path class="pf-best-glow" d={BEST} stroke="#5fd6a3" stroke-width="7" stroke-linecap="round" filter="url(#pfSoft)" />
+    <path class="pf-best" d={BEST} stroke="url(#pfBestGrad)" stroke-width="2.6" stroke-linecap="round" />
+
+    <!-- 探索光点:沿候选路径行至中途消散(寻路的"尝试") -->
+    <circle class="pf-scout" r="2.4" fill="#8fe6bf" />
+
+    <!-- 流光:沿最优路径推进的寻路脉冲(halo + core) -->
+    <circle class="pf-comet-halo" r="9" fill="#aef4d4" filter="url(#pfSoft)" />
+    <circle class="pf-comet" r="3.2" fill="#eafff6" filter="url(#pfGlow)" />
 
     <!-- 节点 -->
-    <g class="pf-nodes">
-      <circle cx="40" cy="140" r="7" class="n-in" />
-      <circle cx="150" cy="55" r="6" class="n" />
-      <circle cx="150" cy="225" r="6" class="n" />
-      <circle cx="150" cy="140" r="6.5" class="n n-on" />
-      <!-- 路由决策核(呼应 logo 中央节点) -->
-      <rect x="278" y="128" width="24" height="24" rx="5" transform="rotate(45 290 140)" class="n-core" />
-      <circle cx="410" cy="140" r="7.5" class="n-out" />
+    <circle class="pf-src" cx="54" cy="116" r="6" />
+    <circle class="pf-dead" cx="408" cy="56" r="4" />
+
+    <!-- 路由核(呼应 logo 中央切换节点:圆角方 + 亮边 + 绿心) -->
+    <g class="pf-core">
+      <rect x="225" y="93" width="30" height="30" rx="8" fill="#07130f" stroke="#7ee6b6" stroke-width="2" />
+      <rect x="234" y="102" width="12" height="12" rx="3.5" fill="#5fd6a3" />
     </g>
 
-    <text x="34" y="168" class="pf-label">请求</text>
-    <text x="290" y="178" class="pf-label" text-anchor="middle">路由核</text>
-    <text x="410" y="168" class="pf-label" text-anchor="middle">最优模型</text>
+    <!-- 目标(最优模型):光点抵达时点亮 -->
+    <circle class="pf-dst" cx="426" cy="102" r="7" />
+    <circle class="pf-dst-ring" cx="426" cy="102" r="7" />
   </svg>
 </div>
 
-<style>
-  .pf { width: 100%; max-width: 440px; }
-  .pf svg { width: 100%; height: auto; display: block; }
+<style define:vars={{ best: `path("${BEST}")` }}>
+  .pf {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .pf svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
 
-  .pf-nodes .n { fill: #2f7d5e; }
-  .pf-nodes .n-in { fill: #8fe6bf; }
-  .pf-nodes .n-out { fill: #5fd6a3; }
-  .pf-nodes .n-on { fill: #aef4d4; }
-  .pf-nodes .n-core { fill: #0d2a22; stroke: #5fd6a3; stroke-width: 2; }
-  .pf-label { fill: #9fc7b6; font-size: 11px; font-family: inherit; }
-
+  .pf-cand path {
+    opacity: 0.24;
+  }
+  .pf-cand-dead {
+    opacity: 0.16;
+  }
   .pf-best {
-    stroke-dasharray: 10 8;
-    animation: flow 1.6s linear infinite;
+    opacity: 0.96;
   }
-  @keyframes flow { to { stroke-dashoffset: -18; } }
+  .pf-best-glow {
+    opacity: 0.32;
+  }
 
-  .pf-pulse {
-    offset-path: path("M40 140 C110 140, 110 140, 150 140 C210 140, 240 140, 290 140 L410 140");
-    offset-rotate: 0deg;
-    animation: travel 2.8s cubic-bezier(.5,0,.5,1) infinite;
+  .pf-src {
+    fill: #b6f5d8;
   }
-  @keyframes travel {
+  .pf-dead {
+    fill: #2f7d5e;
+    opacity: 0.4;
+  }
+  .pf-dst {
+    fill: #07130f;
+    stroke: #5fd6a3;
+    stroke-width: 2;
+  }
+  .pf-dst-ring {
+    fill: none;
+    stroke: #aef4d4;
+    stroke-width: 2;
+    transform-origin: 426px 102px;
+    opacity: 0;
+    animation: pfArrive 4.2s ease-out infinite;
+  }
+
+  .pf-core {
+    transform-origin: 240px 108px;
+    animation: pfBreathe 4.2s ease-in-out infinite;
+  }
+
+  /* 流光:halo 与 core 共用最优路径,offset-rotate 0 保持正向 */
+  .pf-comet,
+  .pf-comet-halo {
+    offset-path: var(--best);
+    offset-rotate: 0deg;
+  }
+  .pf-comet {
+    animation: pfTravel 4.2s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  }
+  .pf-comet-halo {
+    animation: pfTravelHalo 4.2s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  }
+
+  .pf-scout {
+    offset-path: path('M54 116 C132 60 190 54 240 108');
+    offset-rotate: 0deg;
+    animation: pfScout 4.2s ease-in-out infinite;
+  }
+
+  @keyframes pfTravel {
     0% { offset-distance: 0%; opacity: 0; }
-    12% { opacity: 1; }
+    9% { opacity: 1; }
     88% { opacity: 1; }
     100% { offset-distance: 100%; opacity: 0; }
   }
-
-  .n-on { animation: nodeOn 2.8s ease-in-out infinite; transform-origin: center; }
-  .n-out { animation: nodeOut 2.8s ease-in-out infinite; transform-origin: center; }
-  @keyframes nodeOn { 0%,100% { opacity: .6 } 40% { opacity: 1 } }
-  @keyframes nodeOut { 0%,80% { opacity: .55 } 92% { opacity: 1 } }
+  @keyframes pfTravelHalo {
+    0% { offset-distance: 0%; opacity: 0; }
+    9% { opacity: 0.5; }
+    88% { opacity: 0.5; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
+  @keyframes pfScout {
+    0% { offset-distance: 0%; opacity: 0; }
+    6% { opacity: 0.85; }
+    46% { offset-distance: 64%; opacity: 0; }
+    100% { offset-distance: 64%; opacity: 0; }
+  }
+  @keyframes pfArrive {
+    0%, 80% { opacity: 0; transform: scale(0.7); }
+    90% { opacity: 0.9; transform: scale(1.7); }
+    100% { opacity: 0; transform: scale(2.3); }
+  }
+  @keyframes pfBreathe {
+    0%, 100% { opacity: 0.82; }
+    50% { opacity: 1; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    .pf-best, .pf-pulse, .n-on, .n-out { animation: none; }
-    .pf-pulse { opacity: 0; }
+    .pf-comet,
+    .pf-comet-halo,
+    .pf-scout { opacity: 0; animation: none; }
+    .pf-dst-ring,
+    .pf-core { animation: none; }
+    .pf-core { opacity: 1; }
   }
 </style>

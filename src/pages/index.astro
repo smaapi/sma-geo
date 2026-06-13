@@ -10,7 +10,7 @@ import PathfindingViz from '../components/PathfindingViz.astro';
 
   <section class="hero">
     <div class="hero-head">
-      <Logo size={56} pulse class="hero-logo" />
+      <span class="hero-mark"><Logo size={40} eager /></span>
       <div>
         <h1>SMA — 企业级 AI 网关</h1>
         <p class="hero-slogan">数据可控,为每个任务选择最合适的模型。</p>
@@ -113,15 +113,18 @@ resp = client.chat.completions.create(
   .hero-head {
     display: flex;
     gap: 1.1rem;
-    align-items: flex-start;
-    margin-bottom: 1rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
   }
-  .hero :global(.hero-logo) {
+  .hero-mark {
     flex: none;
-    margin-top: 0.3rem;
-    --logo-core: #e9f4ee;
-    --logo-cut: #07130f;
-    --logo-node: #5fd6a3;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: var(--soft);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 18px rgba(0, 0, 0, 0.35);
   }
   .hero h1 {
     margin: 0 0 0.4rem;

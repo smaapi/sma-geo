@@ -52,7 +52,7 @@ const nav = zh
     <header>
       <nav>
         <a class="brand" href={zh ? '/' : '/en/'}>
-          <Logo size={26} />
+          <Logo size={26} eager />
           <span>{zh ? '菌路 SMA' : 'smaapi Gateway'}</span>
         </a>
         {nav.map((item) => <a href={item.href}>{item.label}</a>)}
