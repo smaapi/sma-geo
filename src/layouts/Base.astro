@@ -55,7 +55,11 @@ const nav = zh
           <Logo size={26} eager />
           <span>{zh ? '菌路 SMA' : 'smaapi Gateway'}</span>
         </a>
-        {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+        {nav.map((item) => (
+          <a href={item.href} aria-current={item.href === route ? 'page' : undefined}>
+            {item.label}
+          </a>
+        ))}
         {alt && <a class="lang-switch" href={alt.route}>{zh ? 'English' : '中文'}</a>}
       </nav>
     </header>
@@ -97,12 +101,30 @@ const nav = zh
   * {
     box-sizing: border-box;
   }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  [id] {
+    scroll-margin-top: 4.25rem;
+  }
+  ::selection {
+    background: #bff0d9;
+    color: #0b211a;
+  }
   body {
     margin: 0;
     color: var(--fg);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
       'Microsoft YaHei', sans-serif;
     line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--node);
+    outline-offset: 2px;
+    border-radius: 3px;
   }
   header nav,
   main,
@@ -113,8 +135,13 @@ const nav = zh
     padding: 0 1.25rem;
   }
   header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     border-bottom: 1px solid var(--line);
-    background: #fff;
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
   }
   header nav {
     display: flex;
@@ -140,9 +167,14 @@ const nav = zh
   .lang-switch {
     margin-left: auto;
   }
+  header nav a[aria-current='page'] {
+    color: var(--core);
+    font-weight: 600;
+  }
   a {
     color: var(--accent);
     text-decoration: none;
+    transition: color 0.15s ease;
   }
   a:hover {
     text-decoration: underline;
@@ -156,6 +188,8 @@ const nav = zh
   }
   h2 {
     color: var(--core);
+    margin-top: 2.6rem;
+    line-height: 1.35;
   }
   .answer {
     border-left: 4px solid var(--accent);

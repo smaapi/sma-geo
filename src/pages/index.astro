@@ -3,6 +3,21 @@ import Base from '../layouts/Base.astro';
 import { softwareApplication } from '../lib/schema';
 import Logo from '../components/Logo.astro';
 import PathfindingViz from '../components/PathfindingViz.astro';
+
+// 接入示例:静态语法着色(无运行时 JS;set:html 注入,token 样式走 :global)
+const codeHtml = [
+  '<span class="k">from</span> openai <span class="k">import</span> OpenAI',
+  '',
+  'client = OpenAI(',
+  '    base_url=<span class="s">"https://www.smaapi.com/v1"</span>,  <span class="c"># 指向 SMA 网关</span>',
+  '    api_key=<span class="s">"YOUR_SMA_KEY"</span>,                <span class="c"># 网关密钥,模型厂商密钥不出企业</span>',
+  ')',
+  '',
+  'resp = client.chat.completions.create(',
+  '    model=<span class="s">"deepseek-chat"</span>,  <span class="c"># 模型名按路由策略可换可路由</span>',
+  '    messages=[{<span class="s">"role"</span>: <span class="s">"user"</span>, <span class="s">"content"</span>: <span class="s">"你好"</span>}],',
+  ')',
+].join('\n');
 ---
 
 <Base route="/">
@@ -16,6 +31,10 @@ import PathfindingViz from '../components/PathfindingViz.astro';
         <p class="hero-slogan">数据可控,为每个任务选择最合适的模型。</p>
         <p class="hero-slogan-en">Enterprise-controlled access — the right model for every task.</p>
       </div>
+    </div>
+    <div class="hero-cta">
+      <a class="btn btn-solid" href="#integrate">查看接入示例</a>
+      <a class="btn btn-ghost" href="/zh/what-is-llm-gateway">什么是 LLM 网关</a>
     </div>
     <PathfindingViz class="hero-viz" />
     <p class="hero-caption">
@@ -40,6 +59,7 @@ import PathfindingViz from '../components/PathfindingViz.astro';
   </p>
   <div class="trust">
     <div class="trust-card">
+      <span class="trust-num" aria-hidden="true">01</span>
       <span class="trust-tag">第一层 · 路由可信</span>
       <h3>智能路由</h3>
       <p>
@@ -47,6 +67,7 @@ import PathfindingViz from '../components/PathfindingViz.astro';
       </p>
     </div>
     <div class="trust-card">
+      <span class="trust-num" aria-hidden="true">02</span>
       <span class="trust-tag">第二层 · 边界可信</span>
       <h3>成本与权限治理</h3>
       <p>
@@ -54,6 +75,7 @@ import PathfindingViz from '../components/PathfindingViz.astro';
       </p>
     </div>
     <div class="trust-card">
+      <span class="trust-num" aria-hidden="true">03</span>
       <span class="trust-tag">第三层 · 留痕可信</span>
       <h3>全链路审计</h3>
       <p>
@@ -62,28 +84,27 @@ import PathfindingViz from '../components/PathfindingViz.astro';
     </div>
   </div>
 
-  <h2>接入只改一行配置</h2>
+  <h2 id="integrate">接入只改一行配置</h2>
   <p>应用侧沿用 OpenAI SDK,把 <code>base_url</code> 指向网关即可:</p>
-  <pre is:raw><code>from openai import OpenAI
-
-client = OpenAI(
-    base_url="https://www.smaapi.com/v1",  # 指向 SMA 网关
-    api_key="YOUR_SMA_KEY",                # 网关密钥,模型厂商密钥不出企业
-)
-
-resp = client.chat.completions.create(
-    model="deepseek-chat",  # 模型名按路由策略可换可路由
-    messages=[{"role": "user", "content": "你好"}],
-)</code></pre>
+  <figure class="codeblock">
+    <figcaption>
+      <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+      <span class="codefile">app.py</span>
+    </figcaption>
+    <pre><code set:html={codeHtml} /></pre>
+  </figure>
   <p class="footnote">模型名称为指明性使用;可接入模型范围与路由策略以控制台实际配置为准。</p>
 
   <h2>学术顾问</h2>
   <div class="advisor">
-    <p class="advisor-name"><strong>谢源 教授</strong> · 学术顾问</p>
-    <p>
-      研究关注持续学习与企业 AI 系统。在 SMA,他关注的核心命题是"记忆归企业"——模型可以替换,但企业的使用记忆、路由经验与治理规则,应当沉淀在企业自己手里。这一命题贯穿
-      SMA 的路由校准与审计设计。
-    </p>
+    <span class="advisor-mono" aria-hidden="true">谢</span>
+    <div>
+      <p class="advisor-name"><strong>谢源 教授</strong> · 学术顾问</p>
+      <p>
+        研究关注持续学习与企业 AI 系统。在 SMA,他关注的核心命题是"记忆归企业"——模型可以替换,但企业的使用记忆、路由经验与治理规则,应当沉淀在企业自己手里。这一命题贯穿
+        SMA 的路由校准与审计设计。
+      </p>
+    </div>
   </div>
 
   <h2>谁适合使用 SMA?</h2>
@@ -102,19 +123,22 @@ resp = client.chat.completions.create(
 </Base>
 
 <style>
-  /* 深色 hero(Logo 设计说明 §4 推荐深底 #07130F;Logo 用反白版:浅主体+深底) */
+  /* 深色 hero(Logo 设计说明 §4 深底 #07130F;标识置浅底 tile,合"推荐浅底"规范) */
   .hero {
-    background: var(--dark);
-    border-radius: 14px;
-    padding: 1.75rem 1.75rem 1.25rem;
-    margin: 0.5rem 0 2rem;
+    background:
+      radial-gradient(120% 150% at 84% -12%, rgba(47, 125, 94, 0.34) 0%, rgba(18, 60, 52, 0.12) 42%, rgba(7, 19, 15, 0) 70%),
+      var(--dark);
+    border: 1px solid rgba(95, 214, 163, 0.16);
+    border-radius: 16px;
+    padding: 2rem 2rem 1.25rem;
+    margin: 0.75rem 0 2.25rem;
     color: #e6f2ea;
+    box-shadow: 0 16px 40px rgba(7, 19, 15, 0.22);
   }
   .hero-head {
     display: flex;
-    gap: 1.1rem;
+    gap: 1.15rem;
     align-items: center;
-    margin-bottom: 0.5rem;
   }
   .hero-mark {
     flex: none;
@@ -124,35 +148,76 @@ resp = client.chat.completions.create(
     height: 64px;
     border-radius: 16px;
     background: var(--soft);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06), 0 6px 18px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 22px rgba(0, 0, 0, 0.38);
   }
   .hero h1 {
-    margin: 0 0 0.4rem;
+    margin: 0 0 0.45rem;
     color: #fff;
-    font-size: 1.7rem;
+    font-size: 1.85rem;
+    letter-spacing: 0.01em;
   }
   .hero-slogan {
     margin: 0;
     font-weight: 600;
+    font-size: 1.02rem;
     color: #aef4d4;
   }
   .hero-slogan-en {
-    margin: 0.15rem 0 0;
-    font-size: 0.85rem;
-    color: #9fc7b6;
+    margin: 0.2rem 0 0;
+    font-size: 0.84rem;
+    color: #93bdab;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin: 1.15rem 0 0.4rem;
+  }
+  .btn {
+    display: inline-block;
+    padding: 0.5rem 1.05rem;
+    border-radius: 9px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.5;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .btn:hover {
+    text-decoration: none;
+  }
+  .btn-solid {
+    background: #5fd6a3;
+    color: #07130f;
+  }
+  .btn-solid:hover {
+    background: #7ee6b6;
+  }
+  .btn-ghost {
+    border: 1px solid rgba(174, 244, 212, 0.38);
+    color: #d3efe1;
+  }
+  .btn-ghost:hover {
+    border-color: rgba(174, 244, 212, 0.7);
+    color: #fff;
   }
   .hero :global(.hero-viz) {
-    margin: 0 auto;
+    margin: 0.4rem auto 0;
   }
   .hero-caption {
-    margin: 0.75rem 0 0.25rem;
+    margin: 0.9rem 0 0.25rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(95, 214, 163, 0.12);
     font-size: 0.85rem;
-    color: #9fc7b6;
+    color: #93bdab;
   }
   @media (max-width: 560px) {
+    .hero {
+      padding: 1.5rem 1.25rem 1rem;
+    }
     .hero-head {
       flex-direction: column;
-      gap: 0.75rem;
+      align-items: flex-start;
+      gap: 0.85rem;
     }
   }
 
@@ -162,11 +227,33 @@ resp = client.chat.completions.create(
     margin: 1.25rem 0 2rem;
   }
   .trust-card {
+    position: relative;
+    overflow: hidden;
     border: 1px solid var(--line);
     border-left: 4px solid var(--core);
-    border-radius: 10px;
+    border-radius: 12px;
     background: var(--soft);
-    padding: 0.9rem 1.1rem;
+    padding: 1rem 1.2rem;
+  }
+  @media (hover: hover) {
+    .trust-card {
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .trust-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 26px rgba(18, 60, 52, 0.1);
+    }
+  }
+  .trust-num {
+    position: absolute;
+    top: 0.1rem;
+    right: 0.75rem;
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.4;
+    color: rgba(18, 60, 52, 0.07);
+    pointer-events: none;
+    user-select: none;
   }
   .trust-card h3 {
     margin: 0.25rem 0 0.4rem;
@@ -178,15 +265,69 @@ resp = client.chat.completions.create(
   .trust-tag {
     font-size: 0.78rem;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     color: var(--node);
   }
 
+  /* 终端式代码块:外观层;pre 基础样式沿用全局 */
+  .codeblock {
+    margin: 1rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(18, 60, 52, 0.5);
+    box-shadow: 0 10px 30px rgba(7, 19, 15, 0.16);
+  }
+  .codeblock figcaption {
+    display: flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.55rem 1rem;
+    background: #0d2a22;
+    border-bottom: 1px solid rgba(95, 214, 163, 0.14);
+  }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .d1 { background: #1d5c49; }
+  .d2 { background: #2f7d5e; }
+  .d3 { background: #5fd6a3; }
+  .codefile {
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: #9fc7b6;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  .codeblock pre {
+    margin: 0;
+    border-radius: 0;
+  }
+  .codeblock :global(.k) { color: #8fe6bf; }
+  .codeblock :global(.s) { color: #b6f5d8; }
+  .codeblock :global(.c) { color: #6f8d80; }
+
   .advisor {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
     border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 0.9rem 1.1rem;
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem;
     background: #fff;
+  }
+  .advisor-mono {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--soft);
+    border: 1px solid var(--line);
+    color: var(--core);
+    font-weight: 700;
+    font-size: 1.15rem;
   }
   .advisor-name {
     margin: 0 0 0.4rem;

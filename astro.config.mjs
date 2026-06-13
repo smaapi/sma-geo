@@ -8,4 +8,7 @@ const { site } = JSON.parse(readFileSync(new URL('./src/data/pages.json', import
 export default defineConfig({
   site,
   trailingSlash: 'ignore',
+  // 全站 CSS 内联(站点原本即全内联;改版后首页样式增大触发 auto 外链,显式锁定以保持
+  // 单文件自包含——评审快照可独立查看,且去除渲染阻塞请求利于 LCP。不涉任何 GEO 标签)。
+  build: { inlineStylesheets: 'always' },
 });
