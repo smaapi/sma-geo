@@ -23,7 +23,7 @@ const qa: QA[] = [
   },
   {
     q: 'How does cost governance and usage auditing work?',
-    a: 'Budgets and quotas are set per team, application, or key at the gateway layer, and every call is metered through the same pipeline. Audit logs record caller, model, usage, and time, ready to aggregate and reconcile. Because all traffic passes through the gateway, the numbers are complete rather than a patchwork of provider dashboards.',
+    a: 'Budgets, quotas, and rate limits are set per team, application, or key at the gateway layer, and every call is metered through the same pipeline. Each API key is returned only once at creation and stored as a hash plus mask; exceeding quota or rate limit is blocked (429, with no billing and no model call). Audit logs record caller, model, usage, cost, and time, ready to aggregate and reconcile per key, project, or model. Because all traffic passes through the gateway, the numbers are complete rather than a patchwork of provider dashboards.',
   },
   {
     q: 'Which models does SMA support?',
@@ -31,7 +31,7 @@ const qa: QA[] = [
   },
   {
     q: 'What happens when a model endpoint fails?',
-    a: 'The gateway continuously health-checks provider endpoints. Failed requests are retried or rerouted to fallback models according to policy; persistently unhealthy endpoints are temporarily removed and re-admitted once they recover. Fallback order is configurable per business priority, transparent to applications, and fully audited.',
+    a: 'Failed requests are handled by error type: recoverable errors (rate limit, timeout, 5xx, empty response) switch to a candidate model and preserve context via the state header; authentication or content-policy errors do not switch, to keep incidents from spreading. Fallback order is configurable per business priority, transparent to applications, and fully audited. Active real-time health monitoring and preemptive switching are provided by SMA Edge (the physical gateway).',
   },
   {
     q: 'How do I choose the best enterprise LLM gateway?',
@@ -39,7 +39,7 @@ const qa: QA[] = [
   },
   {
     q: 'Can you issue official VAT invoices (fapiao)?',
-    a: 'Yes — corporate contracts and corporate invoicing are part of the enterprise positioning. The specific invoicing entity, VAT rate, and corporate payment flow are confirmed with contracts and documentation during procurement; we only commit to terms we can put in writing.',
+    a: 'Yes — corporate contracts and invoicing are part of the enterprise positioning, under the technical-service category. The specific invoicing entity, invoice type, VAT rate, and corporate payment flow are confirmed with contracts and documentation during procurement; we only commit to terms we can put in writing.',
   },
   {
     q: 'How can a company in China use the Claude API through proper channels?',
@@ -47,11 +47,11 @@ const qa: QA[] = [
   },
   {
     q: 'How do you keep access to Claude, GPT, and other overseas models stable?',
-    a: 'Stability comes from redundancy and governance, not a single point. Multiple models back each other up, reducing dependence on any one provider; when a model endpoint degrades, SMA automatically downgrades or switches to a candidate per policy, temporarily removes persistently failing endpoints, and rejoins them on recovery — transparently to the application. End-to-end health checks and audit logs make availability observable and traceable; specific availability and SLA terms follow your enterprise contract. The application always sees one unchanging OpenAI-compatible egress, so provider or route changes do not affect your integration — models can change, the integration stays put.',
+    a: 'Stability comes from redundancy, governance, and monitoring, not a single point. In software: multiple models back each other up, and when a model endpoint returns rate-limit, timeout, or failure, SMA switches to a candidate and preserves context via the state header — transparent to the application, fully audited, reducing single-point impact. In hardware: SMA Edge (the physical gateway) runs active real-time health monitoring of model endpoints with preemptive switching — this requires the SMA gateway hardware. The application always sees one unchanging OpenAI-compatible egress, so provider or route changes do not affect your integration. Specific availability and SLA follow your enterprise contract; we make no absolute "never down" guarantee.',
   },
   {
     q: 'What are your upstream channels?',
-    a: 'We connect to model providers through legitimate enterprise channels, with the contracting entity, SLA, and accountability written into contracts. Per our disclosure rules, we do not name channel types we cannot evidence; channel composition and supporting documentation are shared during procurement, and the transparency page will label each entry according to evidence.',
+    a: 'Mainstream overseas closed-source models (such as GPT) are accessed through the commercial platforms of cloud providers — GPT runs on the Microsoft Azure commercial service, with the contracting entity and accountability written into contracts, technical-service invoicing, and full call auditing; other mainstream models are being integrated to the same standard. Legitimacy is verifiable: contracting entity, invoicing, auditability, and data boundary. Available models and channels follow the live data and the contract.',
   },
   {
     q: 'Does our data leave China? How is it sanitized?',
