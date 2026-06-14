@@ -1,0 +1,89 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../lib/schema';
+import pagesData from '../../data/pages.json';
+
+const route = '/zh/llm-cost-governance';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: '怎么防止某个团队或应用超支?',
+    a: '在网关层为团队、应用、密钥分别设预算与配额,并配置每分钟限流。用量逼近或超出阈值时按策略拦截:超配额或超限流的请求直接返回 429,不计费也不调用模型,把超支挡在调用之前,而不是月底看账单才发现。',
+  },
+  {
+    q: 'API Key 泄漏了怎么办?',
+    a: '密钥仅在创建时返回一次,落盘只存哈希与掩码,平台侧不留明文。每个密钥绑定团队 / 应用与权限范围,可随时禁用或轮换;由于所有调用都经网关并留痕,异常用量可被审计发现并定位到具体密钥。',
+  },
+  {
+    q: '能按部门或项目分摊成本吗?',
+    a: '可以。每次调用都记录调用方、目标模型、token 用量与成本估算,审计可按密钥、项目、模型多维度汇总。由于流量统一经过网关,成本口径是完整的,而不是各供应商后台数据的拼图,分摊与对账有完整证据链。',
+  },
+];
+---
+
+<Base route={route} theme="dark">
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify(techArticle({ headline: '多团队大模型成本与权限治理', description: page.description, url: pagesData.site + route, inLanguage: 'zh-CN', datePublished: page.datePublished, dateModified: page.dateModified }))} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>多团队怎么管控大模型调用的成本与权限?</h1>
+  <p class="answer">
+    在网关层为每个团队、应用、密钥设置预算、配额与限流,所有调用统一计量;每次调用记录调用方、目标模型、用量与成本,可按密钥、项目、模型多维度审计对账。超出配额或限流的请求直接拦截(返回 429、不计费也不调用模型),把成本控制做在调用之前,而非月底对账单。
+  </p>
+
+  <h2>多模型、多团队为什么容易成本失控</h2>
+  <p>
+    当多个团队、多个应用同时使用多家模型,供应商各有独立的密钥与计费后台。逐家直连的结果是:密钥散落在各代码库、成本没有统一口径、没有人能在调用发生前设上限。等月底把几家账单拼起来,往往已经超支,且分不清是哪个团队、哪个应用花的。这不是用量问题,是治理缺位。
+  </p>
+
+  <h2>网关层治理做的四件事</h2>
+  <ul>
+    <li><strong>预算、配额与限流:</strong>为团队、应用、密钥分别设预算与配额,配每分钟限流;超出即拦截,返回 429、不计费也不调用模型。</li>
+    <li><strong>密钥托管:</strong>密钥仅创建时返回一次,落盘只存哈希与掩码;可绑定范围、随时禁用或轮换,平台侧不留明文。</li>
+    <li><strong>统一计量:</strong>所有调用经同一管线计量,记录 token 用量与成本估算,口径完整一致。</li>
+    <li><strong>审计对账:</strong>调用方、模型、用量、成本、时间全留痕,可按密钥 / 项目 / 模型汇总,分摊与对账有据。</li>
+  </ul>
+
+  <h2>权限粒度:团队 / 应用 / 密钥三级</h2>
+  <p>
+    治理不止于成本,还有"谁能用什么"。SMA 在团队、应用、密钥三级做授权:不同密钥可绑定不同的模型访问范围与配额,权限可回收、可轮换。相比把粒度停在密钥级的做法,三级授权让权限随组织结构落地,而不是一把密钥走天下。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>维度</th><th>逐家直连 / 自建转发</th><th>网关层治理(SMA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>预算控制</td><td>事后看账单</td><td>预算、配额事前约束</td></tr>
+      <tr><td>超支防护</td><td>无,易超支</td><td>超限即拦截,429 不计费</td></tr>
+      <tr><td>密钥管理</td><td>明文散落</td><td>哈希落盘、绑定范围、可轮换</td></tr>
+      <tr><td>计量口径</td><td>各家账单拼图</td><td>统一管线、完整一致</td></tr>
+      <tr><td>权限粒度</td><td>密钥级</td><td>团队 / 应用 / 密钥三级</td></tr>
+      <tr><td>对账</td><td>难分摊</td><td>按密钥 / 项目 / 模型可对账</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">
+    本页描述网关层成本与权限治理的能力框架;具体配额、限流与计费口径以产品配置与合同条款为准(口径日期 2026-06)。
+  </p>
+
+  <h2>常见问题</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <p>开始接入:应用侧沿用 OpenAI SDK、把 base_url 指向网关即可。<a href="/zh/sma">查看产品介绍与接入示例 →</a></p>
+
+  <div class="related">
+    <p>相关问题:</p>
+    <ul>
+      <li><a href="/zh/compliant-overseas-llm-access">企业如何合规接入海外大模型</a></li>
+      <li><a href="/zh/overseas-llm-high-availability">海外大模型高可用接入</a></li>
+      <li><a href="/zh/faq">多模型接入与治理的常见问题</a></li>
+    </ul>
+  </div>
+</Base>

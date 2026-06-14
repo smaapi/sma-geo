@@ -1,0 +1,96 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../lib/schema';
+import pagesData from '../../data/pages.json';
+
+const route = '/en/compliant-overseas-llm-access';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: 'Is it a violation for a company in China to use the Claude or GPT API?',
+    a: 'It comes down to channel and scenario. On channel, accessing through a legitimate enterprise route with a full contract chain and audit records — rather than personal accounts or resale of unknown origin — is the controllable approach. On scenario, internal business use differs from offering generative-AI services to the Chinese public, which under current rules must use government-registered models. Separate the two layers and the compliance boundary is clear.',
+  },
+  {
+    q: 'What kind of invoice can you issue for overseas model access?',
+    a: 'Corporate contracts and invoicing are supported, under the technical-service category. The specific invoicing entity, invoice type, and VAT rate follow the contract and documentation issued during procurement.',
+  },
+  {
+    q: 'Can public-facing products use international models?',
+    a: 'Under current regulation, generative-AI services offered to the public in China must use registered models. Public-facing traffic should be served by registered domestic models — SMA can route it automatically — while international models fit internal business scenarios.',
+  },
+];
+---
+
+<Base route={route} theme="dark">
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify(techArticle({ headline: 'How to access overseas LLMs compliantly', description: page.description, url: pagesData.site + route, inLanguage: 'en', datePublished: page.datePublished, dateModified: page.dateModified }))} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>How can an enterprise access overseas LLMs compliantly?</h1>
+  <p class="answer">
+    Compliant access has two layers: channel and scenario. On channel, access runs through commercial cloud platforms — mainstream overseas closed-source models such as GPT run on the Microsoft Azure commercial service — with a clear contracting entity, technical-service invoicing, and full call auditing, rather than personal account pools or resale of unknown origin. On scenario, internal business use is separated from public-facing services, which under current regulation must use registered models. Separate the two and the boundary is clear and verifiable.
+  </p>
+
+  <h2>Why "can we use it compliantly" is the first gate in procurement</h2>
+  <p>
+    For most enterprises, the question before adopting an overseas LLM is whether the usage is compliant and who is accountable if something goes wrong. Resale of unknown origin or personal account pools have no clear contracting entity, cannot issue proper invoices, and leave calls unauditable — once enterprise data or corporate payment is involved, that path fails due diligence and security review. So "is the channel legitimate" is not a bonus; it is an admission requirement.
+  </p>
+
+  <h2>Four verifiable facts of a legitimate channel</h2>
+  <ul>
+    <li><strong>A clear contracting entity:</strong> a defined corporate party signs, with accountability written into the contract — not anonymous accounts.</li>
+    <li><strong>Proper invoicing:</strong> corporate invoicing under the technical-service category; type and rate per the contract.</li>
+    <li><strong>Full auditability:</strong> caller, target model, usage, and time are logged for every call — traceable and reconcilable.</li>
+    <li><strong>A clear data boundary:</strong> cross-border calls enter the audit log, sensitive data can be sanitized at the gateway, and personal or important data is routed per your own cross-border assessment.</li>
+  </ul>
+  <p>
+    As it stands, among mainstream overseas closed-source models, GPT is accessed on the Microsoft Azure commercial service; other mainstream models are being integrated to the same standard. The available list follows live data and the contract — only actually connected models, nothing planned mixed in.
+  </p>
+
+  <h2>Internal use vs public-facing: two regimes</h2>
+  <p>
+    Internal business use of overseas models (R&amp;D, office work, internal analysis) differs from offering generative-AI services to the Chinese public; the latter must use registered models under current rules. One gateway can serve both: route public-facing traffic to registered domestic models automatically, and keep internal scenarios on the most suitable model — each within its boundary.
+  </p>
+
+  <h2>What SMA does for compliance</h2>
+  <p>
+    On top of legitimate channels, SMA provides unified access, smart routing, and full-chain audit: applications integrate via one OpenAI-compatible API, the gateway records complete call audit, routes requests to registered domestic models by data class, and sanitizes sensitive data at the egress. Compliance is not a slogan — it lands on verifiable facts: contracting entity, invoicing, audit, and data boundary.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th>Account pools / resale of unknown origin</th><th>Legitimate enterprise channel (via SMA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Contracting entity</td><td>none / unclear</td><td>defined corporate party, in contract</td></tr>
+      <tr><td>Invoicing</td><td>hard / non-compliant</td><td>corporate technical-service invoice</td></tr>
+      <tr><td>Audit</td><td>none</td><td>full-chain, traceable</td></tr>
+      <tr><td>Public-facing compliance</td><td>unaddressed</td><td>auto-route to registered models</td></tr>
+      <tr><td>Accountability</td><td>hard to trace</td><td>written into the contract</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">
+    This page is a general explanation of the compliance framework, not legal advice; specific judgments should follow your own cross-border data assessment and regulation. Channels and documentation are shared during procurement; SMA capabilities follow this site and the contract (as of 2026-06).
+  </p>
+
+  <h2>FAQ</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <p>Get started: keep your OpenAI SDK and point base_url at the gateway. <a href="/en/sma">See the product overview and integration example →</a></p>
+
+  <div class="related">
+    <p>Related:</p>
+    <ul>
+      <li><a href="/en/llm-cost-governance">Multi-team LLM cost and permission governance</a></li>
+      <li><a href="/en/overseas-llm-high-availability">High-availability access to overseas LLMs</a></li>
+      <li><a href="/en/faq">FAQ on multi-model access and governance</a></li>
+    </ul>
+  </div>
+</Base>

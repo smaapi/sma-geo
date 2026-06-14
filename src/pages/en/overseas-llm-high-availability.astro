@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../lib/schema';
+import pagesData from '../../data/pages.json';
+
+const route = '/en/overseas-llm-high-availability';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: 'Does failover lose conversation context?',
+    a: 'No. When SMA switches to a candidate model, the state header carries compressed context and necessary constraints across, rather than starting over, and the switch is transparent to the application. So business continues after a failover instead of breaking and re-asking.',
+  },
+  {
+    q: 'How many times can one request switch?',
+    a: 'By default, at most one fallback per request — a bounded, hard constraint that avoids unbounded retries inflating latency and cost across providers. Only recoverable errors (rate limit, timeout, 5xx) trigger a switch; authentication or content-policy errors do not switch, to keep incidents from spreading.',
+  },
+  {
+    q: 'Can you provide an availability SLA?',
+    a: 'Availability targets follow the SLA terms in your enterprise contract — we commit to availability we can put in writing, not blanket verbal promises. Software-layer redundancy and switching reduce single-point impact; the SMA Edge hardware layer adds active health monitoring; specific figures depend on form factor and contract.',
+  },
+];
+---
+
+<Base route={route} theme="dark">
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify(techArticle({ headline: 'High-availability access to overseas LLMs', description: page.description, url: pagesData.site + route, inLanguage: 'en', datePublished: page.datePublished, dateModified: page.dateModified }))} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>How do you make overseas LLM access more stable and highly available?</h1>
+  <p class="answer">
+    Stability comes from redundancy, governance, and monitoring, not a single point. In software, multiple models back each other up; when an endpoint returns rate-limit, timeout, or failure, SMA switches to a candidate and preserves context via the state header, transparently and fully audited. In hardware, SMA Edge (the physical gateway) runs active real-time health monitoring with preemptive switching — this requires the SMA gateway hardware. The application always sees one unchanging OpenAI-compatible egress; availability follows your contract SLA.
+  </p>
+
+  <h2>Why overseas models are unstable in production</h2>
+  <p>
+    Putting overseas LLMs into production, you hit rate limits (429), timeouts, occasional 5xx, and route fluctuation. With a single direct connection to one model, each of these turns straight into a business interruption — and a late-night failure means switching by hand in code. Stability is not hoping one provider never has trouble; it is designing so a single point of failure does not take down the business.
+  </p>
+
+  <h2>Software layer: error grading + automatic switching + state continuity</h2>
+  <p>
+    SMA handles errors by type: recoverable errors (rate limit, timeout, 5xx, empty response) switch to a candidate model and carry context across via the state header, transparently and fully audited; authentication or content-policy errors do not switch, to avoid spreading an auth or compliance incident. The fallback per request is bounded (at most one by default), with no unbounded retrying across providers.
+  </p>
+
+  <h2>Hardware layer: SMA Edge active health monitoring</h2>
+  <p>
+    The software layer is a safety net after an error occurs; to avoid trouble before it surfaces, you need continuous monitoring of each endpoint's real-time state. That layer is provided by SMA Edge (the physical gateway): active real-time health monitoring with preemptive switching — a hardware capability delivered with the SMA gateway hardware, sharing the same entry as API access. Start with the software layer; add the hardware layer as the higher-availability upgrade path.
+  </p>
+
+  <h2>No application changes: one unchanging egress</h2>
+  <p>
+    However the underlying models switch or routes change, the application always faces one unchanging OpenAI-compatible egress. Provider or routing changes do not touch your code — that is the source of "models can change, the integration stays put," and it means you do not rewrite business logic to get higher availability.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Capability</th><th>Single direct connection</th><th>SMA software layer</th><th>+ SMA Edge hardware</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Multi-model redundancy</td><td>none</td><td>yes, mutual backup</td><td>yes</td></tr>
+      <tr><td>Failover</td><td>manual</td><td>error-graded automatic</td><td>preemptive</td></tr>
+      <tr><td>Context preserved</td><td>—</td><td>state header</td><td>state header</td></tr>
+      <tr><td>Health monitoring</td><td>none</td><td>observational probes (for routing)</td><td>active real-time</td></tr>
+      <tr><td>Application change</td><td>every time</td><td>none</td><td>none</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">
+    Active real-time health monitoring and preemptive switching are SMA Edge hardware capabilities, delivered with the hardware; availability and SLA follow your enterprise contract (as of 2026-06).
+  </p>
+
+  <h2>FAQ</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <p>Get started: keep your OpenAI SDK and point base_url at the gateway. <a href="/en/sma">See the product overview and integration example →</a></p>
+
+  <div class="related">
+    <p>Related:</p>
+    <ul>
+      <li><a href="/en/compliant-overseas-llm-access">Compliant access to overseas LLMs</a></li>
+      <li><a href="/en/llm-cost-governance">Multi-team LLM cost and permission governance</a></li>
+      <li><a href="/en/faq">FAQ on multi-model access and governance</a></li>
+    </ul>
+  </div>
+</Base>

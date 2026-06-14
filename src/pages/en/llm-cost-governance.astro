@@ -1,0 +1,89 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../lib/schema';
+import pagesData from '../../data/pages.json';
+
+const route = '/en/llm-cost-governance';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: 'How do you prevent a team or application from overspending?',
+    a: 'Set budgets and quotas per team, application, and key at the gateway, with per-minute rate limits. When usage approaches or exceeds a threshold, requests are blocked per policy: over-quota or over-limit calls return 429 with no billing and no model call, stopping overruns before the call — not at month-end on the invoice.',
+  },
+  {
+    q: 'What if an API key leaks?',
+    a: 'A key is returned only once at creation and stored as a hash plus mask; no plaintext is kept on the platform side. Each key is bound to a team or application and a permission scope, and can be disabled or rotated at any time. Because all calls pass through the gateway and are logged, anomalous usage can be found in audit and traced to a specific key.',
+  },
+  {
+    q: 'Can we allocate cost by department or project?',
+    a: 'Yes. Every call records caller, target model, token usage, and estimated cost; audit aggregates by key, project, or model. Because traffic flows through one gateway, the cost picture is complete rather than a patchwork of provider dashboards, so allocation and reconciliation have a full evidence chain.',
+  },
+];
+---
+
+<Base route={route} theme="dark">
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify(techArticle({ headline: 'LLM cost and permission governance for multi-team orgs', description: page.description, url: pagesData.site + route, inLanguage: 'en', datePublished: page.datePublished, dateModified: page.dateModified }))} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>How do multi-team orgs govern LLM cost and permissions?</h1>
+  <p class="answer">
+    Set budgets, quotas, and rate limits per team, application, and key at the gateway layer; meter every call and record caller, target model, usage, and cost, ready to reconcile by key, project, or model. Over-quota or over-limit requests are blocked (429, with no billing and no model call), putting cost control before the call rather than at month-end reconciliation.
+  </p>
+
+  <h2>Why multi-model, multi-team usage drifts out of control</h2>
+  <p>
+    When several teams and applications use multiple providers at once, each provider has its own keys and billing backend. Integrating directly leaves keys scattered across repos, costs without a single source of truth, and no one able to set a ceiling before the call happens. By the time the invoices are stitched together at month-end, the budget is often already blown — and it is unclear which team or application spent it. That is not a usage problem; it is missing governance.
+  </p>
+
+  <h2>Four things gateway-layer governance does</h2>
+  <ul>
+    <li><strong>Budgets, quotas, and rate limits:</strong> per team, application, and key; over-limit requests are blocked, returning 429 with no billing and no model call.</li>
+    <li><strong>Key custody:</strong> keys are returned once at creation and stored as a hash plus mask; scoped, disable-able, and rotatable, with no plaintext kept.</li>
+    <li><strong>Unified metering:</strong> every call is metered through the same pipeline, recording token usage and estimated cost on one consistent basis.</li>
+    <li><strong>Audit reconciliation:</strong> caller, model, usage, cost, and time are logged, aggregating by key, project, or model for allocation and reconciliation.</li>
+  </ul>
+
+  <h2>Permission granularity: team / application / key</h2>
+  <p>
+    Governance is not only about cost but also about who may use what. SMA authorizes at three levels — team, application, and key: different keys can carry different model-access scopes and quotas, and permissions can be revoked or rotated. Compared with stopping at key-level granularity, three-level authorization lets permissions follow your org structure rather than one key doing everything.
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th>Direct integration / self-hosted relay</th><th>Gateway-layer governance (SMA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Budget control</td><td>review the invoice afterward</td><td>budgets and quotas up front</td></tr>
+      <tr><td>Overrun protection</td><td>none, easy to overspend</td><td>blocked on limit, 429 not billed</td></tr>
+      <tr><td>Key management</td><td>plaintext, scattered</td><td>hashed storage, scoped, rotatable</td></tr>
+      <tr><td>Metering basis</td><td>patchwork of invoices</td><td>one pipeline, consistent</td></tr>
+      <tr><td>Permission granularity</td><td>key-level</td><td>team / application / key</td></tr>
+      <tr><td>Reconciliation</td><td>hard to allocate</td><td>by key / project / model</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">
+    This page describes the capability framework for gateway-layer cost and permission governance; specific quota, rate-limit, and billing details follow product configuration and contract terms (as of 2026-06).
+  </p>
+
+  <h2>FAQ</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <p>Get started: keep your OpenAI SDK and point base_url at the gateway. <a href="/en/sma">See the product overview and integration example →</a></p>
+
+  <div class="related">
+    <p>Related:</p>
+    <ul>
+      <li><a href="/en/compliant-overseas-llm-access">Compliant access to overseas LLMs</a></li>
+      <li><a href="/en/overseas-llm-high-availability">High-availability access to overseas LLMs</a></li>
+      <li><a href="/en/faq">FAQ on multi-model access and governance</a></li>
+    </ul>
+  </div>
+</Base>

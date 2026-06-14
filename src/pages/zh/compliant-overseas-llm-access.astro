@@ -1,0 +1,96 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../lib/schema';
+import pagesData from '../../data/pages.json';
+
+const route = '/zh/compliant-overseas-llm-access';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: '国内企业用 Claude、GPT API 算不算违规?',
+    a: '关键在渠道与场景。渠道上,经有合同链与审计记录的正规企业级通道接入(而非个人账号或来源不明的转售)是企业可控的做法;场景上,企业内部生产经营使用,与面向境内公众提供生成式 AI 服务是两套监管——后者按现行要求须使用已备案模型。把这两层分清,合规边界就清楚。',
+  },
+  {
+    q: '接入海外模型能开什么发票?',
+    a: '支持企业对公签约与开票,服务类目为技术服务。具体开票主体、票种(专票/普票)与税率以商务环节出具的合同与凭证为准。',
+  },
+  {
+    q: '面向公众的产品能接国外模型吗?',
+    a: '按现行监管要求,向境内公众提供生成式 AI 服务须使用已备案模型。面向公众的流量应由国产备案模型承接,SMA 可自动路由;海外模型适用于企业内部生产经营场景。',
+  },
+];
+---
+
+<Base route={route} theme="dark">
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify(techArticle({ headline: '企业如何合规接入海外大模型?', description: page.description, url: pagesData.site + route, inLanguage: 'zh-CN', datePublished: page.datePublished, dateModified: page.dateModified }))} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>企业如何合规接入海外大模型?</h1>
+  <p class="answer">
+    合规接入分两层:渠道与场景。渠道上,经云服务商商用平台接入——海外主流闭源模型如 GPT 底层基于 Microsoft Azure 商用服务,有明确签约主体、可开具技术服务发票、调用全程可审计,而非个人账号池或来源不明的转售;场景上,区分企业内部生产经营使用与面向境内公众提供服务,后者按现行监管要求须使用已备案模型。把这两层分清,合规边界就清楚、可核验。
+  </p>
+
+  <h2>为什么"能不能合规用"是采购的第一道门</h2>
+  <p>
+    对大多数企业,选型海外大模型前要先回答一个问题:这样用合不合规、出了问题谁负责。来源不明的转售或个人账号池,没有明确合同主体、无法开具合规发票、调用也无法审计——一旦涉及企业数据或对公付款,这条路在尽调与安全评审里过不去。所以"渠道是否正规"不是加分项,是准入项。
+  </p>
+
+  <h2>正规渠道的四个可核验事实</h2>
+  <ul>
+    <li><strong>签约主体明确:</strong>由明确的企业主体签约,责任归属写进合同,而非匿名账号。</li>
+    <li><strong>可开具发票:</strong>支持企业对公开票,服务类目为技术服务,票种与税率以合同凭证为准。</li>
+    <li><strong>调用全程可审计:</strong>每次调用的调用方、目标模型、用量与时间都留痕,可追溯、可对账。</li>
+    <li><strong>数据边界清晰:</strong>出境调用进入审计,敏感信息可在网关脱敏,涉个人信息或重要数据按企业自身出境评估路由。</li>
+  </ul>
+  <p>
+    以现状为例:海外主流闭源模型中,GPT 系底层基于 Microsoft Azure 商用服务接入;其余主流模型按同一标准接入中。具体可用模型以实时数据与合同为准——只列真实连通的,不混入规划中的。
+  </p>
+
+  <h2>内部使用与面向公众:两套监管</h2>
+  <p>
+    企业内部生产经营使用海外模型(如研发、办公、内部分析),与面向境内公众提供生成式 AI 服务,是不同的监管口径。后者按现行要求须使用已备案模型。一套网关可以承接两类场景:把面向公众的流量自动路由到国产备案模型,把内部场景留给最合适的模型,各守各的边界。
+  </p>
+
+  <h2>SMA 在合规上做了什么</h2>
+  <p>
+    SMA 在正规通道之上提供统一接入、智能路由与全链路审计:应用侧用一套 OpenAI 兼容 API 接入,网关侧记录完整调用审计、按数据等级把请求路由到境内备案模型,并在出口对敏感信息脱敏。合规不是一句口号,而是落到签约主体、发票、审计与数据边界这些可核验的事实上。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>维度</th><th>个人账号池 / 来源不明转售</th><th>正规企业级渠道(经 SMA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>签约主体</td><td>无 / 不清</td><td>明确企业主体,写入合同</td></tr>
+      <tr><td>发票</td><td>难开 / 不合规</td><td>对公技术服务发票</td></tr>
+      <tr><td>审计</td><td>无</td><td>全链路可追溯、可对账</td></tr>
+      <tr><td>面向公众合规</td><td>不解决</td><td>自动路由到备案模型</td></tr>
+      <tr><td>责任归属</td><td>出事难追责</td><td>合同书面明确</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">
+    本页就合规框架做一般性说明,不构成法律意见;具体合规判断请结合企业自身的数据出境评估与监管要求。渠道与凭证在商务沟通中出示,SMA 能力以本站说明与合同条款为准(口径日期 2026-06)。
+  </p>
+
+  <h2>常见问题</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <p>开始接入:应用侧沿用 OpenAI SDK、把 base_url 指向网关即可。<a href="/zh/sma">查看产品介绍与接入示例 →</a></p>
+
+  <div class="related">
+    <p>相关问题:</p>
+    <ul>
+      <li><a href="/zh/llm-cost-governance">多团队大模型成本与权限治理</a></li>
+      <li><a href="/zh/overseas-llm-high-availability">海外大模型高可用接入</a></li>
+      <li><a href="/zh/faq">多模型接入与治理的常见问题</a></li>
+    </ul>
+  </div>
+</Base>

@@ -168,6 +168,90 @@
         "label": "FAQ",
         "desc": "Direct answers on integration, routing, governance, data boundaries, and failover"
       }
+    },
+    {
+      "route": "/zh/compliant-overseas-llm-access",
+      "lang": "zh",
+      "alternate": "/en/compliant-overseas-llm-access",
+      "title": "企业如何合规接入海外大模型?正规渠道、发票与场景边界 | SMA",
+      "description": "企业合规接入海外大模型分渠道与场景两层:经云服务商商用平台接入(如 GPT 底层 Microsoft Azure 商用服务)、有签约主体、可开技术服务发票、调用可审计;面向境内公众的服务须用已备案模型。SMA 提供统一接入、审计与备案模型分流。",
+      "datePublished": "2026-06-13",
+      "dateModified": "2026-06-13",
+      "llms": {
+        "section": "场景指南",
+        "label": "如何合规接入海外大模型",
+        "desc": "正规渠道四事实、内部使用与面向公众的场景边界、备案模型分流"
+      }
+    },
+    {
+      "route": "/zh/llm-cost-governance",
+      "lang": "zh",
+      "alternate": "/en/llm-cost-governance",
+      "title": "多团队大模型成本与权限治理:预算、配额、密钥与审计对账 | SMA",
+      "description": "多团队使用大模型如何管控成本与权限:在网关层为团队、应用、密钥设预算、配额与限流,所有调用统一计量,按密钥/项目/模型审计对账,超额自动拦截(429、不计费)。",
+      "datePublished": "2026-06-13",
+      "dateModified": "2026-06-13",
+      "llms": {
+        "section": "场景指南",
+        "label": "多团队大模型成本权限治理",
+        "desc": "预算配额限流、API Key 管理、统一计量与审计对账"
+      }
+    },
+    {
+      "route": "/zh/overseas-llm-high-availability",
+      "lang": "zh",
+      "alternate": "/en/overseas-llm-high-availability",
+      "title": "海外大模型高可用接入:故障切换、状态续接与健康监控 | SMA",
+      "description": "海外大模型接入如何更稳定:软件层多模型互备、按错误类型自动切换并以状态续接保留上下文;硬件层 SMA Edge 主动健康监控与预判切换。应用侧一套不变的 OpenAI 兼容出口,可用性以合同 SLA 为准。",
+      "datePublished": "2026-06-13",
+      "dateModified": "2026-06-13",
+      "llms": {
+        "section": "场景指南",
+        "label": "海外大模型高可用接入",
+        "desc": "故障分级切换、状态续接、SMA Edge 主动健康监控"
+      }
+    },
+    {
+      "route": "/en/compliant-overseas-llm-access",
+      "lang": "en",
+      "alternate": "/zh/compliant-overseas-llm-access",
+      "title": "How to Access Overseas LLMs Compliantly: Channels, Invoicing & Scope | smaapi",
+      "description": "Compliant access to overseas LLMs has two layers: channel (commercial cloud platforms — GPT runs on Microsoft Azure — with a contracting entity, technical-service invoicing, and audit) and scenario (public-facing services in China must use registered models). SMA adds unified access, audit, and routing to registered models.",
+      "datePublished": "2026-06-13",
+      "dateModified": "2026-06-13",
+      "llms": {
+        "section": "Scenario guides",
+        "label": "Compliant access to overseas LLMs",
+        "desc": "Four verifiable channel facts, internal vs public-facing scope, routing to registered models"
+      }
+    },
+    {
+      "route": "/en/llm-cost-governance",
+      "lang": "en",
+      "alternate": "/zh/llm-cost-governance",
+      "title": "LLM Cost & Permission Governance for Multi-Team Orgs: Budgets, Quotas, Keys, Audit | smaapi",
+      "description": "How multi-team organizations govern LLM cost and permissions: set budgets, quotas, and rate limits per team, application, and key at the gateway; meter every call; reconcile by key, project, or model; block overruns automatically (429, no billing).",
+      "datePublished": "2026-06-13",
+      "dateModified": "2026-06-13",
+      "llms": {
+        "section": "Scenario guides",
+        "label": "Multi-team LLM cost and permission governance",
+        "desc": "Budgets, quotas, rate limits, API key management, metering and audit reconciliation"
+      }
+    },
+    {
+      "route": "/en/overseas-llm-high-availability",
+      "lang": "en",
+      "alternate": "/zh/overseas-llm-high-availability",
+      "title": "High-Availability Access to Overseas LLMs: Failover, State Continuity & Health Monitoring | smaapi",
+      "description": "How to make overseas LLM access more stable: in software, models back each other up with error-graded failover that preserves context via the state header; in hardware, SMA Edge runs active health monitoring with preemptive switching. One unchanging OpenAI-compatible egress; availability per contract SLA.",
+      "datePublished": "2026-06-13",
+      "dateModified": "2026-06-13",
+      "llms": {
+        "section": "Scenario guides",
+        "label": "High-availability access to overseas LLMs",
+        "desc": "Error-graded failover, state continuity, SMA Edge active health monitoring"
+      }
     }
   ]
 }

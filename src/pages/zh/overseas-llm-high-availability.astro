@@ -1,0 +1,90 @@
+---
+import Base from '../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../lib/schema';
+import pagesData from '../../data/pages.json';
+
+const route = '/zh/overseas-llm-high-availability';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: '故障切换会丢失对话上下文吗?',
+    a: '不会丢。SMA 切换到候选模型时,通过状态续接(State Header)把压缩后的上下文与必要约束带过去,而不是从零重来,切换对应用透明。这样故障切换后业务能接着走,而不是中断重问。',
+  },
+  {
+    q: '一次请求最多切换几次?',
+    a: '默认每个请求最多一次后备切换,这是有界的硬约束,避免在多家模型间无限重试放大延迟与成本。可恢复错误(如限流、超时、5xx)才触发切换;鉴权或内容策略类错误不切换,避免把事故扩散。',
+  },
+  {
+    q: '能给可用性 SLA 吗?',
+    a: '可用性目标以企业合同的 SLA 条款为准——只承诺能写进合同的可用性,不作笼统的口头承诺。软件层的冗余与切换降低单点故障影响,硬件层的 SMA Edge 主动健康监控进一步提升可用性,具体指标随形态与合同约定。',
+  },
+];
+---
+
+<Base route={route} theme="dark">
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify(techArticle({ headline: '海外大模型高可用接入', description: page.description, url: pagesData.site + route, inLanguage: 'zh-CN', datePublished: page.datePublished, dateModified: page.dateModified }))} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>怎样让海外大模型接入更稳定、更高可用?</h1>
+  <p class="answer">
+    稳定来自冗余、治理与监控,而非单点。软件层:多模型互为备份,某个模型端点返回限流、超时或故障时,SMA 自动切换到候选模型,并以状态续接保留上下文,切换对应用透明、完整记入审计。硬件层:SMA Edge(物理网关)对模型端点做主动实时健康监控、支持预判式切换,需配合 SMA 网关硬件。应用侧始终是一套不变的 OpenAI 兼容出口,可用性以合同 SLA 为准。
+  </p>
+
+  <h2>海外模型为什么会不稳</h2>
+  <p>
+    把海外大模型用进生产,常遇到限流(429)、超时、偶发 5xx、线路波动。单点直连一家模型时,这些都会直接变成业务中断;深夜出问题,降级与切换还要靠人改代码。稳定不是寄望某一家模型不出问题,而是设计上让单点故障不至于拖垮业务。
+  </p>
+
+  <h2>软件层:错误分级 + 自动切换 + 状态续接</h2>
+  <p>
+    SMA 按错误类型分级处理:可恢复错误(限流、超时、5xx、空响应)自动切换到候选模型,并以状态续接(State Header)把上下文带过去,切换对应用透明、完整记入审计;鉴权或内容策略类错误不切换,避免把认证或合规事故扩散。每请求的后备切换有界(默认最多一次),不在多家模型间无限重试。
+  </p>
+
+  <h2>硬件层:SMA Edge 主动健康监控</h2>
+  <p>
+    软件层是错误发生后的兜底切换;要做到"在故障显现前就避开",需要对模型端点的实时运行状态持续监控。这一层由 SMA Edge(物理网关)提供:主动实时健康监控配合预判式切换——此项为硬件能力,需配合 SMA 网关硬件交付,与 API 接入共享入口。软件层先用起来,硬件层作为更高可用的升级路径。
+  </p>
+
+  <h2>应用侧零改动:一套不变的出口</h2>
+  <p>
+    无论底层模型如何切换、线路如何调整,应用面对的始终是一套不变的 OpenAI 兼容出口。供应商或路由变化不影响上层代码——这正是"模型可换、接入不变"的稳定来源,也让你不必为高可用去改业务代码。
+  </p>
+
+  <table>
+    <thead>
+      <tr><th>能力</th><th>单点直连</th><th>SMA 软件层</th><th>+ SMA Edge 硬件</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>多模型冗余</td><td>无</td><td>有,互为备份</td><td>有</td></tr>
+      <tr><td>故障切换</td><td>人工</td><td>按错误分级自动切换</td><td>预判式切换</td></tr>
+      <tr><td>上下文保留</td><td>—</td><td>状态续接</td><td>状态续接</td></tr>
+      <tr><td>健康监控</td><td>无</td><td>观测式探针(供路由)</td><td>主动实时健康监控</td></tr>
+      <tr><td>应用改动</td><td>每次都改</td><td>零改动</td><td>零改动</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">
+    主动实时健康监控与预判式切换为 SMA Edge 硬件能力,需配合硬件交付;可用性与 SLA 以企业合同条款为准(口径日期 2026-06)。
+  </p>
+
+  <h2>常见问题</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <p>开始接入:应用侧沿用 OpenAI SDK、把 base_url 指向网关即可。<a href="/zh/sma">查看产品介绍与接入示例 →</a></p>
+
+  <div class="related">
+    <p>相关问题:</p>
+    <ul>
+      <li><a href="/zh/compliant-overseas-llm-access">企业如何合规接入海外大模型</a></li>
+      <li><a href="/zh/llm-cost-governance">多团队大模型成本与权限治理</a></li>
+      <li><a href="/zh/faq">多模型接入与治理的常见问题</a></li>
+    </ul>
+  </div>
+</Base>
