@@ -20,6 +20,7 @@ const codeHtml = [
 const toc = [
   { href: '#problem', label: 'Problem' },
   { href: '#governance', label: 'Governance' },
+  { href: '#capabilities', label: 'Capabilities' },
   { href: '#integrate', label: 'Integrate' },
   { href: '#team', label: 'Team' },
   { href: '#who', label: "Who it's for" },
@@ -112,8 +113,37 @@ const sciTags = [
     </div>
   </section>
 
+  <section class="band" id="capabilities">
+    <p class="eyebrow"><span class="eyebrow-no">03</span> Capabilities</p>
+    <h2>The full capability map</h2>
+    <p>
+      SMA's capabilities split by form: the software / API layer works as soon as you integrate; the
+      hardware / SMA Edge layer is the upgrade path for higher availability and private deployment.
+    </p>
+    <h3>Software / API layer (works on integration)</h3>
+    <ul>
+      <li><strong>Unified access:</strong> one OpenAI-compatible API in front of many Chinese and international models; applications only change base_url.</li>
+      <li><strong>Smart routing:</strong> route by task characteristics and difficulty — simple tasks to a faster, cheaper model, complex tasks to a stronger one, code tasks to the code channel.</li>
+      <li><strong>Explainable routing:</strong> candidate models, quality gates, and exclusion reasons are all inspectable — routing is not a black box.</li>
+      <li><strong>Data protection:</strong> personal and Chinese sensitive entities are sanitized at the egress (Token Vault); plaintext is not sent downstream and not stored in audit.</li>
+      <li><strong>Content-safety policy:</strong> enterprise red lines are enforced at the gateway — a hit is blocked and no external model is called.</li>
+      <li><strong>High availability &amp; failover:</strong> recoverable errors switch to a candidate model with context preserved via the state header, transparently to the application. <a href="/en/overseas-llm-high-availability">See high-availability access →</a></li>
+      <li><strong>Cost &amp; permission governance:</strong> budgets, quotas, and rate limits per team / application / key; unified metering, reconcilable by key, project, or model. <a href="/en/llm-cost-governance">See cost governance →</a></li>
+      <li><strong>Full audit trail:</strong> caller, target model, usage, and time are logged for every call — traceable and reconcilable.</li>
+      <li><strong>Model calibration &amp; evaluation:</strong> calibrate model capability using your own task set, so model selection is evidence-based.</li>
+    </ul>
+    <h3>Hardware / SMA Edge layer (upgrade form)</h3>
+    <ul>
+      <li><strong>Active health monitoring:</strong> continuous monitoring of each endpoint's real-time state with preemptive switching; this requires the SMA gateway hardware.</li>
+      <li><strong>Private deployment:</strong> the gateway runs inside your own environment, so prompts, keys, and logs stay within the enterprise boundary — suited to strict-compliance scenarios.</li>
+    </ul>
+    <p class="footnote">
+      Capabilities follow your product configuration and contract terms; active health monitoring and private deployment (data staying in-boundary) are provided by the SMA Edge hardware form. For compliant overseas access, see the <a href="/en/compliant-overseas-llm-access">compliance guide</a>.
+    </p>
+  </section>
+
   <section class="band" id="integrate">
-    <p class="eyebrow"><span class="eyebrow-no">03</span> Integrate</p>
+    <p class="eyebrow"><span class="eyebrow-no">04</span> Integrate</p>
     <h2>One line of config to integrate</h2>
     <p>Keep your OpenAI SDK and point <code>base_url</code> at the gateway:</p>
     <figure class="codeblock">
@@ -129,7 +159,7 @@ const sciTags = [
   </section>
 
   <section class="band" id="team">
-    <p class="eyebrow"><span class="eyebrow-no">04</span> Team</p>
+    <p class="eyebrow"><span class="eyebrow-no">05</span> Team</p>
     <h2>Chief Scientist</h2>
     <div class="scientist">
       <div class="sci-head">
@@ -171,7 +201,7 @@ const sciTags = [
   </section>
 
   <section class="band" id="who">
-    <p class="eyebrow"><span class="eyebrow-no">05</span> Who it's for</p>
+    <p class="eyebrow"><span class="eyebrow-no">06</span> Who it's for</p>
     <h2>Who is SMA for?</h2>
     <p>
       Engineering and platform teams that need to access multiple LLM providers — international and
@@ -183,6 +213,9 @@ const sciTags = [
   <div class="related">
     <p>Related questions:</p>
     <ul>
+      <li><a href="/en/compliant-overseas-llm-access">How to access overseas LLMs compliantly</a></li>
+      <li><a href="/en/llm-cost-governance">Multi-team LLM cost and permission governance</a></li>
+      <li><a href="/en/overseas-llm-high-availability">High-availability access to overseas LLMs</a></li>
       <li><a href="/en/what-is-llm-gateway">What is an enterprise LLM gateway?</a></li>
       <li><a href="/en/faq">FAQ on multi-model access, routing, and governance</a></li>
     </ul>
