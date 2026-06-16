@@ -18,6 +18,18 @@ const qa: QA[] = [
     a: 'Point your application base_url at the smaapi gateway (SMA) and keep using the OpenAI SDK and request format. The gateway translates protocols and handles provider authentication; you pick the target model via the model parameter or let routing policy decide. No per-provider integration code.',
   },
   {
+    q: 'How do I get started with SMA and open an API account?',
+    a: 'Register in the console, create an API key on the key-management page, pick a model group, and enable it. Top up via online Alipay (instant) or corporate bank transfer (with a technical-service invoice). Keep your OpenAI SDK and point base_url at the gateway to start calling. Experienced teams self-serve in minutes; if you prefer help, 24/7 technical support via WeCom is on standby.',
+  },
+  {
+    q: 'Do I need to be technical to integrate? Is there help?',
+    a: 'Both work. Experienced developers self-integrate — SMA is OpenAI-compatible, so you change base_url and key. If you would rather have help, 24/7 technical support via WeCom assists with installation and integration until you are connected.',
+  },
+  {
+    q: 'How do I pay, and can you issue an invoice?',
+    a: 'Top up via online Alipay (instant) or corporate bank transfer; corporate payments come with a technical-service invoice. Billing is usage-based, with real-time usage and cost visible in the console.',
+  },
+  {
     q: 'What logic does smart routing use to dispatch requests?',
     a: 'Routing combines three signal groups: task characteristics (business tags and complexity), model state (availability, latency, cost), and enterprise policy (budgets, compliance boundaries, manual calibration rules). Scoring proposes candidates; policy and safety boundaries constrain the final choice, with automatic failover.',
   },

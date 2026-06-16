@@ -138,6 +138,18 @@ const toc = [
       <pre><code set:html={codeHtml} /></pre>
     </figure>
     <p class="footnote">模型名称为指明性使用;可接入模型范围与路由策略以控制台实际配置为准。</p>
+
+    <h3>四步开始使用</h3>
+    <ol class="start-steps">
+      <li><strong>注册并生成密钥:</strong>在控制台注册,于密钥管理页新建 API Key、选择模型分组并启用。</li>
+      <li><strong>充值:</strong>在线支付宝即时充值,或对公账户转账(可开具技术服务发票)。</li>
+      <li><strong>接入:</strong>应用沿用 OpenAI SDK,把 base_url 指向网关(见上方示例);有经验者几分钟即可自助接入。</li>
+      <li><strong>技术支持:</strong>企业微信 7×24 技术支持待命,协助安装与对接,把你接通为止。</li>
+    </ol>
+    <p class="cta-row">
+      <a class="cta-primary" href="https://api.smaapi.com" target="_blank" rel="noopener">注册并获取 API Key →</a>
+      <span class="cta-note">企业微信 7×24 技术支持 · 支付宝 / 对公充值 · 可开技术服务发票</span>
+    </p>
   </section>
 
   <section class="band" id="team">
@@ -227,5 +239,35 @@ const toc = [
     text-decoration: none;
     border-color: rgba(242, 199, 92, 0.6);
     color: #f2c75c;
+  }
+  .start-steps {
+    padding-left: 1.25rem;
+    margin: 0.6rem 0;
+  }
+  .start-steps li {
+    margin: 0.5rem 0;
+  }
+  .cta-row {
+    margin-top: 1.3rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1rem;
+  }
+  .cta-primary {
+    display: inline-block;
+    padding: 0.6rem 1.3rem;
+    border-radius: 999px;
+    background: linear-gradient(160deg, #f2c75c, #d7a642);
+    color: #1a1205;
+    font-weight: 700;
+  }
+  .cta-primary:hover {
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgba(215, 166, 66, 0.3);
+  }
+  .cta-note {
+    color: #9fb8ad;
+    font-size: 0.85rem;
   }
 </style>

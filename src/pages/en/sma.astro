@@ -156,6 +156,18 @@ const sciTags = [
     <p class="footnote">
       Model names are nominative; available models and routing policy follow your console configuration.
     </p>
+
+    <h3>Get started in four steps</h3>
+    <ol class="start-steps">
+      <li><strong>Register and create a key:</strong> sign up in the console, create an API key on the key-management page, pick a model group, and enable it.</li>
+      <li><strong>Top up:</strong> online Alipay (instant) or corporate bank transfer (with a technical-service invoice).</li>
+      <li><strong>Integrate:</strong> keep your OpenAI SDK and point base_url at the gateway (see the example above); experienced teams self-serve in minutes.</li>
+      <li><strong>Support:</strong> 24/7 technical support via WeCom helps with installation and integration until you are connected.</li>
+    </ol>
+    <p class="cta-row">
+      <a class="cta-primary" href="https://api.smaapi.com" target="_blank" rel="noopener">Register and get an API key →</a>
+      <span class="cta-note">24/7 technical support · Alipay / corporate top-up · technical-service invoice</span>
+    </p>
   </section>
 
   <section class="band" id="team">
@@ -250,5 +262,35 @@ const sciTags = [
     text-decoration: none;
     border-color: rgba(242, 199, 92, 0.6);
     color: #f2c75c;
+  }
+  .start-steps {
+    padding-left: 1.25rem;
+    margin: 0.6rem 0;
+  }
+  .start-steps li {
+    margin: 0.5rem 0;
+  }
+  .cta-row {
+    margin-top: 1.3rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1rem;
+  }
+  .cta-primary {
+    display: inline-block;
+    padding: 0.6rem 1.3rem;
+    border-radius: 999px;
+    background: linear-gradient(160deg, #f2c75c, #d7a642);
+    color: #1a1205;
+    font-weight: 700;
+  }
+  .cta-primary:hover {
+    text-decoration: none;
+    box-shadow: 0 8px 22px rgba(215, 166, 66, 0.3);
+  }
+  .cta-note {
+    color: #9fb8ad;
+    font-size: 0.85rem;
   }
 </style>
