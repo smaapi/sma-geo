@@ -1,0 +1,87 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { faqPage, techArticle, type QA } from '../../../lib/schema';
+import pagesData from '../../../data/pages.json';
+
+const route = '/en/compare/api-relay-alternative';
+const page = pagesData.pages.find((p) => p.route === route)!;
+
+const qa: QA[] = [
+  {
+    q: 'Can an API relay get banned and cause an outage?',
+    a: 'Account-pool or unknown-origin resale services often sit on shared accounts or gray sources; when risk controls ban them, a whole batch of keys can fail at once and service goes down with it. A legitimate enterprise channel accesses cloud providers’ commercial platforms under a contracting entity, with stability and accountability written into the contract — not dependent on an account pool that can be banned at any time.',
+  },
+  {
+    q: 'Does migrating require a lot of code changes?',
+    a: 'Usually not. Both expose the OpenAI-compatible protocol, so on the application side you typically just swap base_url and key, leaving business code untouched; model names can be mapped by routing policy. What actually needs doing is the governance setup (budgets, quotas, permissions) — work an enterprise should do anyway.',
+  },
+  {
+    q: 'Can an API relay issue a proper invoice?',
+    a: 'Most account-pool or resale services have no clear contracting entity, so they cannot issue a compliant invoice and corporate payment is difficult. A legitimate enterprise channel supports corporate contracting and issues a technical-service invoice, with a clear invoicing entity.',
+  },
+];
+---
+
+<Base route={route} theme="dark">
+  <Fragment slot="jsonld">
+    <script type="application/ld+json" set:html={JSON.stringify(techArticle({ headline: 'An enterprise-compliant alternative to API relays, and how to migrate', description: page.description, url: pagesData.site + route, inLanguage: 'en', datePublished: page.datePublished, dateModified: page.dateModified }))} />
+    <script type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  </Fragment>
+
+  <h1>API relay unstable or can't invoice? Choosing an enterprise-compliant alternative</h1>
+  <p class="answer">
+    Account-pool or unknown-origin API relays carry familiar risks: bans and interruptions, no clear contracting entity to hold accountable, no compliant invoice, and calls that cannot be audited. An enterprise gateway instead uses legitimate channels (cloud providers' commercial platforms), with a clear contracting entity, technical-service invoicing, and full auditability. Because both speak the OpenAI-compatible protocol, migration is usually just a base_url and key change, with business code untouched.
+  </p>
+
+  <h2>Four risks of account-pool / resale relays</h2>
+  <ul>
+    <li><strong>Bans and outages:</strong> upstream is often shared accounts or gray sources; a risk-control ban can invalidate a whole batch of keys at once, taking service down with it.</li>
+    <li><strong>No entity, no accountability:</strong> with no clear contracting party, there is no one to hold responsible and no books to reconcile — due diligence and security review fail.</li>
+    <li><strong>No compliant invoice:</strong> without a contracting entity, a compliant invoice is hard to obtain and corporate payment does not go through.</li>
+    <li><strong>No auditability:</strong> without complete call logs, compliance review lacks an evidence chain and the data boundary is unclear.</li>
+  </ul>
+
+  <h2>How an enterprise gateway closes these four gaps</h2>
+  <p>
+    Take SMA as an example: legitimate-channel access addresses exactly those four points. Overseas models are accessed through cloud providers' commercial platforms (GPT runs on the Microsoft Azure commercial service), with the contracting entity and accountability written into the contract; corporate contracting and technical-service invoicing are supported, with online Alipay or corporate top-up; every call is fully audited, traceable, and reconcilable; multiple models back each other up, switching automatically on failure and preserving context via the state header to reduce single-point outages. If you want help, 24/7 technical support via WeCom is available.
+  </p>
+
+  <h2>Is migration costly? Dimension by dimension</h2>
+  <table>
+    <thead>
+      <tr><th>Dimension</th><th>Account-pool / resale service</th><th>Enterprise gateway (SMA)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Channel</td><td>shared accounts / unknown-origin resale</td><td>commercial cloud platform, clear entity</td></tr>
+      <tr><td>Ban risk</td><td>whole batch fails, outage anytime</td><td>contract-backed, no account pool</td></tr>
+      <tr><td>Invoice</td><td>hard / none</td><td>corporate technical-service invoice</td></tr>
+      <tr><td>Audit</td><td>none</td><td>full-chain, traceable</td></tr>
+      <tr><td>Stability</td><td>single point, manual</td><td>multi-model failover + state continuity</td></tr>
+      <tr><td>Support</td><td>community / none</td><td>24/7 via WeCom</td></tr>
+      <tr><td>Migration</td><td>—</td><td>OpenAI-compatible, change base_url</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">
+    This page describes general risks of account-pool / resale services and targets no specific service; SMA capabilities and documentation follow this site, console configuration, and contract terms (as of 2026-06).
+  </p>
+
+  <h2>FAQ</h2>
+  {qa.map((item) => (
+    <>
+      <h3>{item.q}</h3>
+      <p>{item.a}</p>
+    </>
+  ))}
+
+  <p>Smooth migration: keep your OpenAI SDK and point base_url at the gateway. <a href="/en/sma">See the product overview and four-step start →</a></p>
+
+  <div class="related">
+    <p>Related questions:</p>
+    <ul>
+      <li><a href="/en/compliant-overseas-llm-access">How to access overseas LLMs compliantly</a></li>
+      <li><a href="/en/compare/sma-vs-oneapi">Self-hosted relays vs enterprise gateways</a></li>
+      <li><a href="/en/overseas-llm-high-availability">High-availability access to overseas LLMs</a></li>
+      <li><a href="/en/faq">FAQ on multi-model access and governance</a></li>
+    </ul>
+  </div>
+</Base>

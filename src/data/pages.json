@@ -252,6 +252,34 @@
         "label": "High-availability access to overseas LLMs",
         "desc": "Error-graded failover, state continuity, SMA Edge active health monitoring"
       }
+    },
+    {
+      "route": "/zh/compare/api-relay-alternative",
+      "lang": "zh",
+      "alternate": "/en/compare/api-relay-alternative",
+      "title": "API 中转站不稳、开不了票?企业级合规替代与迁移指南 | SMA",
+      "description": "个人账号池/来源不明转售类 API 中转的常见风险:封号中断、无合同主体、开不了合规票、调用无法审计。企业级网关以正规渠道接入、签约主体明确、可开技术服务发票、全链路审计;因同为 OpenAI 兼容,迁移通常只改 base_url。",
+      "datePublished": "2026-06-16",
+      "dateModified": "2026-06-16",
+      "llms": {
+        "section": "核心页面",
+        "label": "账号池 / 转售类 API 的企业级合规替代与迁移",
+        "desc": "账号池 / 转售类服务的四类风险、企业级网关如何补齐、迁移成本逐维拆解"
+      }
+    },
+    {
+      "route": "/en/compare/api-relay-alternative",
+      "lang": "en",
+      "alternate": "/zh/compare/api-relay-alternative",
+      "title": "API Relay Unstable or Can't Invoice? Enterprise-Compliant Alternative & Migration | smaapi",
+      "description": "Account-pool or unknown-origin API relay services carry real risks: bans and interruptions, no contracting entity, no compliant invoice, no auditability. An enterprise gateway uses legitimate channels with a clear contracting entity, technical-service invoicing, and full audit; migration is usually just a base_url change since both are OpenAI-compatible.",
+      "datePublished": "2026-06-16",
+      "dateModified": "2026-06-16",
+      "llms": {
+        "section": "Core pages",
+        "label": "Enterprise alternative to API relays, and how to migrate",
+        "desc": "Four risks of resale relays, how an enterprise gateway closes them, migration cost broken down"
+      }
     }
   ]
 }
