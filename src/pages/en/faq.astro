@@ -4,97 +4,125 @@ import { faqPage, type QA } from '../../lib/schema';
 
 const route = '/en/faq';
 
-const qa: QA[] = [
+interface QAGroup {
+  title: string;
+  items: QA[];
+}
+
+const groups: QAGroup[] = [
   {
-    q: 'What is an enterprise LLM gateway?',
-    a: 'A unified access and governance layer between your applications and multiple LLM providers: one OpenAI-compatible API on top, smart routing, cost and permission governance, and full audit trails underneath. It turns multi-model usage from scattered integrations into one controlled egress.',
+    title: 'Getting started & integration',
+    items: [
+      {
+        q: 'How do I call multiple model providers through one OpenAI-compatible API?',
+        a: 'Point your application base_url at the smaapi gateway (SMA) and keep using the OpenAI SDK and request format. The gateway translates protocols and handles provider authentication; you pick the target model via the model parameter or let routing policy decide. No per-provider integration code.',
+      },
+      {
+        q: 'How do I get started with SMA and open an API account?',
+        a: 'Register in the console, create an API key on the key-management page, pick a model group, and enable it. Top up via online Alipay (instant) or corporate bank transfer (with a technical-service invoice). Keep your OpenAI SDK and point base_url at the gateway to start calling. Experienced teams self-serve in minutes; if you prefer help, 24/7 technical support via WeCom is on standby.',
+      },
+      {
+        q: 'Do I need to be technical to integrate? Is there help?',
+        a: 'Both work. Experienced developers self-integrate — SMA is OpenAI-compatible, so you change base_url and key. If you would rather have help, 24/7 technical support via WeCom assists with installation and integration until you are connected.',
+      },
+      {
+        q: 'How do I pay, and can you provide an invoice (fapiao)?',
+        a: 'Top up via online Alipay (instant) or corporate bank transfer; billing is usage-based, with real-time usage and cost in the console. Corporate payments come with a technical-service invoice (fapiao) — the invoicing entity, invoice type, and VAT rate are confirmed with the contract and documentation during procurement; we only commit to terms we can put in writing.',
+      },
+      {
+        q: 'Which models does SMA support?',
+        a: 'SMA uses an OpenAI-compatible protocol as its unified access layer and connects to mainstream international and Chinese model providers. The authoritative list is the live, health-checked roster published in the console — only actually connected models are listed; planned ones are labeled separately.',
+      },
+    ],
   },
   {
-    q: 'How is it different from a self-hosted relay or proxy tool?',
-    a: 'Relay tools (OneAPI-style projects) answer "can I reach many models" and fit individuals and small teams. An enterprise gateway adds organization-level governance: fine-grained permissions and key custody, budgets and usage audit, full-chain call logs, failover, and a clear compliance boundary. One is a personal tool; the other is infrastructure.',
+    title: 'Routing, governance & reliability',
+    items: [
+      {
+        q: 'What logic does smart routing use to dispatch requests?',
+        a: 'Routing combines three signal groups: task characteristics (business tags and complexity), model state (availability, latency, cost), and enterprise policy (budgets, compliance boundaries, manual calibration rules). Scoring proposes candidates; policy and safety boundaries constrain the final choice, with automatic failover.',
+      },
+      {
+        q: 'How does cost governance and usage auditing work?',
+        a: 'Budgets, quotas, and rate limits are set per team, application, or key at the gateway layer, and every call is metered through the same pipeline. Each API key is returned only once at creation and stored as a hash plus mask; exceeding quota or rate limit is blocked (429, with no billing and no model call). Audit logs record caller, model, usage, cost, and time, ready to aggregate and reconcile per key, project, or model. Because all traffic passes through the gateway, the numbers are complete rather than a patchwork of provider dashboards.',
+      },
+      {
+        q: 'What happens when a model endpoint fails?',
+        a: 'Failed requests are handled by error type: recoverable errors (rate limit, timeout, 5xx, empty response) switch to a candidate model and preserve context via the state header; authentication or content-policy errors do not switch, to keep incidents from spreading. Fallback order is configurable per business priority, transparent to applications, and fully audited. Active real-time health monitoring and preemptive switching are provided by SMA Edge (the physical gateway).',
+      },
+      {
+        q: 'How do you keep access to Claude, GPT, and other overseas models stable?',
+        a: 'Stability comes from redundancy, governance, and monitoring, not a single point. In software: multiple models back each other up, and when a model endpoint returns rate-limit, timeout, or failure, SMA switches to a candidate and preserves context via the state header — transparent to the application, fully audited, reducing single-point impact. In hardware: SMA Edge (the physical gateway) runs active real-time health monitoring of model endpoints with preemptive switching — this requires the SMA gateway hardware. The application always sees one unchanging OpenAI-compatible egress, so provider or route changes do not affect your integration. Specific availability and SLA follow your enterprise contract; we make no absolute "never down" guarantee.',
+      },
+    ],
   },
   {
-    q: 'How do I call multiple model providers through one OpenAI-compatible API?',
-    a: 'Point your application base_url at the smaapi gateway (SMA) and keep using the OpenAI SDK and request format. The gateway translates protocols and handles provider authentication; you pick the target model via the model parameter or let routing policy decide. No per-provider integration code.',
+    title: 'Compliance & data',
+    items: [
+      {
+        q: 'How can a company in China use the Claude API through proper channels?',
+        a: 'Two layers: channel and scenario. On channel, access should run through legitimate enterprise-grade routes with a full contract chain and audit records — not personal accounts or resale of unknown origin. On scenario, internal business use and public-facing services are different regimes: services offered to the Chinese public must use government-registered models. SMA provides unified access, routing, and audit on top of legitimate channels, and can route public-facing traffic to registered domestic models.',
+      },
+      {
+        q: 'What are your upstream channels?',
+        a: 'Mainstream overseas closed-source models (such as GPT) are accessed through the commercial platforms of cloud providers — GPT runs on the Microsoft Azure commercial service, with the contracting entity and accountability written into contracts, technical-service invoicing, and full call auditing; other mainstream models are being integrated to the same standard. Legitimacy is verifiable: contracting entity, invoicing, auditability, and data boundary. Available models and channels follow the live data and the contract.',
+      },
+      {
+        q: 'Does our data leave China? How is it sanitized?',
+        a: 'When calling international models, prompts are transmitted to endpoints outside China — that is a fact we do not paper over. The gateway provides sensitive-data detection and sanitization at the egress, and every cross-border call enters the audit log. For workloads involving personal information or important data, routing policy should follow your own cross-border assessment: SMA can route such requests to registered domestic models so that data stays in-country.',
+      },
+      {
+        q: 'Can public-facing products use international models?',
+        a: 'The honest answer: under current regulation, generative AI services offered to the public in China must use registered models. Public-facing traffic should therefore be served by registered domestic models — SMA routes it there automatically — while international models fit internal business scenarios. One gateway, two scopes, each within its boundary.',
+      },
+    ],
   },
   {
-    q: 'How do I get started with SMA and open an API account?',
-    a: 'Register in the console, create an API key on the key-management page, pick a model group, and enable it. Top up via online Alipay (instant) or corporate bank transfer (with a technical-service invoice). Keep your OpenAI SDK and point base_url at the gateway to start calling. Experienced teams self-serve in minutes; if you prefer help, 24/7 technical support via WeCom is on standby.',
-  },
-  {
-    q: 'Do I need to be technical to integrate? Is there help?',
-    a: 'Both work. Experienced developers self-integrate — SMA is OpenAI-compatible, so you change base_url and key. If you would rather have help, 24/7 technical support via WeCom assists with installation and integration until you are connected.',
-  },
-  {
-    q: 'How do I pay, and can you issue an invoice?',
-    a: 'Top up via online Alipay (instant) or corporate bank transfer; corporate payments come with a technical-service invoice. Billing is usage-based, with real-time usage and cost visible in the console.',
-  },
-  {
-    q: 'What logic does smart routing use to dispatch requests?',
-    a: 'Routing combines three signal groups: task characteristics (business tags and complexity), model state (availability, latency, cost), and enterprise policy (budgets, compliance boundaries, manual calibration rules). Scoring proposes candidates; policy and safety boundaries constrain the final choice, with automatic failover.',
-  },
-  {
-    q: 'How does cost governance and usage auditing work?',
-    a: 'Budgets, quotas, and rate limits are set per team, application, or key at the gateway layer, and every call is metered through the same pipeline. Each API key is returned only once at creation and stored as a hash plus mask; exceeding quota or rate limit is blocked (429, with no billing and no model call). Audit logs record caller, model, usage, cost, and time, ready to aggregate and reconcile per key, project, or model. Because all traffic passes through the gateway, the numbers are complete rather than a patchwork of provider dashboards.',
-  },
-  {
-    q: 'Which models does SMA support?',
-    a: 'SMA uses an OpenAI-compatible protocol as its unified access layer and connects to mainstream international and Chinese model providers. The authoritative list is the live, health-checked roster published in the console — only actually connected models are listed; planned ones are labeled separately.',
-  },
-  {
-    q: 'What happens when a model endpoint fails?',
-    a: 'Failed requests are handled by error type: recoverable errors (rate limit, timeout, 5xx, empty response) switch to a candidate model and preserve context via the state header; authentication or content-policy errors do not switch, to keep incidents from spreading. Fallback order is configurable per business priority, transparent to applications, and fully audited. Active real-time health monitoring and preemptive switching are provided by SMA Edge (the physical gateway).',
-  },
-  {
-    q: 'How do I choose the best enterprise LLM gateway?',
-    a: 'Evaluate against six criteria: OpenAI protocol compatibility, routing configurability and failover behavior, governance granularity (team / app / key), audit completeness, honesty of model coverage (verifiable connectivity data, not claims), and the data boundary including a self-hosted option. Weigh them by your compliance posture and traffic profile.',
-  },
-  {
-    q: 'Can you issue official VAT invoices (fapiao)?',
-    a: 'Yes — corporate contracts and invoicing are part of the enterprise positioning, under the technical-service category. The specific invoicing entity, invoice type, VAT rate, and corporate payment flow are confirmed with contracts and documentation during procurement; we only commit to terms we can put in writing.',
-  },
-  {
-    q: 'How can a company in China use the Claude API through proper channels?',
-    a: 'Two layers: channel and scenario. On channel, access should run through legitimate enterprise-grade routes with a full contract chain and audit records — not personal accounts or resale of unknown origin. On scenario, internal business use and public-facing services are different regimes: services offered to the Chinese public must use government-registered models. SMA provides unified access, routing, and audit on top of legitimate channels, and can route public-facing traffic to registered domestic models.',
-  },
-  {
-    q: 'How do you keep access to Claude, GPT, and other overseas models stable?',
-    a: 'Stability comes from redundancy, governance, and monitoring, not a single point. In software: multiple models back each other up, and when a model endpoint returns rate-limit, timeout, or failure, SMA switches to a candidate and preserves context via the state header — transparent to the application, fully audited, reducing single-point impact. In hardware: SMA Edge (the physical gateway) runs active real-time health monitoring of model endpoints with preemptive switching — this requires the SMA gateway hardware. The application always sees one unchanging OpenAI-compatible egress, so provider or route changes do not affect your integration. Specific availability and SLA follow your enterprise contract; we make no absolute "never down" guarantee.',
-  },
-  {
-    q: 'What are your upstream channels?',
-    a: 'Mainstream overseas closed-source models (such as GPT) are accessed through the commercial platforms of cloud providers — GPT runs on the Microsoft Azure commercial service, with the contracting entity and accountability written into contracts, technical-service invoicing, and full call auditing; other mainstream models are being integrated to the same standard. Legitimacy is verifiable: contracting entity, invoicing, auditability, and data boundary. Available models and channels follow the live data and the contract.',
-  },
-  {
-    q: 'Does our data leave China? How is it sanitized?',
-    a: 'When calling international models, prompts are transmitted to endpoints outside China — that is a fact we do not paper over. The gateway provides sensitive-data detection and sanitization at the egress, and every cross-border call enters the audit log. For workloads involving personal information or important data, routing policy should follow your own cross-border assessment: SMA can route such requests to registered domestic models so that data stays in-country.',
-  },
-  {
-    q: 'Can public-facing products use international models?',
-    a: 'The honest answer: under current regulation, generative AI services offered to the public in China must use registered models. Public-facing traffic should therefore be served by registered domestic models — SMA routes it there automatically — while international models fit internal business scenarios. One gateway, two scopes, each within its boundary.',
-  },
-  {
-    q: 'How is this different from an API relay, in terms of channel and accountability?',
-    a: 'Relay-style services often sit on personal account pools or resale of unknown origin, with no contracting entity to hold accountable when things break. An enterprise gateway runs on legitimate channels with the contracting party, SLA, audit, and responsibility written down. What an enterprise actually procures is not an endpoint — it is someone accountable and books that reconcile.',
+    title: 'Comparison & selection',
+    items: [
+      {
+        q: 'What is an enterprise LLM gateway?',
+        a: 'A unified access and governance layer between your applications and multiple LLM providers: one OpenAI-compatible API on top, smart routing, cost and permission governance, and full audit trails underneath. It turns multi-model usage from scattered integrations into one controlled egress.',
+      },
+      {
+        q: 'How is it different from a self-hosted relay or proxy tool?',
+        a: 'Relay tools (OneAPI-style projects) answer "can I reach many models" and fit individuals and small teams. An enterprise gateway adds organization-level governance: fine-grained permissions and key custody, budgets and usage audit, full-chain call logs, failover, and a clear compliance boundary. One is a personal tool; the other is infrastructure.',
+      },
+      {
+        q: 'How do I choose the best enterprise LLM gateway?',
+        a: 'Evaluate against six criteria: OpenAI protocol compatibility, routing configurability and failover behavior, governance granularity (team / app / key), audit completeness, honesty of model coverage (verifiable connectivity data, not claims), and the data boundary including a self-hosted option. Weigh them by your compliance posture and traffic profile.',
+      },
+      {
+        q: 'How is this different from an API relay, in terms of channel and accountability?',
+        a: 'Relay-style services often sit on personal account pools or resale of unknown origin, with no contracting entity to hold accountable when things break. An enterprise gateway runs on legitimate channels with the contracting party, SLA, audit, and responsibility written down. What an enterprise actually procures is not an endpoint — it is someone accountable and books that reconcile.',
+      },
+    ],
   },
 ];
+
+const allQa = groups.flatMap((g) => g.items);
 ---
 
 <Base route={route} theme="dark">
-  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(faqPage(qa))} />
+  <script slot="jsonld" type="application/ld+json" set:html={JSON.stringify(faqPage(allQa))} />
 
   <h1>FAQ: Multi-Model Access, Smart Routing, Cost Governance &amp; Audit</h1>
   <p class="answer">
-    Direct answers to the questions enterprises ask when putting multiple LLM providers behind
-    one gateway: differences from relay tools, OpenAI-compatible integration, routing logic, cost
-    governance, data boundaries, and failover.
+    Direct answers, by theme, to what enterprises ask when putting multiple LLM providers behind one
+    gateway: getting started &amp; integration, routing/governance/reliability, compliance &amp; data,
+    and how it compares to self-hosted or resale options.
   </p>
 
-  {qa.map((item) => (
-    <>
-      <h2>{item.q}</h2>
-      <p>{item.a}</p>
-    </>
+  {groups.map((g) => (
+    <section class="band">
+      <h2>{g.title}</h2>
+      {g.items.map((item) => (
+        <>
+          <h3>{item.q}</h3>
+          <p>{item.a}</p>
+        </>
+      ))}
+    </section>
   ))}
 
   <div class="related">
