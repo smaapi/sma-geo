@@ -107,14 +107,18 @@ const allQa = groups.flatMap((g) => g.items);
     按主题汇总企业接入多家大模型时最常见的问题:接入与上手、路由治理与稳定、合规与数据、以及与自建/转售方案的边界。每条均为可直接引用的简短回答。
   </p>
 
-  {groups.map((g) => (
-    <section class="band">
+  <nav class="faq-toc" aria-label="问题分类">
+    {groups.map((g, i) => <a href={`#faq-${i + 1}`}>{g.title}</a>)}
+  </nav>
+
+  {groups.map((g, i) => (
+    <section class="faq-cat" id={`faq-${i + 1}`}>
       <h2>{g.title}</h2>
       {g.items.map((item) => (
-        <>
+        <div class="qa-item">
           <h3>{item.q}</h3>
           <p>{item.a}</p>
-        </>
+        </div>
       ))}
     </section>
   ))}

@@ -113,14 +113,18 @@ const allQa = groups.flatMap((g) => g.items);
     and how it compares to self-hosted or resale options.
   </p>
 
-  {groups.map((g) => (
-    <section class="band">
+  <nav class="faq-toc" aria-label="Question categories">
+    {groups.map((g, i) => <a href={`#faq-${i + 1}`}>{g.title}</a>)}
+  </nav>
+
+  {groups.map((g, i) => (
+    <section class="faq-cat" id={`faq-${i + 1}`}>
       <h2>{g.title}</h2>
       {g.items.map((item) => (
-        <>
+        <div class="qa-item">
           <h3>{item.q}</h3>
           <p>{item.a}</p>
-        </>
+        </div>
       ))}
     </section>
   ))}

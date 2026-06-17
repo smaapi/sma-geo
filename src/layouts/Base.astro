@@ -680,4 +680,60 @@ const nav = zh
     font-size: 0.82rem;
     letter-spacing: 0.04em;
   }
+
+  /* ===== FAQ 版式(分类 TOC + Q&A 工整) ===== */
+  body.theme-dark .faq-toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.4rem 0 0.5rem;
+  }
+  body.theme-dark .faq-toc a {
+    padding: 0.3rem 0.85rem;
+    border: 1px solid rgba(140, 200, 180, 0.2);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #cfe6db;
+    font-size: 0.84rem;
+  }
+  body.theme-dark .faq-toc a:hover {
+    text-decoration: none;
+    border-color: rgba(242, 199, 92, 0.55);
+    color: #f2c75c;
+  }
+  body.theme-dark .faq-cat {
+    margin: 2.3rem 0 0;
+  }
+  body.theme-dark .faq-cat > h2 {
+    margin-top: 0;
+    margin-bottom: 0.3rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(140, 200, 180, 0.18);
+  }
+  body.theme-dark .qa-item {
+    padding: 1rem 0 1.05rem;
+    border-bottom: 1px solid rgba(140, 200, 180, 0.09);
+  }
+  body.theme-dark .qa-item:last-child {
+    border-bottom: none;
+  }
+  body.theme-dark .qa-item h3 {
+    display: flex;
+    gap: 0.55rem;
+    margin: 0 0 0.5rem;
+    font-size: 1.02rem;
+    line-height: 1.45;
+    color: #eef6f1;
+  }
+  body.theme-dark .qa-item h3::before {
+    content: 'Q';
+    flex: none;
+    color: #f2c75c;
+    font-weight: 700;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  body.theme-dark .qa-item p {
+    margin: 0;
+    color: #c4d8ce;
+  }
 </style>
