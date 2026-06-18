@@ -33,9 +33,16 @@ if (!resolved.includes(EXPECT_IP)) {
 }
 console.log(`DNS 门通过: ${host} -> ${EXPECT_IP}`);
 
-const token = process.env.BAIDU_PUSH_TOKEN;
+// 便于一键运行：环境未注入时，自动从仓库根 .env 读取 BAIDU_PUSH_TOKEN（.env 永不入库）。
+let token = process.env.BAIDU_PUSH_TOKEN;
 if (!token) {
-  console.error('缺少环境变量 BAIDU_PUSH_TOKEN —— 推送取消（在百度站长「普通收录 → API提交」页获取准入密钥）');
+  try {
+    const m = readFileSync(resolve(root, '.env'), 'utf8').match(/^\s*BAIDU_PUSH_TOKEN\s*=\s*(.+?)\s*$/m);
+    if (m) token = m[1];
+  } catch { /* 无 .env：走下方缺失校验 */ }
+}
+if (!token) {
+  console.error('缺少 BAIDU_PUSH_TOKEN（环境变量或 .env 均无）—— 推送取消（在百度站长「普通收录 → API提交」页获取准入密钥）');
   process.exit(1);
 }
 
